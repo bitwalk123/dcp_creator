@@ -76,22 +76,30 @@ class DCPMatrix(QWidget):
         self.model = model
 
     def excludeStepMinus1(self, flag: bool):
-        c = -1
-        for i in range(self.model.columnCount()):
-            item: QStandardItem = self.model.horizontalHeaderItem(i)
-            if item.text() == '-1':
-                c = i
-                break
-        if c < 0:
+        key = '-1'
+        col = self.find_header_label(key)
+        if col < 0:
             return
+        self.switch_check_all_rows(col, flag)
+
+    def switch_check_all_rows(self, col, flag):
         rows = self.model.rowCount()
-        for r in range(rows):
-            item: QStandardItem = self.model.item(r, c)
+        for row in range(rows):
+            item: QStandardItem = self.model.item(row, col)
             if item.isCheckable():
                 if flag:
                     item.setCheckState(Qt.CheckState.Unchecked)
                 else:
                     item.setCheckState(Qt.CheckState.Checked)
+
+    def find_header_label(self, key):
+        col = -1
+        for i in range(self.model.columnCount()):
+            item: QStandardItem = self.model.horizontalHeaderItem(i)
+            if item.text() == key:
+                col = i
+                break
+        return col
 
     def count_checkbox_checked(self, layout):
         """
