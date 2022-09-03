@@ -75,9 +75,16 @@ class DCPMatrix(QWidget):
         #
         self.model = model
 
-    def excludeStepMinus1(self, flag:bool):
+    def excludeStepMinus1(self, flag: bool):
+        c = -1
+        for i in range(self.model.columnCount()):
+            item: QStandardItem = self.model.horizontalHeaderItem(i)
+            if item.text() == '-1':
+                c = i
+                break
+        if c < 0:
+            return
         rows = self.model.rowCount()
-        c = 2 # need to determine column programmatically
         for r in range(rows):
             item: QStandardItem = self.model.item(r, c)
             if item.isCheckable():
@@ -117,4 +124,4 @@ class DCPMatrix(QWidget):
                 msg = 'checked'
             else:
                 msg = 'unchecked'
-            #print('(%d, %d) -> %s' % (row, col, msg))
+            # print('(%d, %d) -> %s' % (row, col, msg))
