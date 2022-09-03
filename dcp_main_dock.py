@@ -34,14 +34,17 @@ class DockFilter(QDockWidget):
         :param layout:
         """
         but = MenuButton('exclude Step -1')
+        but.setToolTip('exclude Step -1.')
         but.clicked.connect(self.exclude_step_minus1)
         layout.addWidget(but)
         #
         but = MenuButton('exclude Step >= 1000')
+        but.setToolTip('exclude Step 1001, 1002, ...')
         but.clicked.connect(self.exclude_step_dechuck)
         layout.addWidget(but)
         #
         but = MenuButton('exclude Sensor endswith @')
+        but.setToolTip('exclude Sensor for setting data.')
         layout.addWidget(but)
         #
         but = MenuButton('exclude Step with Small Variation')
