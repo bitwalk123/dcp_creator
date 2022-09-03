@@ -82,6 +82,18 @@ class DCPMatrix(QWidget):
             return
         self.switch_check_all_rows(col, flag)
 
+    def excludeStepDechuck(self, flag: bool):
+        list_col = list()
+        for i in range(self.model.columnCount()):
+            item: QStandardItem = self.model.horizontalHeaderItem(i)
+            name_head = item.text()
+            if not name_head.isdecimal():
+                continue
+            if int(name_head) >= 1000:
+                list_col.append(i)
+        for col in list_col:
+            self.switch_check_all_rows(col, flag)
+
     def switch_check_all_rows(self, col, flag):
         rows = self.model.rowCount()
         for row in range(rows):

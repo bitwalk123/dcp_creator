@@ -38,12 +38,13 @@ class DockFilter(QDockWidget):
         layout.addWidget(but)
         #
         but = MenuButton('exclude Step >= 1000')
+        but.clicked.connect(self.exclude_step_dechuck)
         layout.addWidget(but)
         #
         but = MenuButton('exclude Sensor endswith @')
         layout.addWidget(but)
         #
-        but = MenuButton('exclude Step Variation = 0')
+        but = MenuButton('exclude Step with Small Variation')
         layout.addWidget(but)
         #
         but = MenuButton('exclude OES data')
@@ -55,3 +56,7 @@ class DockFilter(QDockWidget):
     def exclude_step_minus1(self):
         but: QPushButton = self.sender()
         self.dcp.excludeStepMinus1(but.isChecked())
+
+    def exclude_step_dechuck(self):
+        but: QPushButton = self.sender()
+        self.dcp.excludeStepDechuck(but.isChecked())
