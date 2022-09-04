@@ -1,5 +1,3 @@
-import pandas as pd
-
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QDockWidget,
@@ -17,13 +15,12 @@ class DCPMain(QMainWindow):
     SensorSelectionMain
     Main windows for Sensor Selection
     """
+    dcp = None
+    dock = None
 
     def __init__(self, features: FeatureInfo):
         super().__init__()
         self.setAutoFillBackground(True)
-        # self.df_source = df
-        #
-        # info_log: dict = self.init_sensor()
         self.init_ui(features)
 
     def init_ui(self, features: FeatureInfo):
@@ -45,3 +42,6 @@ class DCPMain(QMainWindow):
         dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, dock)
+        #
+        self.dcp = dcp
+        self.dock = dock

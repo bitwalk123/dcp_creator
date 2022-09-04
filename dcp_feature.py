@@ -15,6 +15,7 @@ class FeatureInfo:
     pattern_feature_2_units = re.compile(r'^([^_]+)(\[.+\]\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+)_(.+)$')
+    pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
 
     def __init__(self, df: pd.DataFrame):
         self.df_source = df

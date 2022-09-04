@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from app_functions import is_num
 from app_widgets import (
     VBoxLayout,
     TableView,
@@ -22,6 +23,9 @@ class DCPMatrix(QWidget):
     DCPMatrix class
     manage sensor selection
     """
+    name_sensor = 'Sensor Name'
+    name_unit = 'unit'
+
     model = None
     style_cell = 'padding:2px 5px;'
 
@@ -46,7 +50,7 @@ class DCPMatrix(QWidget):
         table = TableView()
         model = QStandardItemModel()
         # headers
-        headers = ['Sensor Name', 'unit']
+        headers = [self.name_sensor, self.name_unit]
         headers.extend([str(n) for n in self.features.getSteps()])
         model.setHorizontalHeaderLabels(headers)
         model.itemChanged.connect(self.on_check_item)
@@ -93,6 +97,42 @@ class DCPMatrix(QWidget):
                 list_col.append(i)
         for col in list_col:
             self.switch_check_all_rows(col, flag)
+
+    def excludeSensorForSetting(self, flag: bool):
+        list_row = self.find_sensor_with_pattern()
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+    def get_step_columns(self):
+        list_col = list()
+        for col in range(self.model.columnCount()):
+            item: QStandardItem = self.model.horizontalHeaderItem(col)
+            if is_num(item.text()):
+                list_col.append(col)
+        return list_col
+
+    def find_sensor_with_pattern(self):
+        key = self.name_sensor
+        col = self.find_header_label(key)
+        list_row = list()
+        pattern = self.features.pattern_sensor_setting
+        for row in range(self.model.rowCount()):
+            item: QStandardItem = self.model.item(row, col)
+            sensor = item.text()
+            result = pattern.match(sensor)
+            if result:
+                list_row.append(row)
+        return list_row
+
+    def swicth_check(self, list_row, list_col, flag):
+        for row in list_row:
+            for col in list_col:
+                item: QStandardItem = self.model.item(row, col)
+                if item.isCheckable():
+                    if flag:
+                        item.setCheckState(Qt.CheckState.Unchecked)
+                    else:
+                        item.setCheckState(Qt.CheckState.Checked)
 
     def switch_check_all_rows(self, col, flag):
         rows = self.model.rowCount()
