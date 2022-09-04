@@ -102,6 +102,12 @@ class DCPCreator(QMainWindow):
         tab.addTab(DCPMain(features), 'Sensor Selection')
         # Setting Data
         tab.addTab(DCPSettingData(features), 'Setting Data')
+        #
+        tab.currentChanged.connect(self.tab_changed)
+
+    def tab_changed(self):
+        tab: QTabWidget = self.sender()
+        print('current tab', tab.currentIndex())
 
 
 def main():

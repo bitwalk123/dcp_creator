@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 
+
 class FeatureInfo:
     """
     FeatureInfo
@@ -12,6 +13,9 @@ class FeatureInfo:
     units = {}
     headers_feature = None
     # Regular Expression
+    # example columns
+    #   Wall Temperature (setting data)[degC]_2_Stddev
+    #   Pulse Frequency (setting data)[kHz]_-1_Stddev
     pattern_feature_2_units = re.compile(r'^([^_]+)(\[.+\]\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+)_(.+)$')
@@ -83,6 +87,12 @@ class FeatureInfo:
         self.sensors = sensors
         self.stats = stats
         self.units = units
+
+    def getFeatureValue(self, sensor: str, step: int):
+        # print(sensor, step)
+        #   Pulse Frequency (setting data)[kHz]_-1_Stddev
+        feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, self.stats[0])
+        return list(set(self.df_source[feature]))
 
     def getSteps(self) -> list:
         return self.steps
