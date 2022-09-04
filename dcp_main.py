@@ -20,7 +20,7 @@ class DCPMain(QMainWindow):
 
     def __init__(self, features: FeatureInfo):
         super().__init__()
-        self.setAutoFillBackground(True)
+        # self.setAutoFillBackground(True)
         self.init_ui(features)
 
     def init_ui(self, features: FeatureInfo):

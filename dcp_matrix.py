@@ -5,29 +5,22 @@ from PySide6.QtGui import (
     QStandardItemModel,
     QStandardItem,
 )
-from PySide6.QtWidgets import (
-    QSizePolicy,
-    QWidget,
-)
+from PySide6.QtWidgets import QSizePolicy
 
 from app_functions import is_num
 from app_widgets import (
-    VBoxLayout,
+    FeatureMatrix,
     TableView,
+    VBoxLayout,
 )
 from dcp_feature import FeatureInfo
 
 
-class DCPMatrix(QWidget):
+class DCPMatrix(FeatureMatrix):
     """
     DCPMatrix class
     manage sensor selection
     """
-    name_sensor = 'Sensor Name'
-    name_unit = 'unit'
-
-    model = None
-    style_cell = 'padding:2px 5px;'
 
     def __init__(self, features: FeatureInfo):
         super().__init__()
@@ -172,16 +165,3 @@ class DCPMatrix(QWidget):
                         count += 1
         return count
 
-    def on_check_item(self, item: QStandardItem):
-        """
-        on_check_item
-        examine check status
-        """
-        if item.isCheckable():
-            row = item.row()
-            col = item.column()
-            if item.checkState() == Qt.CheckState.Checked:
-                msg = 'checked'
-            else:
-                msg = 'unchecked'
-            # print('(%d, %d) -> %s' % (row, col, msg))

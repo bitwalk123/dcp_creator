@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 from dcp_creator_toolbar import DCPCreatorToolBar
 from dcp_feature import FeatureInfo
 from dcp_main import DCPMain
+from dcp_setting import DCPSettingData
 
 
 class DCPCreator(QMainWindow):
@@ -32,7 +33,7 @@ class DCPCreator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.init_ui()
-        self.resize(800, 800)
+        self.resize(1000, 800)
         self.setWindowTitle('DCP Creator')
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
@@ -96,9 +97,11 @@ class DCPCreator(QMainWindow):
         self.takeCentralWidget()
         # make new tab widget
         tab = QTabWidget()
+        self.setCentralWidget(tab)
         # Sensor Selection
         tab.addTab(DCPMain(features), 'Sensor Selection')
-        self.setCentralWidget(tab)
+        # Setting Data
+        tab.addTab(DCPSettingData(features), 'Setting Data')
 
 
 def main():
