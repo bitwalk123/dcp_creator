@@ -9,6 +9,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFrame,
     QGridLayout,
     QHeaderView,
@@ -50,8 +51,11 @@ class CheckBox(QCheckBox):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setChecked(True)
 
+class ComboBox(QComboBox):
+    def __init__(self):
+        super().__init__()
+        self.setContentsMargins(0, 0, 0, 0)
 
-# check.setAutoFillBackground(True)
 
 class LabelCell(QLabel):
     """

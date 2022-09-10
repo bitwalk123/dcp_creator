@@ -1,9 +1,12 @@
 from PySide6.QtWidgets import QSizePolicy
 
 from app_widgets import (
+    ComboBox,
     FeatureMatrix,
+    GridLayout,
+    LabelCell,
     LabelHead,
-    GridLayout, LabelCell, LabelNumeric,
+    LabelNumeric,
 )
 from features import Features
 
@@ -30,8 +33,14 @@ class Summary(FeatureMatrix):
         row = 0
         lab = LabelHead('Recipe', self.style_cell)
         layout.addWidget(lab, row, 0)
-        lab_recipe = LabelCell(None, self.style_cell)
+        lab_recipe = ComboBox()
         layout.addWidget(lab_recipe, row, 1)
+        #
+        row += 1
+        lab = LabelHead('Chamber', self.style_cell)
+        layout.addWidget(lab, row, 0)
+        lab_chamber = LabelNumeric(0, self.style_cell)
+        layout.addWidget(lab_chamber, row, 1)
         #
         row += 1
         lab = LabelHead('Wafers', self.style_cell)
