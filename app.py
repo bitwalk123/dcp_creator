@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from dcp_creator_toolbar import DCPCreatorToolBar
+from dcp_summary import DCPSummary
 from feature_info import FeatureInfo
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_step_value_setting import DCPStepValueSetting
@@ -98,11 +99,17 @@ class DCPCreator(QMainWindow):
         # make new tab widget
         tab = QTabWidget()
         self.setCentralWidget(tab)
+        # _____________________________________________________________________
+        # Sensor Selection
+        tab.addTab(DCPSummary(features), 'Summary')
+        # _____________________________________________________________________
         # Sensor Selection
         tab.addTab(DCPSensorSelection(features), 'Sensor Selection')
+        # _____________________________________________________________________
         # Setting Data
         tab.addTab(DCPStepValueSetting(features), 'Setting Data')
-        #
+        # _____________________________________________________________________
+        # for tab click event
         tab.currentChanged.connect(self.tab_changed)
 
     def tab_changed(self):
