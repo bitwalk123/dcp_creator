@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMainWindow, QScrollArea
 
 from features import Features
+from summary import Summary
 
 
 class DCPSummary(QMainWindow):
@@ -18,5 +19,5 @@ class DCPSummary(QMainWindow):
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
-        # recipe = DCPRecipe(features)
-        # central.setWidget(recipe)
+        summary = Summary(features)
+        central.setWidget(summary)

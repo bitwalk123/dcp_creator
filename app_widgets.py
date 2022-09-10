@@ -1,3 +1,5 @@
+from typing import Union
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import (
     QBrush,
@@ -8,6 +10,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import (
     QCheckBox,
     QFrame,
+    QGridLayout,
     QHeaderView,
     QLabel,
     QPushButton,
@@ -75,6 +78,20 @@ class LabelHead(QLabel):
         self.setStyleSheet(style_cell)
 
 
+class LabelNumeric(LabelCell):
+    """
+    LabelSensor
+    label for sensor name in the DCP matrix
+
+    note:
+    This class overrides LabelCell class
+    """
+
+    def __init__(self, num: Union[float, int], style_cell: str):
+        super().__init__(str(num), style_cell)
+        self.setAlignment(Qt.AlignRight)
+        # align
+
 class LabelSensor(LabelCell):
     """
     LabelSensor
@@ -91,7 +108,6 @@ class LabelSensor(LabelCell):
         pal.setColor(QPalette.Window, Qt.white)
         self.setAutoFillBackground(True)
         self.setPalette(pal)
-
 
 class FeatureMatrix(QWidget):
     name_sensor = 'Sensor Name'
@@ -116,6 +132,17 @@ class FeatureMatrix(QWidget):
             else:
                 msg = 'unchecked'
             # print('(%d, %d) -> %s' % (row, col, msg))
+
+
+class GridLayout(QGridLayout):
+    """
+    VBoxLayout
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSpacing(0)
 
 
 class RecipeItem(QStandardItem):
