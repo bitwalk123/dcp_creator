@@ -100,7 +100,7 @@ class DCPCreator(QMainWindow):
         tab = QTabWidget()
         self.setCentralWidget(tab)
         # _____________________________________________________________________
-        # Sensor Selection
+        # Summary
         tab.addTab(DCPSummary(features), 'Summary')
         # _____________________________________________________________________
         # Sensor Selection
