@@ -90,8 +90,8 @@ class DCPCreator(QMainWindow):
     def main_ui(self, features: FeatureInfo):
         """
         main_ui
-        generate main UI
-        :param df: dataframe of summary stat log data read from CSV
+        :param features:
+        :return:
         """
         # remove central widget if exists.
         self.takeCentralWidget()

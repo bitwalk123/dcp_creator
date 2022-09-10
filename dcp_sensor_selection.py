@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
 
 from feature_info import FeatureInfo
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
-from dcp_matrix import DCPSensor
+from dcp_sensor import DCPSensor
 
 
 class DCPSensorSelection(QMainWindow):

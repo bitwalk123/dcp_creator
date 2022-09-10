@@ -37,7 +37,7 @@ class MenuButton(QPushButton):
 class CheckBox(QCheckBox):
     """
     CheckBox
-    checkbox for selecting/deselecting feature in the DCP matrix
+    This checkbox is for selecting/deselecting feature in the DCP matrix
     """
 
     def __init__(self):

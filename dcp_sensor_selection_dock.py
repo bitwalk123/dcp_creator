@@ -8,7 +8,7 @@ from app_widgets import (
     VBoxLayout,
     MenuButton,
 )
-from dcp_matrix import DCPSensor
+from dcp_sensor import DCPSensor
 
 
 class DCPSensorSelectionDock(QDockWidget):
