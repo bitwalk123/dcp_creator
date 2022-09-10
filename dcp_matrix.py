@@ -16,7 +16,7 @@ from app_widgets import (
 from feature_info import FeatureInfo
 
 
-class DCPMatrix(FeatureMatrix):
+class DCPSensor(FeatureMatrix):
     """
     DCPMatrix class
     manage sensor selection
@@ -69,7 +69,7 @@ class DCPMatrix(FeatureMatrix):
                 list_row.append(item)
 
             model.appendRow(list_row)
-        #
+        # set the model to member variable
         self.model = model
 
     def excludeStepMinus1(self, flag: bool):

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
 
 from feature_info import FeatureInfo
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
-from dcp_matrix import DCPMatrix
+from dcp_matrix import DCPSensor
 
 
 class DCPSensorSelection(QMainWindow):
@@ -34,7 +34,7 @@ class DCPSensorSelection(QMainWindow):
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
         # Blank Widget on the Scroll Area
-        dcp = DCPMatrix(features)
+        dcp = DCPSensor(features)
         central.setWidget(dcp)
         # _____________________________________________________________________
         # Right Dock
