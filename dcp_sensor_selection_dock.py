@@ -11,7 +11,7 @@ from app_widgets import (
 from dcp_matrix import DCPMatrix
 
 
-class DockFilter(QDockWidget):
+class DCPSensorSelectionDock(QDockWidget):
     """
     DockFilter
     dock for sensor filtering

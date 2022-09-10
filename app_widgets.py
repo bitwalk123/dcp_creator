@@ -1,10 +1,15 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPalette, QStandardItem, QColor, QBrush
+from PySide6.QtGui import (
+    QBrush,
+    QColor,
+    QPalette,
+    QStandardItem,
+)
 from PySide6.QtWidgets import (
     QCheckBox,
-    QLabel,
     QFrame,
     QHeaderView,
+    QLabel,
     QPushButton,
     QSizePolicy,
     QTableView,

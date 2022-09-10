@@ -6,11 +6,11 @@ from PySide6.QtWidgets import (
 )
 
 from feature_info import FeatureInfo
-from dcp_main_dock import DockFilter
+from dcp_sensor_selection_dock import DCPSensorSelectionDock
 from dcp_matrix import DCPMatrix
 
 
-class DCPMain(QMainWindow):
+class DCPSensorSelection(QMainWindow):
     """
     SensorSelectionMain
     Main windows for Sensor Selection
@@ -38,7 +38,7 @@ class DCPMain(QMainWindow):
         central.setWidget(dcp)
         # _____________________________________________________________________
         # Right Dock
-        dock = DockFilter(dcp)
+        dock = DCPSensorSelectionDock(dcp)
         dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, dock)

@@ -1,14 +1,14 @@
 from PySide6.QtGui import (
     QStandardItem,
     QStandardItemModel,
-    Qt, QColor, QBrush,
 )
 from PySide6.QtWidgets import QSizePolicy
 
 from app_widgets import (
     FeatureMatrix,
+    RecipeItem,
     TableView,
-    VBoxLayout, RecipeItem,
+    VBoxLayout,
 )
 from feature_info import FeatureInfo
 

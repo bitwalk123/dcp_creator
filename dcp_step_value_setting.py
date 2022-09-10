@@ -7,7 +7,7 @@ from feature_info import FeatureInfo
 from dcp_recipe import DCPRecipe
 
 
-class DCPSettingData(QMainWindow):
+class DCPStepValueSetting(QMainWindow):
     def __init__(self, features: FeatureInfo):
         super().__init__()
         self.init_ui(features)
@@ -24,4 +24,3 @@ class DCPSettingData(QMainWindow):
         self.setCentralWidget(central)
         recipe = DCPRecipe(features)
         central.setWidget(recipe)
-
