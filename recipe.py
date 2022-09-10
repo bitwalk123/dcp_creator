@@ -10,11 +10,11 @@ from app_widgets import (
     TableView,
     VBoxLayout,
 )
-from feature_info import FeatureInfo
+from features import Features
 
 
-class DCPRecipe(FeatureMatrix):
-    def __init__(self, features: FeatureInfo):
+class Recipe(FeatureMatrix):
+    def __init__(self, features: Features):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # source

@@ -2,7 +2,7 @@ import pandas as pd
 import re
 
 
-class FeatureInfo:
+class Features:
     """
     FeatureInfo
     """

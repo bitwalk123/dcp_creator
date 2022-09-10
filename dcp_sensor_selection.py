@@ -5,9 +5,9 @@ from PySide6.QtWidgets import (
     QMainWindow,
 )
 
-from feature_info import FeatureInfo
+from features import Features
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
-from dcp_sensor import DCPSensor
+from sensors import Sensors
 
 
 class DCPSensorSelection(QMainWindow):
@@ -18,12 +18,12 @@ class DCPSensorSelection(QMainWindow):
     dcp = None
     dock = None
 
-    def __init__(self, features: FeatureInfo):
+    def __init__(self, features: Features):
         super().__init__()
         # self.setAutoFillBackground(True)
         self.init_ui(features)
 
-    def init_ui(self, features: FeatureInfo):
+    def init_ui(self, features: Features):
         """
         init_ui
         initialize UI
@@ -34,7 +34,7 @@ class DCPSensorSelection(QMainWindow):
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
         # Blank Widget on the Scroll Area
-        dcp = DCPSensor(features)
+        dcp = Sensors(features)
         central.setWidget(dcp)
         # _____________________________________________________________________
         # Right Dock

@@ -8,7 +8,7 @@ from app_widgets import (
     VBoxLayout,
     MenuButton,
 )
-from dcp_sensor import DCPSensor
+from sensors import Sensors
 
 
 class DCPSensorSelectionDock(QDockWidget):
@@ -16,7 +16,7 @@ class DCPSensorSelectionDock(QDockWidget):
     DockFilter
     dock for sensor filtering
     """
-    def __init__(self, dcp:DCPSensor):
+    def __init__(self, dcp:Sensors):
         super().__init__('Filter')
         self.dcp = dcp
         base = QWidget()

@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 
 from dcp_creator_toolbar import DCPCreatorToolBar
 from dcp_summary import DCPSummary
-from feature_info import FeatureInfo
+from features import Features
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_step_value_setting import DCPStepValueSetting
 
@@ -53,7 +53,7 @@ class DCPCreator(QMainWindow):
         csvfile = selection[0]
         if os.path.exists(csvfile):
             df = pd.read_csv(csvfile)
-            obj = FeatureInfo(df)
+            obj = Features(df)
             self.main_ui(obj)
 
     def button_save_clicked(self):
@@ -88,7 +88,7 @@ class DCPCreator(QMainWindow):
         self.statusbar = QStatusBar()
         self.setStatusBar(self.statusbar)
 
-    def main_ui(self, features: FeatureInfo):
+    def main_ui(self, features: Features):
         """
         main_ui
         :param features:

@@ -13,16 +13,16 @@ from app_widgets import (
     TableView,
     VBoxLayout,
 )
-from feature_info import FeatureInfo
+from features import Features
 
 
-class DCPSensor(FeatureMatrix):
+class Sensors(FeatureMatrix):
     """
     DCPMatrix class
     manage sensor selection
     """
 
-    def __init__(self, features: FeatureInfo):
+    def __init__(self, features: Features):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # source

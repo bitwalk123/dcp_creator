@@ -3,16 +3,16 @@ from PySide6.QtWidgets import (
     QScrollArea,
 )
 
-from feature_info import FeatureInfo
-from dcp_recipe import DCPRecipe
+from features import Features
+from recipe import Recipe
 
 
 class DCPStepValueSetting(QMainWindow):
-    def __init__(self, features: FeatureInfo):
+    def __init__(self, features: Features):
         super().__init__()
         self.init_ui(features)
 
-    def init_ui(self, features: FeatureInfo):
+    def init_ui(self, features: Features):
         """
         init_ui
         initialize UI
@@ -22,5 +22,5 @@ class DCPStepValueSetting(QMainWindow):
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
-        recipe = DCPRecipe(features)
+        recipe = Recipe(features)
         central.setWidget(recipe)
