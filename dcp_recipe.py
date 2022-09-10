@@ -10,7 +10,7 @@ from app_widgets import (
     TableView,
     VBoxLayout, RecipeItem,
 )
-from dcp_feature import FeatureInfo
+from feature_info import FeatureInfo
 
 
 class DCPRecipe(FeatureMatrix):

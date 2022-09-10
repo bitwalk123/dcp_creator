@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
 )
 
-from dcp_feature import FeatureInfo
+from feature_info import FeatureInfo
 from dcp_main_dock import DockFilter
 from dcp_matrix import DCPMatrix
 

@@ -13,7 +13,7 @@ from app_widgets import (
     TableView,
     VBoxLayout,
 )
-from dcp_feature import FeatureInfo
+from feature_info import FeatureInfo
 
 
 class DCPMatrix(FeatureMatrix):

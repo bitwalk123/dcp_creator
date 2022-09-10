@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from dcp_creator_toolbar import DCPCreatorToolBar
-from dcp_feature import FeatureInfo
+from feature_info import FeatureInfo
 from dcp_main import DCPMain
 from dcp_setting import DCPSettingData
 
@@ -26,7 +26,7 @@ class DCPCreator(QMainWindow):
     DCPCreator
     DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '20220902'
+    __version__ = '20220910'
     toolbar = None
     statusbar = None
 
