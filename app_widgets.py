@@ -182,14 +182,14 @@ class RecipeItem(QStandardItem):
         self.status = status
 
     def setValueMultiple(self):
-        self.setBackground(QColor(255, 232, 232))
+        self.setBackground(QColor(255, 224, 224))
 
     def setValueValid(self):
-        self.setBackground(QColor(236, 255, 236))
-        self.setForeground(QBrush(QColor(0, 8, 8)))
+        self.setBackground(QColor(224, 224, 255))
+        self.setForeground(QBrush(QColor(0, 0, 0)))
 
     def setValueZero(self):
-        self.setBackground(QColor(232, 232, 232))
+        self.setBackground(QColor(224, 224, 224))
         self.setForeground(QBrush(QColor(128, 128, 128)))
 
 

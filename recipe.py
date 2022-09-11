@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtGui import (
     QStandardItem,
     QStandardItemModel,
@@ -38,6 +39,7 @@ class Recipe(FeatureMatrix):
         model.setHorizontalHeaderLabels(headers)
         model.itemChanged.connect(self.on_check_item)
         table.setModel(model)
+        table.verticalHeader().setDefaultAlignment(Qt.AlignRight)
         layout.addWidget(table)
 
         pattern = self.features.pattern_sensor_setting

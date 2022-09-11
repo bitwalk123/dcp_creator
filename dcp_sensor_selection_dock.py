@@ -46,19 +46,49 @@ class DCPSensorSelectionDock(QDockWidget):
         but_exclude_sensor_for_setting.clicked.connect(self.exclude_sensor_for_setting)
         layout.addWidget(but_exclude_sensor_for_setting)
         #
-        but = MenuButton('exclude Step with Small Variation')
+        but_exclude_sensor_time_dependent = MenuButton('exclude time dependent sensor')
+        but_exclude_sensor_time_dependent.clicked.connect(self.exclude_sensor_time_dependent)
+        layout.addWidget(but_exclude_sensor_time_dependent)
+        #
+        but_exclude_sensor_dyp = MenuButton('exclude Dynamic Process sensors')
+        but_exclude_sensor_dyp.clicked.connect(self.exclude_sensor_dyp)
+        layout.addWidget(but_exclude_sensor_dyp)
+        #
+        but_exclude_sensor_epd = MenuButton('exclude EPD DATA sensors')
+        but_exclude_sensor_epd.clicked.connect(self.exclude_sensor_epd)
+        layout.addWidget(but_exclude_sensor_epd)
+        #
+        but = MenuButton('exclude Gas Flow setting = 0')
+        layout.addWidget(but)
+        #
+        but = MenuButton('exclude Power setting = 0')
         layout.addWidget(but)
         #
         but = MenuButton('exclude OES data')
         layout.addWidget(but)
         #
-        but = MenuButton('exclude time dependent sensor')
+        but = MenuButton('exclude Step with Small Variation')
         layout.addWidget(but)
+
         # _____________________________________________________________________
-        # clicked by default
-        #but_exclude_step_minus1.animateClick()
-        #but_exclude_step_dechuck.animateClick()
-        #but_exclude_sensor_for_setting.animateClick()
+        # initial filter
+        but_exclude_step_minus1.animateClick()
+        self.sensors.excludeStepMinus1(True)
+
+        but_exclude_step_dechuck.animateClick()
+        self.sensors.excludeStepDechuck(True)
+
+        but_exclude_sensor_for_setting.animateClick()
+        self.sensors.excludeSensorSetting(True)
+
+        but_exclude_sensor_time_dependent.animateClick()
+        self.sensors.excludeSensorTimeDependent(True)
+
+        but_exclude_sensor_dyp.animateClick()
+        self.sensors.excludeSensorDYP(True)
+
+        but_exclude_sensor_epd.animateClick()
+        self.sensors.excludeSensorEPD(True)
 
     def exclude_step_minus1(self):
         but: QPushButton = self.sender()
@@ -70,4 +100,16 @@ class DCPSensorSelectionDock(QDockWidget):
 
     def exclude_sensor_for_setting(self):
         but: QPushButton = self.sender()
-        self.sensors.excludeSensorForSetting(but.isChecked())
+        self.sensors.excludeSensorSetting(but.isChecked())
+
+    def exclude_sensor_time_dependent(self):
+        but: QPushButton = self.sender()
+        self.sensors.excludeSensorTimeDependent(but.isChecked())
+
+    def exclude_sensor_dyp(self):
+        but: QPushButton = self.sender()
+        self.sensors.excludeSensorDYP(but.isChecked())
+
+    def exclude_sensor_epd(self):
+        but: QPushButton = self.sender()
+        self.sensors.excludeSensorEPD(but.isChecked())

@@ -48,6 +48,7 @@ class Sensors(FeatureMatrix):
         model.setHorizontalHeaderLabels(headers)
         model.itemChanged.connect(self.on_check_item)
         table.setModel(model)
+        table.verticalHeader().setDefaultAlignment(Qt.AlignRight)
         layout.addWidget(table)
 
         for sensor in self.features.getSensors():
@@ -94,8 +95,23 @@ class Sensors(FeatureMatrix):
         for col in list_col:
             self.switch_check_all_rows(col, flag)
 
-    def excludeSensorForSetting(self, flag: bool):
-        list_row = self.find_sensor_with_pattern()
+    def excludeSensorSetting(self, flag: bool):
+        list_row = self.find_sensor_setting()
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+    def excludeSensorTimeDependent(self, flag: bool):
+        list_row = self.find_sensor_time_dependent()
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+    def excludeSensorDYP(self, flag: bool):
+        list_row = self.find_sensor_dyp()
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+    def excludeSensorEPD(self, flag: bool):
+        list_row = self.find_sensor_epd()
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
 
@@ -107,7 +123,7 @@ class Sensors(FeatureMatrix):
                 list_col.append(col)
         return list_col
 
-    def find_sensor_with_pattern(self):
+    def find_sensor_setting(self):
         key = self.name_sensor
         col = self.find_header_label(key)
         list_row = list()
@@ -118,7 +134,59 @@ class Sensors(FeatureMatrix):
             result = pattern.match(sensor)
             if result:
                 list_row.append(row)
+        return list(set(list_row))
+
+    def find_sensor_time_dependent(self):
+        # Sensor Name
+        key_name = self.name_sensor
+        col_name = self.find_header_label(key_name)
+        list_row = list()
+        list_pattern = [self.features.pattern_sensor_general_counter]
+        for pattern in list_pattern:
+            for row in range(self.model.rowCount()):
+                item: QStandardItem = self.model.item(row, col_name)
+                sensor = item.text()
+                result = pattern.match(sensor)
+                if result:
+                    list_row.append(row)
+        # Unit
+        key_unit = self.name_unit
+        col_unit = self.find_header_label(key_unit)
+        for pattern in list_pattern:
+            for row in range(self.model.rowCount()):
+                item: QStandardItem = self.model.item(row, col_unit)
+                unit = item.text()
+                # result = pattern.match(unit)
+                if unit == '[min]' or unit == '[times]':
+                    list_row.append(row)
+
         return list_row
+
+    def find_sensor_dyp(self):
+        key = self.name_sensor
+        col = self.find_header_label(key)
+        list_row = list()
+        pattern = self.features.pattern_sensor_dyp
+        for row in range(self.model.rowCount()):
+            item: QStandardItem = self.model.item(row, col)
+            sensor = item.text()
+            result = pattern.match(sensor)
+            if result:
+                list_row.append(row)
+        return list(set(list_row))
+
+    def find_sensor_epd(self):
+        key = self.name_sensor
+        col = self.find_header_label(key)
+        list_row = list()
+        pattern = self.features.pattern_sensor_epd
+        for row in range(self.model.rowCount()):
+            item: QStandardItem = self.model.item(row, col)
+            sensor = item.text()
+            result = pattern.match(sensor)
+            if result:
+                list_row.append(row)
+        return list(set(list_row))
 
     def swicth_check(self, list_row, list_col, flag):
         for row in list_row:

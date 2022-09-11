@@ -21,6 +21,9 @@ class Features:
     pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+)_(.+)$')
     pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
+    pattern_sensor_general_counter = re.compile(r'^General Counter')
+    pattern_sensor_dyp = re.compile(r'^Dynamic Process')
+    pattern_sensor_epd = re.compile(r'^EPD DATA')
 
     def __init__(self, df: pd.DataFrame):
         self.df_source = df
@@ -93,6 +96,7 @@ class Features:
         self.stats = stats
         self.units = units
 
+        """
         count = 0
         headers_feature = self.headers_feature.copy()
         for sensor in self.sensors:
@@ -105,6 +109,7 @@ class Features:
         print('count', count)
         print(headers_feature)
         print('remaining', len(headers_feature))
+        """
 
     def checkFeatureVaid(self, sensor: str, step: int, stat: str = None) -> bool:
         #if stat is None:
