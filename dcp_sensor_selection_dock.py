@@ -16,9 +16,10 @@ class DCPSensorSelectionDock(QDockWidget):
     DockFilter
     dock for sensor filtering
     """
-    def __init__(self, dcp:Sensors):
+
+    def __init__(self, sensors: Sensors):
         super().__init__('Filter')
-        self.dcp = dcp
+        self.sensors = sensors
         base = QWidget()
         base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setWidget(base)
@@ -33,17 +34,17 @@ class DCPSensorSelectionDock(QDockWidget):
         filtering options
         :param layout:
         """
-        but = MenuButton('exclude Step -1')
-        but.clicked.connect(self.exclude_step_minus1)
-        layout.addWidget(but)
+        but_exclude_step_minus1 = MenuButton('exclude Step -1')
+        but_exclude_step_minus1.clicked.connect(self.exclude_step_minus1)
+        layout.addWidget(but_exclude_step_minus1)
         #
-        but = MenuButton('exclude Step >= 1000')
-        but.clicked.connect(self.exclude_step_dechuck)
-        layout.addWidget(but)
+        but_exclude_step_dechuck = MenuButton('exclude Step >= 1000')
+        but_exclude_step_dechuck.clicked.connect(self.exclude_step_dechuck)
+        layout.addWidget(but_exclude_step_dechuck)
         #
-        but = MenuButton('exclude Sensor of setting data')
-        but.clicked.connect(self.exclude_sensor_for_setting)
-        layout.addWidget(but)
+        but_exclude_sensor_for_setting = MenuButton('exclude Sensor of setting data')
+        but_exclude_sensor_for_setting.clicked.connect(self.exclude_sensor_for_setting)
+        layout.addWidget(but_exclude_sensor_for_setting)
         #
         but = MenuButton('exclude Step with Small Variation')
         layout.addWidget(but)
@@ -53,14 +54,20 @@ class DCPSensorSelectionDock(QDockWidget):
         #
         but = MenuButton('exclude time dependent sensor')
         layout.addWidget(but)
+        # _____________________________________________________________________
+        # clicked by default
+        #but_exclude_step_minus1.animateClick()
+        #but_exclude_step_dechuck.animateClick()
+        #but_exclude_sensor_for_setting.animateClick()
 
     def exclude_step_minus1(self):
         but: QPushButton = self.sender()
-        self.dcp.excludeStepMinus1(but.isChecked())
+        self.sensors.excludeStepMinus1(but.isChecked())
 
     def exclude_step_dechuck(self):
         but: QPushButton = self.sender()
-        self.dcp.excludeStepDechuck(but.isChecked())
+        self.sensors.excludeStepDechuck(but.isChecked())
+
     def exclude_sensor_for_setting(self):
         but: QPushButton = self.sender()
-        self.dcp.excludeSensorForSetting(but.isChecked())
+        self.sensors.excludeSensorForSetting(but.isChecked())

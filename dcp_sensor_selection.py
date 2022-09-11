@@ -15,7 +15,7 @@ class DCPSensorSelection(QMainWindow):
     SensorSelectionMain
     Main windows for Sensor Selection
     """
-    dcp = None
+    sensors = None
     dock = None
 
     def __init__(self, features: Features):
@@ -34,14 +34,17 @@ class DCPSensorSelection(QMainWindow):
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
         # Blank Widget on the Scroll Area
-        dcp = Sensors(features)
-        central.setWidget(dcp)
+        sensors = Sensors(features)
+        central.setWidget(sensors)
         # _____________________________________________________________________
         # Right Dock
-        dock = DCPSensorSelectionDock(dcp)
+        dock = DCPSensorSelectionDock(sensors)
         dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, dock)
         #
-        self.dcp = dcp
+        self.sensors = sensors
         self.dock = dock
+
+    def getPanel(self) -> Sensors:
+        return self.sensors

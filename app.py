@@ -31,7 +31,7 @@ class DCPCreator(QMainWindow):
     __version__ = '20220910'
     toolbar = None
     statusbar = None
-    #organizer = None
+    organizer = None
 
     def __init__(self):
         super().__init__()
@@ -115,15 +115,18 @@ class DCPCreator(QMainWindow):
         page['recipe'] = DCPStepValueSetting(features)
         tab.addTab(page['recipe'], 'Setting Data')
         # _____________________________________________________________________
-        organizer = DCPOrganizer(page)
-        organizer.init()
+        self.organizer = DCPOrganizer(page)
+        self.organizer.init()
         # _____________________________________________________________________
         # for tab click event
         tab.currentChanged.connect(self.tab_changed)
 
     def tab_changed(self):
         tab: QTabWidget = self.sender()
-        print('current tab', tab.currentIndex())
+        idx = tab.currentIndex()
+        if idx == 0:
+            self.organizer.update_features()
+        print('current tab', idx)
 
 
 def main():

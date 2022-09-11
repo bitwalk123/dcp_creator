@@ -118,6 +118,17 @@ class Summary(FeatureMatrix):
     def setFeaturesOriginal(self):
         self.lab_feature_original.setValue(self.features.getFeaturesOriginal())
 
+    def setFeaturesModified(self, sensor_step:int):
+        """
+        setFeaturesModified
+        :param sensor_step:
+        :return:
+        """
+        # simply calculate sensor/step times stats at this moment
+        stats = len(self.features.getStats())
+        n = stats * sensor_step
+        self.lab_feature_modified.setValue(n)
+
     def setSensor(self):
         list_sensor = self.features.getSensors()
         self.lab_sensor.setValue(len(list_sensor))
@@ -125,7 +136,7 @@ class Summary(FeatureMatrix):
     def setStep(self):
         list_step = self.features.getSteps()
         steps = len(list_step)
-        if '-1' in list_step:
+        if -1 in list_step:
             steps -= 1
         self.lab_step.setValue(steps)
 

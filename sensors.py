@@ -64,8 +64,11 @@ class Sensors(FeatureMatrix):
             for step in self.features.getSteps():
                 item = QStandardItem()
                 item.setCheckable(True)
-                item.setCheckState(Qt.CheckState.Checked)
                 item.setEditable(False)
+                result = self.features.checkFeatureVaid(sensor, step)
+                if not result:
+                    print(sensor, step)
+                item.setCheckState(Qt.CheckState.Checked)
                 list_row.append(item)
 
             model.appendRow(list_row)
@@ -146,22 +149,20 @@ class Sensors(FeatureMatrix):
                 break
         return col
 
-    def count_checkbox_checked(self, layout):
+    def count_checkbox_checked(self):
         """
         count_checkbox_checked
         :param layout:
         :return:
         """
         count = 0
-        rows = layout.rowCount()
-        cols = layout.columnCount()
-        print('layout (', rows, ',', cols, ')')
-        for row in range(1, rows):
-            for col in range(2, cols):
-                item = layout.itemAtPosition(row, col)
-                check = item.widget()
-                if check.metaObject().className() == 'QCheckBox':
-                    if check.checkState() == Qt.Checked:
+        rows = self.model.rowCount()
+        cols = self.model.columnCount()
+        for row in range(rows):
+            for col in range(cols):
+                item: QStandardItem = self.model.item(row, col)
+                if item.isCheckable():
+                    if item.checkState() == Qt.CheckState.Checked:
                         count += 1
+        print('layout (', rows, ',', cols, '),', 'checked', count)
         return count
-

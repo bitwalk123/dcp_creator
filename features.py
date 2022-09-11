@@ -17,7 +17,7 @@ class Features:
     # example columns
     #   Wall Temperature (setting data)[degC]_2_Stddev
     #   Pulse Frequency (setting data)[kHz]_-1_Stddev
-    pattern_feature_2_units = re.compile(r'^([^_]+)(\[.+\]\[.+\])_([+-]?\d+)_(.+)$')
+    pattern_feature_2_units = re.compile(r'^([^_]+\[.+\])(\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+)_(.+)$')
     pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+)_(.+)$')
     pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
@@ -42,7 +42,9 @@ class Features:
         units = {}
         steps = list()
         stats = list()
+        print('self.headers_feature ->', len(self.headers_feature))
         for feature in self.headers_feature:
+            sensor = None
             # Feature with [unit1][unit2]
             result1 = self.pattern_feature_2_units.match(feature)
             if result1:
@@ -75,6 +77,7 @@ class Features:
                     else:
                         # No match!
                         print('ERROR @ %s' % feature)
+
         # _____________________________________________________________________
         # Unique, Sort
         steps = sorted(list(set(steps)))
@@ -90,10 +93,34 @@ class Features:
         self.stats = stats
         self.units = units
 
-    def getFeatureValue(self, sensor: str, step: int):
+        count = 0
+        headers_feature = self.headers_feature.copy()
+        for sensor in self.sensors:
+            for step in self.steps:
+                for stat in self.stats:
+                    feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
+                    if feature in headers_feature:
+                        headers_feature.remove(feature)
+                    count += 1
+        print('count', count)
+        print(headers_feature)
+        print('remaining', len(headers_feature))
+
+    def checkFeatureVaid(self, sensor: str, step: int, stat: str = None) -> bool:
+        #if stat is None:
+        #    stat = self.stats[0]
+        for stat in self.stats:
+            feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
+            if feature not in self.headers_feature:
+                return False
+        return True
+
+    def getFeatureValue(self, sensor: str, step: int, stat: str = None):
         # print(sensor, step)
         #   Pulse Frequency (setting data)[kHz]_-1_Stddev
-        feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, self.stats[0])
+        if stat is None:
+            stat = self.stats[0]
+        feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
         return list(set(self.df_source[feature]))
 
     def getSteps(self) -> list:
