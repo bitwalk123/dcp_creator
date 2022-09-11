@@ -90,6 +90,6 @@ class Summary(FeatureMatrix):
 
     def setWafers(self):
         self.lab_wafer.setValue(self.features.getWafers())
+
     def setFeaturesOriginal(self):
         self.lab_feature_original.setValue(self.features.getFeaturesOriginal())
-

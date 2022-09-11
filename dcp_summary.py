@@ -5,7 +5,8 @@ from summary import Summary
 
 
 class DCPSummary(QMainWindow):
-    summary:Summary = None
+    summary: Summary = None
+
     def __init__(self, features: Features):
         super().__init__()
         self.features = features

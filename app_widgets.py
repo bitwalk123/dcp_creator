@@ -51,6 +51,7 @@ class CheckBox(QCheckBox):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setChecked(True)
 
+
 class ComboBox(QComboBox):
     def __init__(self):
         super().__init__()
@@ -91,8 +92,10 @@ class LabelNumeric(LabelCell):
         super().__init__(str(num), style_cell)
         self.setAlignment(Qt.AlignRight)
         # align
+
     def setValue(self, num: Union[float, int]):
         self.setText(str(num))
+
 
 class LabelSensor(LabelCell):
     """
@@ -110,6 +113,7 @@ class LabelSensor(LabelCell):
         pal.setColor(QPalette.Window, Qt.white)
         self.setAutoFillBackground(True)
         self.setPalette(pal)
+
 
 class FeatureMatrix(QWidget):
     name_sensor = 'Sensor Name'
@@ -146,11 +150,13 @@ class GridLayout(QGridLayout):
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
 
+
 class Pad(QWidget):
     def __init__(self):
         super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
 
 class RecipeItem(QStandardItem):
     status = 0
