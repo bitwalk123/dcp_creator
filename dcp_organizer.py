@@ -18,3 +18,9 @@ class DCPOrganizer:
         summary.setWafers()
         # Features Original
         summary.setFeaturesOriginal()
+        # Sensor
+        summary.setSensor()
+        # Step
+        summary.setStep()
+        # Stat
+        summary.setStat()

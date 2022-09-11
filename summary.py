@@ -24,6 +24,12 @@ class Summary(FeatureMatrix):
     # Feature
     lab_feature_original: LabelNumeric = None
     lab_feature_modified: LabelNumeric = None
+    # Sensor
+    lab_sensor: LabelNumeric = None
+    # Step
+    lab_step: LabelNumeric = None
+    # Stat
+    lab_stat: LabelNumeric = None
 
     def __init__(self, features: Features):
         super().__init__()
@@ -76,6 +82,24 @@ class Summary(FeatureMatrix):
         layout.addWidget(self.lab_feature_original, row, 1)
         self.lab_feature_modified = LabelNumeric(0, self.style_cell)
         layout.addWidget(self.lab_feature_modified, row, 2)
+        #
+        row += 1
+        lab = LabelHead('Sensor', self.style_cell)
+        layout.addWidget(lab, row, 0)
+        self.lab_sensor = LabelNumeric(0, self.style_cell)
+        layout.addWidget(self.lab_sensor, row, 1)
+        #
+        row += 1
+        lab = LabelHead('Step', self.style_cell)
+        layout.addWidget(lab, row, 0)
+        self.lab_step = LabelNumeric(0, self.style_cell)
+        layout.addWidget(self.lab_step, row, 1)
+        #
+        row += 1
+        lab = LabelHead('Stat', self.style_cell)
+        layout.addWidget(lab, row, 0)
+        self.lab_stat = LabelNumeric(0, self.style_cell)
+        layout.addWidget(self.lab_stat, row, 1)
 
     def setRecipe(self):
         list_recipe = self.features.getRecipe()
@@ -93,3 +117,18 @@ class Summary(FeatureMatrix):
 
     def setFeaturesOriginal(self):
         self.lab_feature_original.setValue(self.features.getFeaturesOriginal())
+
+    def setSensor(self):
+        list_sensor = self.features.getSensors()
+        self.lab_sensor.setValue(len(list_sensor))
+
+    def setStep(self):
+        list_step = self.features.getSteps()
+        steps = len(list_step)
+        if '-1' in list_step:
+            steps -= 1
+        self.lab_step.setValue(steps)
+
+    def setStat(self):
+        list_stat = self.features.getStats()
+        self.lab_stat.setValue(len(list_stat))
