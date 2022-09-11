@@ -12,6 +12,7 @@ class Features:
     stats = None
     units = {}
     headers_feature = None
+    headers_others = None
     # Regular Expression
     # example columns
     #   Wall Temperature (setting data)[degC]_2_Stddev
@@ -34,6 +35,7 @@ class Features:
         headers = self.df_source.columns
         # the header name starting with + is not feature
         self.headers_feature = [s for s in headers if not s.startswith('*')]
+        self.headers_others = [s for s in headers if s.startswith('*')]
         # _____________________________________________________________________
         # Step, Sensor, Stat
         sensors = list()
@@ -105,3 +107,26 @@ class Features:
 
     def getUnits(self) -> dict:
         return self.units
+
+    def getRecipe(self) -> list:
+        col_recipe = '*recipe'
+        pattern_recipe = re.compile(r'.+/([^/]+)$')
+
+        if col_recipe not in self.headers_others:
+            return None
+        list_recipe = list()
+        for recipe_full in self.df_source[col_recipe]:
+            result = pattern_recipe.match(recipe_full)
+            if result:
+                list_recipe.append(result.group(1))
+        return sorted(list(set(list_recipe)))
+
+    def getChambers(self) -> list:
+        col_chamber = '*chamber'
+        return sorted(list(set(self.df_source[col_chamber])))
+
+    def getWafers(self) -> int:
+        return self.df_source.shape[0]
+
+    def getFeaturesOriginal(self) -> int:
+        return len(self.headers_feature)

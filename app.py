@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from dcp_creator_toolbar import DCPCreatorToolBar
+from dcp_organizer import DCPOrganizer
 from dcp_summary import DCPSummary
 from features import Features
 from dcp_sensor_selection import DCPSensorSelection
@@ -30,6 +31,7 @@ class DCPCreator(QMainWindow):
     __version__ = '20220910'
     toolbar = None
     statusbar = None
+    #organizer = None
 
     def __init__(self):
         super().__init__()
@@ -94,6 +96,7 @@ class DCPCreator(QMainWindow):
         :param features:
         :return:
         """
+        page = {}
         # remove central widget if exists.
         self.takeCentralWidget()
         # make new tab widget
@@ -101,13 +104,19 @@ class DCPCreator(QMainWindow):
         self.setCentralWidget(tab)
         # _____________________________________________________________________
         # Summary
-        tab.addTab(DCPSummary(features), 'Summary')
+        page['summary'] = DCPSummary(features)
+        tab.addTab(page['summary'], 'Summary')
         # _____________________________________________________________________
         # Sensor Selection
-        tab.addTab(DCPSensorSelection(features), 'Sensor Selection')
+        page['sensors'] = DCPSensorSelection(features)
+        tab.addTab(page['sensors'], 'Sensor Selection')
         # _____________________________________________________________________
         # Setting Data
-        tab.addTab(DCPStepValueSetting(features), 'Setting Data')
+        page['recipe'] = DCPStepValueSetting(features)
+        tab.addTab(page['recipe'], 'Setting Data')
+        # _____________________________________________________________________
+        organizer = DCPOrganizer(page)
+        organizer.init()
         # _____________________________________________________________________
         # for tab click event
         tab.currentChanged.connect(self.tab_changed)

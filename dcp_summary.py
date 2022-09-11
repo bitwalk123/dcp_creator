@@ -5,11 +5,13 @@ from summary import Summary
 
 
 class DCPSummary(QMainWindow):
+    summary:Summary = None
     def __init__(self, features: Features):
         super().__init__()
-        self.init_ui(features)
+        self.features = features
+        self.init_ui()
 
-    def init_ui(self, features: Features):
+    def init_ui(self):
         """
         init_ui
         initialize UI
@@ -19,5 +21,8 @@ class DCPSummary(QMainWindow):
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
-        summary = Summary(features)
-        central.setWidget(summary)
+        self.summary = Summary(self.features)
+        central.setWidget(self.summary)
+
+    def getPanel(self) -> Summary:
+        return self.summary

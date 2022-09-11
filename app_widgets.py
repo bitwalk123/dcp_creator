@@ -84,17 +84,15 @@ class LabelHead(QLabel):
 
 class LabelNumeric(LabelCell):
     """
-    LabelSensor
-    label for sensor name in the DCP matrix
-
-    note:
-    This class overrides LabelCell class
+    LabelNumeric
     """
 
     def __init__(self, num: Union[float, int], style_cell: str):
         super().__init__(str(num), style_cell)
         self.setAlignment(Qt.AlignRight)
         # align
+    def setValue(self, num: Union[float, int]):
+        self.setText(str(num))
 
 class LabelSensor(LabelCell):
     """
@@ -148,6 +146,11 @@ class GridLayout(QGridLayout):
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
 
+class Pad(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
 class RecipeItem(QStandardItem):
     status = 0
