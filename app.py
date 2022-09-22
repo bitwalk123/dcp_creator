@@ -2,8 +2,8 @@
 # coding: utf-8
 import os
 import sys
-import pandas as pd
 
+import pandas as pd
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -48,16 +48,22 @@ class DCPCreator(QMainWindow):
         button_open_clicked
         action for 'Open' button clicked.
         """
+        self.read_csv()
+
+    def read_csv(self):
         selection = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select CSV file',
             filter='CSV File (*.csv)'
         )
         csvfile = selection[0]
-        if os.path.exists(csvfile):
-            df = pd.read_csv(csvfile)
-            obj = Features(df)
-            self.main_ui(obj)
+        if not os.path.exists(csvfile):
+            return
+
+        df = pd.read_csv(csvfile)
+        obj_feature = Features(df)
+        self.main_ui(obj_feature)
+
 
     def button_save_clicked(self):
         """
@@ -70,7 +76,7 @@ class DCPCreator(QMainWindow):
         selection = QFileDialog.getSaveFileName(
             parent=self,
             caption='Specify name of JSON file to save',
-            dir = 'dcp.json',
+            dir='dcp.json',
             filter='JSON File (*.json)'
         )
         jsonfile = selection[0]
