@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHeaderView,
     QLabel,
+    QProgressDialog,
     QPushButton,
     QSizePolicy,
     QTableView,
@@ -240,3 +241,12 @@ class VBoxLayout(QVBoxLayout):
         super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
+
+
+class WorkInProgress(QProgressDialog):
+    def __init__(self, parent):
+        super().__init__(labelText='Working...', parent=parent)
+        self.setWindowModality(Qt.WindowModal)
+        self.setCancelButton(None)
+        self.setRange(0, 0)
+        self.setWindowTitle('progress')

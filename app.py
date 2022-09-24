@@ -4,7 +4,10 @@ import os
 import sys
 
 import pandas as pd
-from PySide6.QtCore import Qt
+from PySide6.QtCore import (
+    Qt,
+    QThread,
+)
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
@@ -15,10 +18,13 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
+from app_thread import CSVReader
+from app_widgets import WorkInProgress
 from dcp_creator_toolbar import DCPCreatorToolBar
 from dcp_organizer import DCPOrganizer
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
 from dcp_summary import DCPSummary
+from dcp_summary_stat import DCPSummaryStat
 from features import Features
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_step_value_setting import DCPStepValueSetting
@@ -29,10 +35,14 @@ class DCPCreator(QMainWindow):
     DCPCreator
     DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '20220916'
+    __version__ = '20220924'
     toolbar = None
     statusbar = None
     organizer = None
+
+    thread = None
+    reader = None
+    progress = None
 
     def __init__(self):
         super().__init__()
@@ -48,22 +58,39 @@ class DCPCreator(QMainWindow):
         button_open_clicked
         action for 'Open' button clicked.
         """
-        self.read_csv()
-
-    def read_csv(self):
         selection = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select CSV file',
             filter='CSV File (*.csv)'
         )
         csvfile = selection[0]
-        if not os.path.exists(csvfile):
-            return
+        print('csvfile', csvfile, len(csvfile))
+        if len(csvfile) > 0:
+            self.read_csv(csvfile)
 
-        df = pd.read_csv(csvfile)
+    def read_csv(self, csvfile):
+        if not os.path.exists(csvfile):
+            return pd.DataFrame()
+
+        # threading
+        self.reader = CSVReader(csvfile)
+        self.thread = QThread()
+        self.reader.moveToThread(self.thread)
+        # controller
+        self.thread.started.connect(self.reader.run)
+        self.reader.finished.connect(self.thread.quit)
+        self.reader.finished.connect(self.reader.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.reader.readCompleted.connect(self.handle_results)
+        # start threading
+        self.thread.start()
+        self.progress = WorkInProgress(self)
+        self.progress.show()
+
+    def handle_results(self, df):
+        self.progress.cancel()
         obj_feature = Features(df)
         self.main_ui(obj_feature)
-
 
     def button_save_clicked(self):
         """
@@ -137,6 +164,10 @@ class DCPCreator(QMainWindow):
         # Setting Data
         page['recipe'] = page_recipe = DCPStepValueSetting(features)
         tab.addTab(page_recipe, 'Setting Data')
+        # _____________________________________________________________________
+        # Summary Stat
+        page['stat'] = page_stat = DCPSummaryStat(features)
+        tab.addTab(page_stat, 'Summary Stat')
         # _____________________________________________________________________
         self.organizer = DCPOrganizer(page)
         self.organizer.init()
