@@ -5,7 +5,7 @@ from PySide6.QtGui import (
     QBrush,
     QColor,
     QPalette,
-    QStandardItem,
+    QStandardItem, QIcon,
 )
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QTableView,
     QVBoxLayout,
-    QWidget,
+    QWidget, QStyle,
 )
 
 
@@ -246,6 +246,11 @@ class VBoxLayout(QVBoxLayout):
 class WorkInProgress(QProgressDialog):
     def __init__(self, parent):
         super().__init__(labelText='Working...', parent=parent)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowIcon(
+            QIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
+        )
         self.setWindowModality(Qt.WindowModal)
         self.setCancelButton(None)
         self.setRange(0, 0)
