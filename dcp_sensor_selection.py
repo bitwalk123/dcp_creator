@@ -39,28 +39,27 @@ class DCPSensorSelection(QMainWindow):
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
-        # Blank Widget on the Scroll Area
+        # widget on the Scroll Area
         sensors = Sensors(features)
         central.setWidget(sensors)
         # _____________________________________________________________________
         # Right Dock
-        dock = DCPSensorSelectionDock(sensors)
+        dock = DCPSensorSelectionDock()
         dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        #dock.excludeGasFlow0.connect(self.exclude_gas_flow_0)
-        #dock.excludePower0.connect(self.exclude_power_0)
         self.addDockWidget(Qt.RightDockWidgetArea, dock)
         #
         self.sensors = sensors
         self.dock = dock
 
     def getPanel(self) -> Sensors:
+        """
+        get/return instance of this panel
+        """
         return self.sensors
 
     def getDock(self) -> DCPSensorSelectionDock:
+        """
+        get/return instance of the dock at right
+        """
         return self.dock
-
-    #def exclude_gas_flow_0(self, flag: bool):
-    #    self.excludeGasFlow0.emit(flag)
-    #def exclude_power_0(self, flag: bool):
-    #    self.excludePower0.emit(flag)

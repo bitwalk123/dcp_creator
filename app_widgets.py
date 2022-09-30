@@ -138,8 +138,14 @@ class LabelSensor(LabelCell):
 
 
 class FeatureMatrix(QWidget):
+    """
+    FeatureMatrix
+    base class for managing matrix data
+    """
     name_sensor = 'Sensor Name'
+    name_stat = 'Summary Stats'
     name_unit = 'unit'
+    name_sel = 'selection'
 
     model = None
     style_cell = 'padding:2px 5px;'
@@ -160,6 +166,34 @@ class FeatureMatrix(QWidget):
             else:
                 msg = 'unchecked'
             # print('(%d, %d) -> %s' % (row, col, msg))
+
+    def count_checkbox_checked(self):
+        """
+        count_checkbox_checked
+        """
+        count = 0
+        rows = self.model.rowCount()
+        cols = self.model.columnCount()
+        for row in range(rows):
+            for col in range(cols):
+                item: QStandardItem = self.model.item(row, col)
+                if item.isCheckable():
+                    if item.checkState() == Qt.CheckState.Checked:
+                        count += 1
+        print('layout (', rows, ',', cols, '),', 'checked', count)
+        return count
+
+    def find_header_label(self, key) -> int:
+        """
+        find_header_label
+        """
+        col = -1
+        for i in range(self.model.columnCount()):
+            item: QStandardItem = self.model.horizontalHeaderItem(i)
+            if item.text() == key:
+                col = i
+                break
+        return col
 
 
 class GridLayout(QGridLayout):
@@ -244,10 +278,8 @@ class VBoxLayout(QVBoxLayout):
 
 
 class WorkInProgress(QProgressDialog):
-    def __init__(self, parent):
-        super().__init__(labelText='Working...', parent=parent)
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+    def __init__(self, parent, title='Working...'):
+        super().__init__(parent=parent, labelText=title)
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
         )

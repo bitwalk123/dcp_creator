@@ -1,13 +1,14 @@
-from PySide6.QtCore import (
-    Qt,
-)
+from PySide6.QtCore import Qt
 from PySide6.QtGui import (
     QStandardItemModel,
     QStandardItem,
 )
-from PySide6.QtWidgets import QSizePolicy, QHeaderView
+from PySide6.QtWidgets import (
+    QHeaderView,
+    QSizePolicy,
+)
 
-from app_functions import is_num
+from app_functions import is_num, timeit
 from app_widgets import (
     FeatureMatrix,
     TableView,
@@ -29,9 +30,8 @@ class Sensors(FeatureMatrix):
         self.features = features
         #
         self.init_ui()
-        # count = self.count_checkbox_checked(layout)
-        # print('original count', count)
 
+    @timeit
     def init_ui(self):
         """
         init_ui
@@ -52,6 +52,7 @@ class Sensors(FeatureMatrix):
         table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeToContents
         )
+        table.setAlternatingRowColors(True)
         layout.addWidget(table)
 
         for sensor in self.features.getSensors():
@@ -69,14 +70,20 @@ class Sensors(FeatureMatrix):
                 item = QStandardItem()
                 item.setCheckable(True)
                 item.setEditable(False)
-                result = self.features.checkFeatureVaid(sensor, step)
+                # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+                # At this moment, in order to save processing time,
+                # it does not check if sensor/step certainly exists
+                # in the exported CSV file or not.
+                """
+                result = self.features.checkFeatureValid(sensor, step)
 
                 if not result:
                     # print(sensor, step)
                     item.setCheckState(Qt.CheckState.Unchecked)
                 else:
                     item.setCheckState(Qt.CheckState.Checked)
-
+                """
+                item.setCheckState(Qt.CheckState.Checked)
                 list_row.append(item)
 
             model.appendRow(list_row)
@@ -293,14 +300,6 @@ class Sensors(FeatureMatrix):
                 else:
                     item.setCheckState(Qt.CheckState.Checked)
 
-    def find_header_label(self, key) -> int:
-        col = -1
-        for i in range(self.model.columnCount()):
-            item: QStandardItem = self.model.horizontalHeaderItem(i)
-            if item.text() == key:
-                col = i
-                break
-        return col
 
     def setSensorStep(self, flag: bool, list_sensor_step: list):
         info = {'step': list()}
@@ -330,22 +329,6 @@ class Sensors(FeatureMatrix):
                     item.setCheckState(Qt.CheckState.Unchecked)
                 else:
                     item.setCheckState(Qt.CheckState.Checked)
-
-    def count_checkbox_checked(self):
-        """
-        count_checkbox_checked
-        """
-        count = 0
-        rows = self.model.rowCount()
-        cols = self.model.columnCount()
-        for row in range(rows):
-            for col in range(cols):
-                item: QStandardItem = self.model.item(row, col)
-                if item.isCheckable():
-                    if item.checkState() == Qt.CheckState.Checked:
-                        count += 1
-        print('layout (', rows, ',', cols, '),', 'checked', count)
-        return count
 
     def getDCP(self) -> dict:
         """

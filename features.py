@@ -99,24 +99,10 @@ class Features:
         self.stats = stats
         self.units = units
 
+    def checkFeatureValid(self, sensor: str, step: int, stat: str = None) -> bool:
         """
-        count = 0
-        headers_feature = self.headers_feature.copy()
-        for sensor in self.sensors:
-            for step in self.steps:
-                for stat in self.stats:
-                    feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
-                    if feature in headers_feature:
-                        headers_feature.remove(feature)
-                    count += 1
-        print('count', count)
-        print(headers_feature)
-        print('remaining', len(headers_feature))
+        check if the feature is valid or not.
         """
-
-    def checkFeatureVaid(self, sensor: str, step: int, stat: str = None) -> bool:
-        # if stat is None:
-        #    stat = self.stats[0]
         for stat in self.stats:
             feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
             if feature not in self.headers_feature:
@@ -124,26 +110,42 @@ class Features:
         return True
 
     def getFeatureValue(self, sensor: str, step: int, stat: str = None):
-        # print(sensor, step)
-        #   Pulse Frequency (setting data)[kHz]_-1_Stddev
+        """
+        get/return value of feature
+        """
         if stat is None:
             stat = self.stats[0]
         feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
         return list(set(self.df_source[feature]))
 
     def getSteps(self) -> list:
+        """
+        get/return recipe steps
+        """
         return self.steps
 
     def getSensors(self) -> list:
+        """
+        get/return sensor list
+        """
         return self.sensors
 
     def getStats(self) -> list:
+        """
+        get/return stat list
+        """
         return self.stats
 
     def getUnits(self) -> dict:
+        """
+        get/return unit dictionary
+        """
         return self.units
 
     def getRecipe(self) -> list:
+        """
+        get/return recipe list
+        """
         col_recipe = '*recipe'
         pattern_recipe = re.compile(r'.+/([^/]+)$')
 
@@ -157,11 +159,20 @@ class Features:
         return sorted(list(set(list_recipe)))
 
     def getChambers(self) -> list:
+        """
+        get/return chamber list
+        """
         col_chamber = '*chamber'
         return sorted(list(set(self.df_source[col_chamber])))
 
     def getWafers(self) -> int:
+        """
+        get/return number of wafer
+        """
         return self.df_source.shape[0]
 
     def getFeaturesOriginal(self) -> int:
+        """
+        get/return original size of features
+        """
         return len(self.headers_feature)

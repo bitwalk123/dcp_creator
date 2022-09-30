@@ -7,10 +7,10 @@ from PySide6.QtWidgets import (
 )
 
 from app_widgets import (
+    LabelFrameNarrow,
+    MenuButton,
     VBoxLayout,
-    MenuButton, Label, LabelFrameNarrow,
 )
-from sensors import Sensors
 
 
 class DCPSensorSelectionDock(QDockWidget):
@@ -22,14 +22,22 @@ class DCPSensorSelectionDock(QDockWidget):
     excludeSetting0 = Signal(bool)
     excludeGasFlow0 = Signal(bool)
     excludeRFPower0 = Signal(bool)
+    excludeSensorDYP = Signal(bool)
+    excludeStepMinus1 = Signal(bool)
+    excludeStepDechuck = Signal(bool)
+    excludeSensorSetting = Signal(bool)
+    excludeSensorTimeDependent = Signal(bool)
+    excludeSensorEPD = Signal(bool)
+    excludeLargeUnit = Signal(bool)
+    excludeSensorOES = Signal(bool)
 
-    def __init__(self, sensors: Sensors):
+    def __init__(self):
         super().__init__('Filter')
-        self.sensors = sensors
+        # self.sensors = sensors
         base = QWidget()
         base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setWidget(base)
-        # Layout for dock
+        # Layout for the dock
         layout = VBoxLayout()
         base.setLayout(layout)
         self.init_ui(layout)
@@ -82,11 +90,11 @@ class DCPSensorSelectionDock(QDockWidget):
         layout.addWidget(but_exclude_sensor_epd)
         #
         but_exclude_sensor_oes = MenuButton('exclude OES data')
-        but_exclude_sensor_oes.clicked.connect(self.exclude_oes)
+        but_exclude_sensor_oes.clicked.connect(self.exclude_sensor_oes)
         layout.addWidget(but_exclude_sensor_oes)
         #
         but_exclude_large_unit = MenuButton('exclude sensor with unit [MPaG]')
-        but_exclude_large_unit.clicked.connect(self.exclude_large_unit)
+        but_exclude_large_unit.clicked.connect(self.exclude_sensor_large_unit)
         layout.addWidget(but_exclude_large_unit)
         #
         but_exclude_gas_flow_0 = MenuButton('exclude Gas Flow setting = 0')
@@ -103,37 +111,13 @@ class DCPSensorSelectionDock(QDockWidget):
         # _____________________________________________________________________
         # initial filter
         but_exclude_sensor_dyp.animateClick()
-        self.sensors.excludeSensorDYP(True)
+        self.excludeSensorDYP.emit(True)
 
         but_exclude_step_minus1.animateClick()
-        self.sensors.excludeStepMinus1(True)
+        self.excludeStepMinus1.emit(True)
 
         but_exclude_step_dechuck.animateClick()
-        self.sensors.excludeStepDechuck(True)
-
-        """
-        but_exclude_sensor_time_dependent.animateClick()
-        self.sensors.excludeSensorTimeDependent(True)
-
-        but_exclude_sensor_epd.animateClick()
-        self.sensors.excludeSensorEPD(True)
-
-        but_exclude_large_unit.animateClick()
-        self.sensors.excludeLargeUnit(True)
-
-        # --- need event to change --------------------------------------------
-        but_exclude_gas_flow_0.animateClick()
-        self.excludeGasFlow0.emit(True)
-
-        but_exclude_power_0.animateClick()
-        self.excludeRFPower0.emit(True)
-
-        but_exclude_sensor_for_setting.animateClick()
-        self.sensors.excludeSensorSetting(True)
-
-        but_exclude_sensor_oes.animateClick()
-        self.sensors.excludeSensorOES(True)
-        """
+        self.excludeStepDechuck.emit(True)
 
     def exclude_no_setting(self):
         but: QPushButton = self.sender()
@@ -143,38 +127,6 @@ class DCPSensorSelectionDock(QDockWidget):
         but: QPushButton = self.sender()
         self.excludeSetting0.emit(but.isChecked())
 
-    def exclude_step_minus1(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeStepMinus1(but.isChecked())
-
-    def exclude_step_dechuck(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeStepDechuck(but.isChecked())
-
-    def exclude_sensor_for_setting(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeSensorSetting(but.isChecked())
-
-    def exclude_sensor_time_dependent(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeSensorTimeDependent(but.isChecked())
-
-    def exclude_sensor_dyp(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeSensorDYP(but.isChecked())
-
-    def exclude_sensor_epd(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeSensorEPD(but.isChecked())
-
-    def exclude_large_unit(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeLargeUnit(but.isChecked())
-
-    def exclude_oes(self):
-        but: QPushButton = self.sender()
-        self.sensors.excludeSensorOES(but.isChecked())
-
     def exclude_gas_flow_0(self):
         but: QPushButton = self.sender()
         self.excludeGasFlow0.emit(but.isChecked())
@@ -182,3 +134,35 @@ class DCPSensorSelectionDock(QDockWidget):
     def exclude_rf_power_0(self):
         but: QPushButton = self.sender()
         self.excludeRFPower0.emit(but.isChecked())
+
+    def exclude_sensor_dyp(self):
+        but: QPushButton = self.sender()
+        self.excludeSensorDYP.emit(but.isChecked())
+
+    def exclude_step_minus1(self):
+        but: QPushButton = self.sender()
+        self.excludeStepMinus1.emit(but.isChecked())
+
+    def exclude_step_dechuck(self):
+        but: QPushButton = self.sender()
+        self.excludeStepDechuck.emit(but.isChecked())
+
+    def exclude_sensor_for_setting(self):
+        but: QPushButton = self.sender()
+        self.excludeSensorSetting.emit(but.isChecked())
+
+    def exclude_sensor_time_dependent(self):
+        but: QPushButton = self.sender()
+        self.excludeSensorTimeDependent.emit(but.isChecked())
+
+    def exclude_sensor_epd(self):
+        but: QPushButton = self.sender()
+        self.excludeSensorEPD.emit(but.isChecked())
+
+    def exclude_sensor_large_unit(self):
+        but: QPushButton = self.sender()
+        self.excludeLargeUnit.emit(but.isChecked())
+
+    def exclude_sensor_oes(self):
+        but: QPushButton = self.sender()
+        self.excludeSensorOES.emit(but.isChecked())

@@ -18,31 +18,40 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from app_thread import CSVReader
+from app_functions import timeit
+from app_thread import CSVReadWorker, ParseFeaturesWorker
 from app_widgets import WorkInProgress
 from dcp_creator_toolbar import DCPCreatorToolBar
-from dcp_organizer import DCPOrganizer
-from dcp_sensor_selection_dock import DCPSensorSelectionDock
-from dcp_summary import DCPSummary
-from dcp_summary_stat import DCPSummaryStat
-from features import Features
 from dcp_sensor_selection import DCPSensorSelection
+from dcp_stats_selection import DCPStats
 from dcp_step_value_setting import DCPStepValueSetting
+from dcp_summary import DCPSummary
+from features import Features
+from ui_controller import UIController
 
 
 class DCPCreator(QMainWindow):
+    """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    DCPCreator
-    DCP creator with the CSV file exported from the fleet analysis tool
-    """
-    __version__ = '20220924'
-    toolbar = None
-    statusbar = None
-    organizer = None
+    __version__ = '20220930'
+    # UI components
+    tab: QTabWidget = None
+    toolbar: DCPCreatorToolBar = None
+    statusbar: QStatusBar = None
+    controller: UIController = None
 
-    thread = None
-    reader = None
-    progress = None
+    features: Features = None
+    page = dict()
+
+    # thread instances
+    reader: CSVReadWorker = None
+    parser: ParseFeaturesWorker = None
+    thread_reader: QThread = None
+    thread_parser: QThread = None
+
+    # progressbar
+    progress_reader: WorkInProgress = None
+    progress_parser: WorkInProgress = None
 
     def __init__(self):
         super().__init__()
@@ -54,50 +63,91 @@ class DCPCreator(QMainWindow):
         )
 
     def button_open_clicked(self):
-        """
-        button_open_clicked
-        action for 'Open' button clicked.
+        """Action for 'Open' button clicked.
         """
         selection = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select CSV file',
-            filter='CSV File (*.csv)'
+            filter='CSV File (*.csv);; Zip File (*.zip)'
         )
         csvfile = selection[0]
         print('csvfile', csvfile, len(csvfile))
         if len(csvfile) > 0:
             self.read_csv(csvfile)
 
-    def read_csv(self, csvfile):
+    def read_csv(self, csvfile: str):
+        """Read CSV file in a thread.
+
+        Parameters
+        ----------
+        csvfile: str
+        """
         if not os.path.exists(csvfile):
             return pd.DataFrame()
-
-        # threading
-        self.reader = CSVReader(csvfile)
-        self.thread = QThread()
-        self.reader.moveToThread(self.thread)
-        # controller
-        self.thread.started.connect(self.reader.run)
-        self.reader.finished.connect(self.thread.quit)
+        # _____________________________________________________________________
+        # Prep. Threading
+        self.reader = CSVReadWorker(csvfile)
+        self.thread_reader = QThread()
+        self.reader.moveToThread(self.thread_reader)
+        # Controller
+        self.thread_reader.started.connect(self.reader.run)
+        self.reader.finished.connect(self.thread_reader.quit)
         self.reader.finished.connect(self.reader.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.reader.readCompleted.connect(self.handle_results)
-        # start threading
-        self.thread.start()
-        self.progress = WorkInProgress(self)
-        self.progress.show()
+        self.thread_reader.finished.connect(self.thread_reader.deleteLater)
+        self.reader.readCompleted.connect(self.read_csv_completed)
+        # Start Threading
+        self.thread_reader.start()
+        self.progress_reader = WorkInProgress(self, 'Reading ...')
+        self.progress_reader.show()
 
-    def handle_results(self, df):
-        self.progress.cancel()
-        obj_feature = Features(df)
-        self.main_ui(obj_feature)
+    def read_csv_completed(self, df: pd.DataFrame):
+        """Event handler when thread of read_csv is completed.
+
+        Parameters
+        ----------
+        df: pd.DataFrame
+        """
+        self.progress_reader.cancel()
+        self.parse_features(df)
+
+    def parse_features(self, df: pd.DataFrame):
+        """Parser for exported summary statistics (feature) in dataframe.
+
+        Parameters
+        ----------
+        df: pd.DataFrame
+        """
+        # _____________________________________________________________________
+        # Prep. Threading
+        self.parser = ParseFeaturesWorker(df)
+        self.thread_parser = QThread()
+        self.parser.moveToThread(self.thread_reader)
+        # Controller
+        self.thread_parser.started.connect(self.parser.run)
+        self.parser.finished.connect(self.thread_parser.quit)
+        self.parser.finished.connect(self.parser.deleteLater)
+        self.thread_parser.finished.connect(self.thread_parser.deleteLater)
+        self.parser.parseCompleted.connect(self.parse_features_completed)
+        # Start Threading
+        self.thread_parser.start()
+        self.progress_parser = WorkInProgress(self, 'Parsing ...')
+        self.progress_parser.show()
+
+    def parse_features_completed(self, features: Features):
+        """Event handler when thread of parse_feature is completed.
+
+        Parameters
+        ----------
+        features: Features
+        """
+        self.features = features
+        self.progress_parser.cancel()
+        self.main_ui()
 
     def button_save_clicked(self):
+        """Action for 'Save' button clicked.
         """
-        button_save_clicked
-        action for 'Save' button clicked.
-        """
-        if self.organizer is None:
+        if self.controller is None:
             print('There is no data!')
             return
         selection = QFileDialog.getSaveFileName(
@@ -107,21 +157,21 @@ class DCPCreator(QMainWindow):
             filter='JSON File (*.json)'
         )
         jsonfile = selection[0]
-        self.organizer.saveDCP(jsonfile)
+        if len(jsonfile) > 0:
+            self.controller.saveJSON4DCP(jsonfile)
 
     def closeEvent(self, event):
-        """
-        closeEvent
-        close event handling.
-        :param event:
+        """Close event handling.
+
+        Parameters
+        ----------
+        event: QCloseEvent
         """
         print('Exiting application ...')
         event.accept()
 
     def init_ui(self):
-        """
-        init_ui
-        initialize UI
+        """Initialize UI
         """
         # _____________________________________________________________________
         # Toolbar
@@ -134,107 +184,47 @@ class DCPCreator(QMainWindow):
         self.statusbar = QStatusBar()
         self.setStatusBar(self.statusbar)
 
-    def main_ui(self, features: Features):
+    @timeit
+    def main_ui(self):
+        """Main UI
         """
-        main_ui
-        :param features:
-        :return:
-        """
-        page = {}
         # remove central widget if exists.
         self.takeCentralWidget()
         # make new tab widget
-        tab = QTabWidget()
+        self.tab = tab = QTabWidget()
         self.setCentralWidget(tab)
-        # _____________________________________________________________________
-        # Summary
-        page['summary'] = page_summary = DCPSummary(features)
-        tab.addTab(page_summary, 'Summary')
-        # _____________________________________________________________________
-        # Sensor Selection
-        page['sensors'] = page_sensor = DCPSensorSelection(features)
-        tab.addTab(page_sensor, 'Sensor Selection')
-        # binding
-        dock_sensors: DCPSensorSelectionDock = page_sensor.getDock()
-        dock_sensors.excludeNoSetting.connect(self.exclude_no_setting)
-        dock_sensors.excludeSetting0.connect(self.exclude_setting_0)
-        dock_sensors.excludeGasFlow0.connect(self.exclude_gas_flow_0)
-        dock_sensors.excludeRFPower0.connect(self.exclude_rf_power_0)
-        # _____________________________________________________________________
-        # Setting Data
-        page['recipe'] = page_recipe = DCPStepValueSetting(features)
-        tab.addTab(page_recipe, 'Setting Data')
-        # _____________________________________________________________________
-        # Summary Stat
-        page['stat'] = page_stat = DCPSummaryStat(features)
-        tab.addTab(page_stat, 'Summary Stat')
-        # _____________________________________________________________________
-        self.organizer = DCPOrganizer(page)
-        self.organizer.init()
+        # page creation to be added to tab
+        page = {
+            'summary': DCPSummary(self.features),
+            'sensors': DCPSensorSelection(self.features),
+            'recipe': DCPStepValueSetting(self.features),
+            'stats': DCPStats(self.features)
+        }
+        # tab creation
+        self.tab.addTab(page['summary'], 'Summary')
+        self.tab.addTab(page['sensors'], 'Sensor Selection')
+        self.tab.addTab(page['recipe'], 'Setting Data')
+        self.tab.addTab(page['stats'], 'Summary Stats')
         # _____________________________________________________________________
         # for tab click event
-        tab.currentChanged.connect(self.tab_changed)
+        self.tab.currentChanged.connect(self.tab_changed)
+        # _____________________________________________________________________
+        # Controller for tab and other UI interaction
+        self.controller = UIController(page)
+        self.controller.Init()
 
     def tab_changed(self):
-        """
-        tab_changed
-        for event when Tab changed
+        """Event handler for tab changed
         """
         tab: QTabWidget = self.sender()
         idx = tab.currentIndex()
         if idx == 0:
-            self.organizer.update_features()
+            self.controller.updateFeatures()
         print('current tab', idx)
-
-    def exclude_no_setting(self, flag: bool):
-        """
-        exclude_no_setting
-        exclude sensor w/o setting data
-        """
-        recipe = self.organizer.getPanelRecipe()
-        list_sensor_setting = recipe.getSensorWithSetting()
-        sensors = self.organizer.getPanelSensors()
-        sensors.excludeSensorWithoutSetting(flag, list_sensor_setting)
-        self.organizer.update_features()
-
-    def exclude_setting_0(self, flag: bool):
-        """
-        exclude_setting_0
-        exclude sensor where setting data = 0
-        """
-        print('DEBUG!')
-        recipe = self.organizer.getPanelRecipe()
-        dict_sensor_step_setting_0 = recipe.getSensorStepSetting0()
-        sensors = self.organizer.getPanelSensors()
-        sensors.excludeSetting0(flag, dict_sensor_step_setting_0)
-        self.organizer.update_features()
-
-    def exclude_gas_flow_0(self, flag: bool):
-        """
-        exclude_gas_flow_0
-        exclude sensor/step where Gas Flow = 0
-        """
-        recipe = self.organizer.getPanelRecipe()
-        list_sensor_step = recipe.excludeGasFlow0(flag)
-        sensors = self.organizer.getPanelSensors()
-        sensors.setSensorStep(flag, list_sensor_step)
-        self.organizer.update_features()
-
-    def exclude_rf_power_0(self, flag: bool):
-        """
-        exclude_rf_power_0
-        exclude sensor/step where RF Power = 0
-        """
-        recipe = self.organizer.getPanelRecipe()
-        list_sensor_step = recipe.excludeRFPower0(flag)
-        sensors = self.organizer.getPanelSensors()
-        sensors.setSensorStep(flag, list_sensor_step)
-        self.organizer.update_features()
 
 
 def main():
-    """
-    Event Loop
+    """Main Event Loop
     """
     app: QApplication = QApplication(sys.argv)
     ex = DCPCreator()

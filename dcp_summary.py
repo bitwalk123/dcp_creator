@@ -5,6 +5,9 @@ from summary import Summary
 
 
 class DCPSummary(QMainWindow):
+    """
+    Summary Window/Panel/Tab
+    """
     summary: Summary = None
 
     def __init__(self, features: Features):
@@ -26,4 +29,7 @@ class DCPSummary(QMainWindow):
         central.setWidget(self.summary)
 
     def getPanel(self) -> Summary:
+        """
+        get/return instance of this panel
+        """
         return self.summary

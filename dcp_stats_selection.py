@@ -4,9 +4,15 @@ from PySide6.QtWidgets import (
 )
 
 from features import Features
+from stats import Stats
 
 
-class DCPSummaryStat(QMainWindow):
+class DCPStats(QMainWindow):
+    """
+    Panel for Summary Statistics
+    """
+    stats = None
+
     def __init__(self, features: Features):
         super().__init__()
         self.init_ui(features)
@@ -21,3 +27,12 @@ class DCPSummaryStat(QMainWindow):
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
+        # widget on the Scroll Area
+        self.stats = stats = Stats(features)
+        central.setWidget(stats)
+
+    def getPanel(self) -> Stats:
+        """
+        get/return instance of this panel
+        """
+        return self.stats

@@ -4,7 +4,6 @@ from app_widgets import (
     ComboBox,
     FeatureMatrix,
     GridLayout,
-    LabelCell,
     LabelHead,
     LabelNumeric, Pad,
 )
@@ -29,7 +28,8 @@ class Summary(FeatureMatrix):
     # Step
     lab_step: LabelNumeric = None
     # Stat
-    lab_stat: LabelNumeric = None
+    lab_stat_original: LabelNumeric = None
+    lab_stat_moified: LabelNumeric = None
 
     def __init__(self, features: Features):
         super().__init__()
@@ -58,8 +58,6 @@ class Summary(FeatureMatrix):
         layout.addWidget(lab, row, 0)
         self.lab_chamber = LabelNumeric(0, self.style_cell)
         layout.addWidget(self.lab_chamber, row, 1)
-        # self.combo_chamber = ComboBox()
-        # layout.addWidget(self.combo_chamber, row, 2)
         #
         row += 1
         lab = LabelHead('Wafer', self.style_cell)
@@ -98,8 +96,10 @@ class Summary(FeatureMatrix):
         row += 1
         lab = LabelHead('Statistics', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_stat = LabelNumeric(0, self.style_cell)
-        layout.addWidget(self.lab_stat, row, 1)
+        self.lab_stat_original = LabelNumeric(0, self.style_cell)
+        layout.addWidget(self.lab_stat_original, row, 1)
+        self.lab_stat_modified = LabelNumeric(0, self.style_cell)
+        layout.addWidget(self.lab_stat_modified, row, 2)
 
     def setRecipe(self):
         list_recipe = self.features.getRecipe()
@@ -110,6 +110,10 @@ class Summary(FeatureMatrix):
         list_chamber = self.features.getChambers()
         if len(list_chamber) > 0:
             self.lab_chamber.setValue(len(list_chamber))
+            # for debug purpose
+            print('Chambers')
+            for chamber in list_chamber:
+                print(chamber)
         # self.combo_chamber.addItems(list_chamber)
 
     def setWafers(self):
@@ -118,16 +122,13 @@ class Summary(FeatureMatrix):
     def setFeaturesOriginal(self):
         self.lab_feature_original.setValue(self.features.getFeaturesOriginal())
 
-    def setFeaturesModified(self, sensor_step:int):
+    def setFeaturesModified(self, n_feature_valid:int):
         """
         setFeaturesModified
         :param sensor_step:
         :return:
         """
-        # simply calculate sensor/step times stats at this moment
-        stats = len(self.features.getStats())
-        n = stats * sensor_step
-        self.lab_feature_modified.setValue(n)
+        self.lab_feature_modified.setValue(n_feature_valid)
 
     def setSensor(self):
         list_sensor = self.features.getSensors()
@@ -142,4 +143,8 @@ class Summary(FeatureMatrix):
 
     def setStat(self):
         list_stat = self.features.getStats()
-        self.lab_stat.setValue(len(list_stat))
+        n_stat = len(list_stat)
+        self.lab_stat_original.setValue(n_stat)
+
+    def setStatModified(self, n_stat_valid:int):
+        self.lab_stat_modified.setValue(n_stat_valid)

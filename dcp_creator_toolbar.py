@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 class DCPCreatorToolBar(QToolBar):
     """
     DCPCreatorToolBar
-    toolbar class of the main window
+    toolbar class of the sensor window
     """
     openClicked = Signal()
     saveClicked = Signal()

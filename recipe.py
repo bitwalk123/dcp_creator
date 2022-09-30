@@ -21,7 +21,7 @@ class Recipe(FeatureMatrix):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # source
         self.features = features
-        #
+        # UI
         self.init_ui()
 
     def init_ui(self):

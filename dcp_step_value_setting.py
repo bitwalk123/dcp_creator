@@ -8,6 +8,9 @@ from recipe import Recipe
 
 
 class DCPStepValueSetting(QMainWindow):
+    """
+    Step Value Setting, Recipe-like information
+    """
     recipe = None
 
     def __init__(self, features: Features):
