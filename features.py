@@ -28,14 +28,18 @@ class Features:
     pattern_gas_flow = re.compile(r'^Gas\([0-9]{,2}\) Flow$')
     pattern_rf_power = re.compile(r'.*RF\sPower.*')
 
+    # This is for Sensor Table model
+    check_states = dict()
+    col_sensor = 'Sensor'
+    col_unit = 'Unit'
+    col_labels = [col_sensor, col_unit]
+
     def __init__(self, df: pd.DataFrame):
         self.df_source = df
         self.init_sensor()
 
     def init_sensor(self):
-        """
-        init_sensor
-        initialize sensor dataset
+        """Initialize sensor dataset
         """
         print(self.df_source.shape)
         headers = self.df_source.columns
@@ -176,3 +180,31 @@ class Features:
         get/return original size of features
         """
         return len(self.headers_feature)
+
+    # _________________________________________________________________________
+    # for Sensor Table Model
+    def getCheckColStart(self):
+        return len(self.col_labels)
+
+    def getCols(self):
+        return len(self.col_labels) + len(self.steps)
+
+    def getColumnHeader(self, index: int):
+        if index < len(self.col_labels):
+            return self.col_labels[index]
+        else:
+            return self.steps[index - len(self.col_labels)]
+
+    def getData(self, row: int, col: int):
+        if col == 0:
+            return self.sensors[row]
+        elif col == 1:
+            return self.units[row]
+        else:
+            return None
+
+    def getRowIndex(self, index: int):
+        return str(index + 1)
+
+    def getRows(self):
+        return len(self.sensors)
