@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QMainWindow
 
 from features import Features
 
+
 class Scatter(FigureCanvas):
     df: pd.DataFrame = None
 
@@ -15,6 +16,7 @@ class Scatter(FigureCanvas):
         g = sns.FacetGrid(df, col='step', hue='*chamber')
         g.map(sns.scatterplot, '*start_time', 'value')
         super().__init__(g.fig)
+
 
 class SensorChart(QMainWindow):
     def __init__(self, parent, features: Features, row: int):
@@ -47,17 +49,15 @@ class SensorChart(QMainWindow):
         df = pd.concat(list_df_step)
         print(df)
 
-        #fig = plt.figure(dpi=100)
-        #ax = fig.add_subplot(111, title=sensor)
-        #plt.subplots_adjust(bottom=0.2, left=0.2, right=0.8, top=0.9)
-        #ax.grid(True)
-        #g = sns.FacetGrid(df, col='step')
-        #g.map(sns.scatterplot, '*start_time', 'value')
-        #tips = sns.load_dataset('tips')
-        #g = sns.FacetGrid(tips, col='time', row='sex')
-        #g.map(sns.scatterplot, 'total_bill', 'tip')
+        # fig = plt.figure(dpi=100)
+        # ax = fig.add_subplot(111, title=sensor)
+        # plt.subplots_adjust(bottom=0.2, left=0.2, right=0.8, top=0.9)
+        # ax.grid(True)
+        # g = sns.FacetGrid(df, col='step')
+        # g.map(sns.scatterplot, '*start_time', 'value')
+        # tips = sns.load_dataset('tips')
+        # g = sns.FacetGrid(tips, col='time', row='sex')
+        # g.map(sns.scatterplot, 'total_bill', 'tip')
         canvas = Scatter(df)
         self.setCentralWidget(canvas)
         return sensor
-
-
