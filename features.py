@@ -199,7 +199,7 @@ class Features:
         if col == 0:
             return self.sensors[row]
         elif col == 1:
-            return self.units[row]
+            return self.units[self.sensors[row]]
         else:
             return None
 

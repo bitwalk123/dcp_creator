@@ -155,7 +155,7 @@ class Recipe(FeatureMatrix):
             if label_item == self.name_sensor:
                 col_sensor = col
             elif is_num(label_item):
-                dict_col_step[label_item] = col
+                dict_col_step[int(label_item)] = col
 
         dict_sensor_step = {}
         for row in range(rows):

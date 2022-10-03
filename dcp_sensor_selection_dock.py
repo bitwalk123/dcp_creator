@@ -77,9 +77,9 @@ class DCPSensorSelectionDock(QDockWidget):
         but_exclude_sensor_for_setting.clicked.connect(self.exclude_sensor_for_setting)
         layout.addWidget(but_exclude_sensor_for_setting)
         #
-        but_exclude_sensor_time_dependent = MenuButton('exclude time dependent sensor')
-        but_exclude_sensor_time_dependent.clicked.connect(self.exclude_sensor_time_dependent)
-        layout.addWidget(but_exclude_sensor_time_dependent)
+        but_exclude_sensor_general_counter = MenuButton('exclude General Counter sensor')
+        but_exclude_sensor_general_counter.clicked.connect(self.exclude_sensor_time_dependent)
+        layout.addWidget(but_exclude_sensor_general_counter)
         #
         but_exclude_sensor_dyp = MenuButton('exclude Dynamic Process sensors')
         but_exclude_sensor_dyp.clicked.connect(self.exclude_sensor_dyp)

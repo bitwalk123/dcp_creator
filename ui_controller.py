@@ -245,7 +245,7 @@ class UIController:
 
     def exclude_sensor_time_dependent(self, flag: bool):
         sensors = self.getPanelSensors()
-        sensors.excludeSensorTimeDependent(flag)
+        sensors.excludeSensorGeneralCounter(flag)
         self.updateFeatures()
 
     def exclude_sensor_epd(self, flag: bool):
