@@ -14,22 +14,23 @@ from PySide6.QtWidgets import (
 from features import Features
 
 
-class SensorScatter(FigureCanvas):
+class SensorStepScatter(FigureCanvas):
     def __init__(self, df):
-        facet = sns.FacetGrid(df, col='step', hue='*chamber')
-        facet.map(sns.scatterplot, '*start_time', 'value')
+        facet = sns.FacetGrid(df, col='step')
+        facet.map_dataframe(sns.scatterplot, x='*start_time', y='value', hue='*chamber')
         self.fig: Figure = facet.fig
         super().__init__(self.fig)
 
 
 class SensorChart(QMainWindow):
-    canvas: SensorScatter = None
+    canvas: SensorStepScatter = None
 
     def __init__(self, parent, features: Features, row: int):
         super().__init__(parent=parent)
         self.features = features
         sensor = self.init_ui(row)
         self.setWindowTitle(sensor)
+        self.resize(1000, 320)
 
     def init_ui(self, row):
         central = QScrollArea()
@@ -59,7 +60,7 @@ class SensorChart(QMainWindow):
                 list_df_step.append(df_step)
 
         df = pd.concat(list_df_step)
-        self.canvas = SensorScatter(df)
+        self.canvas = SensorStepScatter(df)
         layout.addWidget(self.canvas)
 
         return sensor
