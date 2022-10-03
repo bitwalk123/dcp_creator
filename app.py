@@ -2,6 +2,9 @@
 # coding: utf-8
 import os
 import sys
+import warnings
+
+warnings.simplefilter('ignore', FutureWarning)
 
 import pandas as pd
 from PySide6.QtCore import (
@@ -56,7 +59,7 @@ class DCPCreator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.init_ui()
-        self.resize(1000, 800)
+        self.resize(1000, 600)
         self.setWindowTitle('DCP Creator')
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))

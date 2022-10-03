@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QScrollArea, QWidget, QHBoxLayout, QSizePolicy
 
 from features import Features
 
@@ -13,9 +13,9 @@ class Scatter(FigureCanvas):
     df: pd.DataFrame = None
 
     def __init__(self, df):
-        g = sns.FacetGrid(df, col='step', hue='*chamber')
-        g.map(sns.scatterplot, '*start_time', 'value')
-        super().__init__(g.fig)
+        facetgrif = sns.FacetGrid(df, col='step', hue='*chamber')
+        facetgrif.map(sns.scatterplot, '*start_time', 'value')
+        super().__init__(facetgrif.fig)
 
 
 class SensorChart(QMainWindow):
@@ -26,9 +26,15 @@ class SensorChart(QMainWindow):
         self.setWindowTitle(sensor)
 
     def init_ui(self, row):
-        # list_cols = list()
-        # list_cols.append(self.features.getSrcDfStart())
-        # list_cols.append(self.features.getSrcDfChamberCol())
+        central = QScrollArea()
+        central.setWidgetResizable(True)
+        self.setCentralWidget(central)
+        base = QWidget()
+        base.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        central.setWidget(base)
+        layout = QHBoxLayout()
+        base.setLayout(layout)
+
         sensor = self.features.getSensors()[row]
         unit = self.features.getUnits()[sensor]
         stats = self.features.getStats()
@@ -41,23 +47,13 @@ class SensorChart(QMainWindow):
             if features_full in self.features.getSrcDfColumns():
                 list_cols = [self.features.getSrcDfStart(),
                              self.features.getSrcDfChamberCol()]
-                df_step = self.features.getSrcDf()[list_cols]
-                df_step['value'] = self.features.getSrcDf()[features_full]
+                df_step = self.features.getSrcDf()[list_cols].copy()
+                df_step['value'] = self.features.getSrcDf()[features_full].copy()
                 df_step['step'] = step
                 list_df_step.append(df_step)
 
         df = pd.concat(list_df_step)
-        print(df)
-
-        # fig = plt.figure(dpi=100)
-        # ax = fig.add_subplot(111, title=sensor)
-        # plt.subplots_adjust(bottom=0.2, left=0.2, right=0.8, top=0.9)
-        # ax.grid(True)
-        # g = sns.FacetGrid(df, col='step')
-        # g.map(sns.scatterplot, '*start_time', 'value')
-        # tips = sns.load_dataset('tips')
-        # g = sns.FacetGrid(tips, col='time', row='sex')
-        # g.map(sns.scatterplot, 'total_bill', 'tip')
         canvas = Scatter(df)
-        self.setCentralWidget(canvas)
+        layout.addWidget(canvas)
+
         return sensor
