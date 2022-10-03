@@ -12,11 +12,8 @@ class Scatter(FigureCanvas):
     df: pd.DataFrame = None
 
     def __init__(self, df):
-        #tips = sns.load_dataset("tips")
         g = sns.FacetGrid(df, col='step', hue='*chamber')
         g.map(sns.scatterplot, '*start_time', 'value')
-        #g = sns.FacetGrid(df, col="time", row="sex")
-        #g.map(sns.scatterplot, "total_bill", "tip")
         super().__init__(g.fig)
 
 class SensorChart(QMainWindow):
