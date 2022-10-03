@@ -1,24 +1,30 @@
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QMainWindow, QScrollArea, QWidget, QHBoxLayout, QSizePolicy
+import seaborn as sns
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QMainWindow,
+    QScrollArea,
+    QSizePolicy,
+    QWidget,
+)
 
 from features import Features
 
 
-class Scatter(FigureCanvas):
-    df: pd.DataFrame = None
-
+class SensorScatter(FigureCanvas):
     def __init__(self, df):
-        facetgrif = sns.FacetGrid(df, col='step', hue='*chamber')
-        facetgrif.map(sns.scatterplot, '*start_time', 'value')
-        super().__init__(facetgrif.fig)
+        facet = sns.FacetGrid(df, col='step', hue='*chamber')
+        facet.map(sns.scatterplot, '*start_time', 'value')
+        self.fig: Figure = facet.fig
+        super().__init__(self.fig)
 
 
 class SensorChart(QMainWindow):
+    canvas: SensorScatter = None
+
     def __init__(self, parent, features: Features, row: int):
         super().__init__(parent=parent)
         self.features = features
@@ -53,7 +59,11 @@ class SensorChart(QMainWindow):
                 list_df_step.append(df_step)
 
         df = pd.concat(list_df_step)
-        canvas = Scatter(df)
-        layout.addWidget(canvas)
+        self.canvas = SensorScatter(df)
+        layout.addWidget(self.canvas)
 
         return sensor
+
+    def closeEvent(self, event):
+        plt.close(self.canvas.fig)
+        event.accept()
