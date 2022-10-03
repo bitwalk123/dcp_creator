@@ -108,22 +108,24 @@ class Sensors(FeatureMatrix):
         self.setLayout(layout)
         #
         table = QTableView()
-        header_h = table.horizontalHeader()
-        header_h.setLineWidth(2)
-        header_h.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        table.setHorizontalHeader(header_h)
-        header_v = table.verticalHeader()
-        header_v.setLineWidth(2)
-        header_v.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        table.setVerticalHeader(header_v)
-        table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents
-        )
+        layout.addWidget(table)
+        #
         table.setStyle(ProxyStyle4CheckBoxCenter())
         table.setWordWrap(False)
         table.setAlternatingRowColors(True)
         table.verticalHeader().setDefaultAlignment(Qt.AlignRight)
-        layout.addWidget(table)
+        # Horizontal Header
+        head_horizontal = table.horizontalHeader()
+        head_horizontal.setLineWidth(2)
+        head_horizontal.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
+        table.setHorizontalHeader(head_horizontal)
+        # Vertical Header
+        head_vertical = table.verticalHeader()
+        head_vertical.setLineWidth(2)
+        head_vertical.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
+        head_vertical.sectionDoubleClicked.connect(self.on_row_section_double_clicked)
+        head_vertical.setSectionResizeMode(QHeaderView.ResizeToContents)
+        table.setVerticalHeader(head_vertical)
 
         delegate = CheckBoxDelegate(table)
         for col in range(self.features.getCheckColStart(), self.features.getCols()):
@@ -214,36 +216,6 @@ class Sensors(FeatureMatrix):
                 else:
                     item.setCheckState(Qt.CheckState.Checked)
 
-    def getDCP(self) -> dict:
-        """
-        get_dcp_current
-        """
-
-        rows = self.model.rowCount()
-        # cols = self.model.columnCount()
-
-        key_sensor = self.name_sensor
-        col_sensor = self.find_header_label(key_sensor)
-        key_unit = self.name_unit
-        col_unit = self.find_header_label(key_unit)
-
-        cols_step = self.get_step_columns()
-        list_sensor_steps = list()
-        for row in range(rows):
-            for col in cols_step:
-                item: QStandardItem = self.model.item(row, col)
-                if item.isCheckable():
-                    if item.checkState() == Qt.CheckState.Checked:
-                        # count += 1
-                        name_sensor = self.model.item(row, col_sensor).text()
-                        name_unit = self.model.item(row, col_unit).text()
-                        full_sensor = name_sensor + name_unit
-                        name_step = self.model.horizontalHeaderItem(col).text()
-                        dic_element = {'sensor': full_sensor, 'step': name_step}
-                        list_sensor_steps.append(dic_element)
-        dic_dcp = {'sensor_steps': list_sensor_steps, 'statistics': self.features.getStats()}
-        return dic_dcp
-
     # _________________________________________________________________________
     # apply new table model
     def count_checkbox_checked(self) -> int:
@@ -307,9 +279,6 @@ class Sensors(FeatureMatrix):
             row = self.features.getSensors().index(sensor)
             if sensor in list_sensor_step_setting_0:
                 for step_name in dict_sensor_step_setting_0[sensor]:
-                    # if is_num(step_name):
-                    #    col = self.find_header_label(int(step_name))
-                    # else:
                     col: int = self.find_header_label(step_name)
 
                     index = self.model.index(row, col)
@@ -378,3 +347,37 @@ class Sensors(FeatureMatrix):
                 self.model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
             else:
                 self.model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
+
+    def getDCP(self) -> dict:
+        """
+        get_dcp_current
+        """
+
+        rows = self.model.rowCount()
+        # cols = self.model.columnCount()
+
+        key_sensor = self.name_sensor
+        col_sensor = self.find_header_label(key_sensor)
+        key_unit = self.name_unit
+        col_unit = self.find_header_label(key_unit)
+
+        cols_step = self.get_step_columns()
+        list_sensor_steps = list()
+        for row in range(rows):
+            for col in cols_step:
+                index = self.model.index(row, col)
+                value = self.model.data(index, role=Qt.CheckStateRole)
+                if value == Qt.CheckState.Checked:
+                    name_sensor = self.features.getSensors()[row]
+                    name_unit = self.features.getUnits()[name_sensor]
+                    num_step = self.model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
+                    full_sensor = name_sensor + name_unit
+                    dic_element = {'sensor': full_sensor, 'step': str(num_step)}
+                    list_sensor_steps.append(dic_element)
+        dic_dcp = {'sensor_steps': list_sensor_steps, 'statistics': self.features.getStats()}
+        return dic_dcp
+
+    def on_row_section_double_clicked(self, row: int):
+        print('DEBUG!', self.features.getSensors()[row])
+        #print(self.get_step_columns())
+        print(self.features.getSteps())

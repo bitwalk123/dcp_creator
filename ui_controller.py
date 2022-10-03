@@ -123,51 +123,13 @@ class UIController:
         """
         # SENSOR/STEP
         sensors = self.getPanelSensors()
-        rows = sensors.model.rowCount()
-
-        key_sensor = sensors.name_sensor
-        col_sensor = sensors.find_header_label(key_sensor)
-        key_unit = sensors.name_unit
-        col_unit = sensors.find_header_label(key_unit)
-
-        cols_step = sensors.get_step_columns()
-        list_sensor_steps = list()
-        for row in range(rows):
-            for col in cols_step:
-                item: QStandardItem = sensors.model.item(row, col)
-                if item.isCheckable():
-                    if item.checkState() == Qt.CheckState.Checked:
-                        name_sensor = sensors.model.item(row, col_sensor).text()
-                        name_unit = sensors.model.item(row, col_unit).text()
-                        full_sensor = name_sensor + name_unit
-                        name_step = sensors.model.horizontalHeaderItem(col).text()
-                        dic_element = {'sensor': full_sensor, 'step': name_step}
-                        list_sensor_steps.append(dic_element)
-        # _____________________________________________________________________
-        # STATS
-        stats = self.getPanelStats()
-        rows = stats.model.rowCount()
-        col_stat = stats.find_header_label(stats.name_stat)
-        col_sel = stats.find_header_label(stats.name_sel)
-        list_stats = list()
-        for row in range(rows):
-            item: QStandardItem = stats.model.item(row, col_sel)
-            if item.isCheckable():
-                if item.checkState() == Qt.CheckState.Checked:
-                    name_stat = stats.model.item(row, col_stat).text()
-                    list_stats.append(name_stat)
+        dict_dcp = sensors.getDCP()
         # _____________________________________________________________________
         # OUTPUT
-        dict_dcp = {'sensor_steps': list_sensor_steps, 'statistics': list_stats}
         with open(filename, 'w') as f:
             json.dump(dict_dcp, f, indent=4)
         # for debug
         print(json.dumps(dict_dcp, indent=4))
-        print('total features (%d) = %d sensor_steps x %d statistics' % (
-            len(list_sensor_steps) * len(list_stats),
-            len(list_sensor_steps),
-            len(list_stats)
-        ))
 
     # =========================================================================
     #  SENSOR FILTERING RELATED
@@ -192,8 +154,8 @@ class UIController:
         dock_sensors.excludeSensorSetting.connect(self.exclude_sensor_for_setting)
         dock_sensors.excludeSensorTimeDependent.connect(self.exclude_sensor_time_dependent)
         dock_sensors.excludeSensorEPD.connect(self.exclude_sensor_epd)
-        dock_sensors.excludeLargeUnit.connect(self.exclude_sensor_large_unit)
-        dock_sensors.excludeSensorOES.connect(self.exclude_sensor_oes)
+        #dock_sensors.excludeLargeUnit.connect(self.exclude_sensor_large_unit)
+        #dock_sensors.excludeSensorOES.connect(self.exclude_sensor_oes)
 
     def exclude_sensor_no_setting(self, flag: bool):
         recipe = self.getPanelRecipe()
