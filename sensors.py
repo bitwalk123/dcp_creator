@@ -7,7 +7,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QHeaderView,
-    QSizePolicy, QProxyStyle, QStyledItemDelegate, QTableView, QFrame,
+    QSizePolicy, QProxyStyle, QStyledItemDelegate, QTableView, QFrame, QMainWindow, QApplication,
 )
 
 from app_functions import is_num, timeit
@@ -16,6 +16,7 @@ from app_widgets import (
     VBoxLayout, TableView,
 )
 from features import Features
+from sensors_chart import SensorChart
 
 
 class ProxyStyle4CheckBoxCenter(QProxyStyle):
@@ -89,6 +90,7 @@ class Sensors(FeatureMatrix):
     DCPMatrix class
     manage sensor selection
     """
+    win_chart = None
 
     def __init__(self, features: Features):
         super().__init__()
@@ -378,6 +380,7 @@ class Sensors(FeatureMatrix):
         return dic_dcp
 
     def on_row_section_double_clicked(self, row: int):
-        print('DEBUG!', self.features.getSensors()[row])
-        #print(self.get_step_columns())
-        print(self.features.getSteps())
+        if self.win_chart is not None:
+            self.win_chart.close()
+        self.win_chart = SensorChart(self, self.features, row)
+        self.win_chart.show()

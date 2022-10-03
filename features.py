@@ -7,6 +7,8 @@ class Features:
     FeatureInfo
     """
     df_source = None
+    src_chamber = '*chamber'
+    src_start = '*start_time'
     steps = None
     sensors = None
     stats = None
@@ -27,7 +29,7 @@ class Features:
     pattern_sensor_oes = re.compile(r'^[0-9\.]{3,6}nm$')
     pattern_gas_flow = re.compile(r'^Gas\([0-9]{,2}\) Flow$')
     pattern_rf_power = re.compile(r'.*RF\sPower.*')
-
+    #
     # This is for Sensor Table model
     check_states = dict()
     col_sensor = 'Sensor'
@@ -36,6 +38,7 @@ class Features:
 
     def __init__(self, df: pd.DataFrame):
         self.df_source = df
+        self.df_source[self.src_start] = pd.to_datetime(df[self.src_start], format='%Y/%m/%d %H:%M:%S')
         self.init_sensor()
 
     def init_sensor(self):
@@ -166,8 +169,7 @@ class Features:
         """
         get/return chamber list
         """
-        col_chamber = '*chamber'
-        return sorted(list(set(self.df_source[col_chamber])))
+        return sorted(list(set(self.df_source[self.src_chamber])))
 
     def getWafers(self) -> int:
         """
@@ -181,6 +183,17 @@ class Features:
         """
         return len(self.headers_feature)
 
+    def getSrcDf(self):
+        return self.df_source
+
+    def getSrcDfColumns(self):
+        return self.df_source.columns
+
+    def getSrcDfChamberCol(self):
+        return self.src_chamber
+
+    def getSrcDfStart(self):
+        return self.src_start
     # _________________________________________________________________________
     # for Sensor Table Model
     def getCheckColStart(self):
