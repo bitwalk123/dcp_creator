@@ -1,13 +1,22 @@
 from typing import Any
 
-from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, QPersistentModelIndex
+from PySide6.QtCore import (
+    Qt,
+    QAbstractTableModel,
+    QModelIndex,
+    QPersistentModelIndex,
+    QRect,
+)
 from PySide6.QtGui import (
-    QStandardItemModel,
     QStandardItem,
 )
 from PySide6.QtWidgets import (
+    QFrame,
     QHeaderView,
-    QSizePolicy, QProxyStyle, QStyledItemDelegate, QTableView, QFrame, QMainWindow, QApplication,
+    QProxyStyle,
+    QSizePolicy,
+    QStyledItemDelegate,
+    QTableView,
 )
 
 from app_functions import is_num, timeit
@@ -90,7 +99,7 @@ class Sensors(FeatureMatrix):
     DCPMatrix class
     manage sensor selection
     """
-    win_chart = None
+    win_chart:SensorChart = None
 
     def __init__(self, features: Features):
         super().__init__()
@@ -121,6 +130,7 @@ class Sensors(FeatureMatrix):
         head_horizontal.setLineWidth(2)
         head_horizontal.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
         table.setHorizontalHeader(head_horizontal)
+        head_horizontal.setSectionResizeMode(QHeaderView.ResizeToContents)
         # Vertical Header
         head_vertical = table.verticalHeader()
         head_vertical.setLineWidth(2)
@@ -380,7 +390,11 @@ class Sensors(FeatureMatrix):
         return dic_dcp
 
     def on_row_section_double_clicked(self, row: int):
+        winrect:QRect = None
         if self.win_chart is not None:
+            winrect = self.win_chart.geometry()
             self.win_chart.close()
         self.win_chart = SensorChart(self, self.features, row)
+        if winrect is not None:
+            self.win_chart.setGeometry(winrect)
         self.win_chart.show()

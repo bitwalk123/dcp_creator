@@ -1,14 +1,15 @@
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import seaborn as sns
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QMainWindow,
     QScrollArea,
-    QSizePolicy,
-    QWidget,
+    QSizePolicy, QToolBar, QComboBox, QLabel, QStyle,
 )
 
 from features import Features
@@ -16,9 +17,14 @@ from features import Features
 
 class SensorStepScatter(FigureCanvas):
     def __init__(self, df):
-        facet = sns.FacetGrid(df, col='step')
+        #sns.set_theme(style='grid', palette='colorblind', font_scale=0.8)
+        mpl.rcParams.update({'font.size': 9})
+        facet = sns.FacetGrid(data=df, col='step', height=2, aspect=0.6)
         facet.map_dataframe(sns.scatterplot, x='*start_time', y='value', hue='*chamber')
-        self.fig: Figure = facet.fig
+        facet.set(xticklabels=[])
+        #facet.set(xlabel=None)
+        facet.tight_layout()
+        self.fig: Figure = facet.figure
         super().__init__(self.fig)
 
 
@@ -28,24 +34,37 @@ class SensorChart(QMainWindow):
     def __init__(self, parent, features: Features, row: int):
         super().__init__(parent=parent)
         self.features = features
-        sensor = self.init_ui(row)
-        self.setWindowTitle(sensor)
-        self.resize(1000, 320)
+        sensor, unit = self.init_ui(row)
+        self.setWindowTitle('%s%s'%(sensor, unit))
+        self.setWindowIcon(
+            QIcon(self.style().standardIcon(QStyle.SP_ArrowForward))
+        )
+        self.resize(1000, 200)
 
     def init_ui(self, row):
+        # _____________________________________________________________________
+        # Toolbar
+        toolbar = QToolBar()
+        self.addToolBar(Qt.TopToolBarArea, toolbar)
+        label_stat = QLabel('Summary Statistics')
+        label_stat.setStyleSheet('margin:0 1em 0 0;')
+        toolbar.addWidget(label_stat)
+        combo_stat = QComboBox()
+        toolbar.addWidget(combo_stat)
+        # _____________________________________________________________________
+        # Central Widget
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
-        base = QWidget()
-        base.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        base = QMainWindow()
+        base.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         central.setWidget(base)
-        layout = QHBoxLayout()
-        base.setLayout(layout)
 
         sensor = self.features.getSensors()[row]
         unit = self.features.getUnits()[sensor]
         stats = self.features.getStats()
         stat = stats[0]
+        combo_stat.addItems(stats)
         #
         list_df_step = list()
         steps = self.features.getSteps()
@@ -61,9 +80,9 @@ class SensorChart(QMainWindow):
 
         df = pd.concat(list_df_step)
         self.canvas = SensorStepScatter(df)
-        layout.addWidget(self.canvas)
+        base.setCentralWidget(self.canvas)
 
-        return sensor
+        return sensor, unit
 
     def closeEvent(self, event):
         plt.close(self.canvas.fig)
