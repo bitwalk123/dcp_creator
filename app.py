@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from app_functions import timeit
+from app_functions import timeit, getAppLogger
 from app_thread import CSVReadWorker, ParseFeaturesWorker
 from app_widgets import WorkInProgress
 from dcp_creator_toolbar import DCPCreatorToolBar
@@ -36,7 +36,7 @@ from ui_controller import UIController
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '20220930'
+    __version__ = '20221004'
     # UI components
     tab: QTabWidget = None
     toolbar: DCPCreatorToolBar = None
@@ -214,7 +214,7 @@ class DCPCreator(QMainWindow):
         # _____________________________________________________________________
         # Controller for tab and other UI interaction
         self.controller = UIController(page)
-        self.controller.Init()
+        #self.controller.Init()
 
     def tab_changed(self):
         """Event handler for tab changed

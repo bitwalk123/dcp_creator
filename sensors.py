@@ -27,7 +27,6 @@ from app_widgets import (
 from features import Features
 from sensors_chart import SensorChart
 
-
 class ProxyStyle4CheckBoxCenter(QProxyStyle):
     def subElementRect(self, element, opt, widget=None):
         if element == self.SE_ItemViewItemCheckIndicator:
@@ -152,10 +151,12 @@ class Sensors(FeatureMatrix):
                 index = model.index(row, col)
                 model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
 
+    """
     def excludeLargeUnit(self, flag: bool):
         list_row = self.find_large_unit()
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
+    """
 
     def find_sensor_time_dependent(self):
         # Sensor Name
@@ -186,6 +187,7 @@ class Sensors(FeatureMatrix):
 
         return list_row
 
+    """
     def find_large_unit(self):
         list_row = list()
         # Unit
@@ -227,6 +229,7 @@ class Sensors(FeatureMatrix):
                     item.setCheckState(Qt.CheckState.Unchecked)
                 else:
                     item.setCheckState(Qt.CheckState.Checked)
+    """
 
     # _________________________________________________________________________
     # apply new table model
@@ -255,6 +258,7 @@ class Sensors(FeatureMatrix):
 
     def excludeSensorOES(self, flag: bool):
         list_row = self.find_sensor_with_regex(self.features.pattern_sensor_oes)
+        print(list_row)
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
 
