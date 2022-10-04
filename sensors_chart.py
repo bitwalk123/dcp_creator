@@ -18,6 +18,7 @@ from features import Features
 class SensorStepScatter(FigureCanvas):
     def __init__(self, df):
         #sns.set_theme(style='grid', palette='colorblind', font_scale=0.8)
+        print(df)
         mpl.rcParams.update({'font.size': 9})
         facet = sns.FacetGrid(data=df, col='step', height=2, aspect=0.6)
         facet.map_dataframe(sns.scatterplot, x='*start_time', y='value', hue='*chamber')
@@ -63,8 +64,12 @@ class SensorChart(QMainWindow):
         sensor = self.features.getSensors()[row]
         unit = self.features.getUnits()[sensor]
         stats = self.features.getStats()
-        stat = stats[0]
+        if 'Avg' in stats:
+            stat = 'Avg'
+        else:
+            stat = stats[0]
         combo_stat.addItems(stats)
+        combo_stat.setCurrentText(stat)
         #
         list_df_step = list()
         steps = self.features.getSteps()
@@ -76,6 +81,7 @@ class SensorChart(QMainWindow):
                 df_step = self.features.getSrcDf()[list_cols].copy()
                 df_step['value'] = self.features.getSrcDf()[features_full].copy()
                 df_step['step'] = step
+                print(df_step)
                 list_df_step.append(df_step)
 
         df = pd.concat(list_df_step)
