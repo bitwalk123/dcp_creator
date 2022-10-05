@@ -18,12 +18,12 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QStatusBar,
     QStyle,
-    QTabWidget,
+    QTabWidget, QPlainTextEdit, QWidget, QPushButton, QSizePolicy,
 )
 
 from app_functions import timeit, getAppLogger
 from app_thread import CSVReadWorker, ParseFeaturesWorker
-from app_widgets import WorkInProgress
+from app_widgets import WorkInProgress, LogConsole, VBoxLayout
 from dcp_creator_toolbar import DCPCreatorToolBar
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_stats_selection import DCPStats
@@ -36,8 +36,9 @@ from ui_controller import UIController
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '20221004'
+    __version__ = '20221005'
     # UI components
+    console:LogConsole = None
     tab: QTabWidget = None
     toolbar: DCPCreatorToolBar = None
     statusbar: QStatusBar = None
@@ -71,11 +72,11 @@ class DCPCreator(QMainWindow):
         selection = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select CSV file',
-            filter='CSV File (*.csv);; Zip File (*.zip)'
+            filter='Zip File (*.zip);; CSV File (*.csv)'
         )
         csvfile = selection[0]
-        print('csvfile', csvfile, len(csvfile))
         if len(csvfile) > 0:
+            self.console.insertIn('reading %s.' % csvfile)
             self.read_csv(csvfile)
 
     def read_csv(self, csvfile: str):
@@ -103,7 +104,7 @@ class DCPCreator(QMainWindow):
         self.progress_reader = WorkInProgress(self, 'Reading ...')
         self.progress_reader.show()
 
-    def read_csv_completed(self, df: pd.DataFrame):
+    def read_csv_completed(self, df: pd.DataFrame, elapsed: float):
         """Event handler when thread of read_csv is completed.
 
         Parameters
@@ -111,6 +112,8 @@ class DCPCreator(QMainWindow):
         df: pd.DataFrame
         """
         self.progress_reader.cancel()
+        self.console.insertCompleted(elapsed)
+        self.console.insertIn('Parsing data.')
         self.parse_features(df)
 
     def parse_features(self, df: pd.DataFrame):
@@ -136,15 +139,21 @@ class DCPCreator(QMainWindow):
         self.progress_parser = WorkInProgress(self, 'Parsing ...')
         self.progress_parser.show()
 
-    def parse_features_completed(self, features: Features):
+    def parse_features_completed(self, features: Features, elapsed: float):
         """Event handler when thread of parse_feature is completed.
 
         Parameters
         ----------
         features: Features
         """
-        self.features = features
         self.progress_parser.cancel()
+        # Log
+        self.console.insertCompleted(elapsed)
+        self.console.insertOut(features.getLogDfShape())
+        self.console.insertOut(features.getLogStep())
+        self.console.insertOut(features.getLogStat())
+        #
+        self.features = features
         self.main_ui()
 
     def button_save_clicked(self):
@@ -184,8 +193,10 @@ class DCPCreator(QMainWindow):
         self.addToolBar(Qt.TopToolBarArea, self.toolbar)
         # _____________________________________________________________________
         # Statusbar
-        self.statusbar = QStatusBar()
-        self.setStatusBar(self.statusbar)
+        statusbar = QStatusBar()
+        self.setStatusBar(statusbar)
+        self.console = LogConsole()
+        statusbar.addWidget(self.console, stretch=1)
 
     @timeit
     def main_ui(self):
@@ -214,7 +225,6 @@ class DCPCreator(QMainWindow):
         # _____________________________________________________________________
         # Controller for tab and other UI interaction
         self.controller = UIController(page)
-        #self.controller.Init()
 
     def tab_changed(self):
         """Event handler for tab changed

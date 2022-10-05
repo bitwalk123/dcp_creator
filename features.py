@@ -1,6 +1,8 @@
 import pandas as pd
 import re
 
+from app_functions import is_num
+
 
 class Features:
     """
@@ -19,9 +21,9 @@ class Features:
     # example columns
     #   Wall Temperature (setting data)[degC]_2_Stddev
     #   Pulse Frequency (setting data)[kHz]_-1_Stddev
-    pattern_feature_2_units = re.compile(r'^([^_]+\[.+\])(\[.+\])_([+-]?\d+)_(.+)$')
-    pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+)_(.+)$')
-    pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+)_(.+)$')
+    pattern_feature_2_units = re.compile(r'^([^_]+\[.+\])(\[.+\])_([+-]?\d+|All\sSteps)_(.+)$')
+    pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+|All\sSteps)_(.+)$')
+    pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+|All\sSteps)_(.+)$')
     pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
     pattern_sensor_general_counter = re.compile(r'^General Counter')
     pattern_sensor_dyp = re.compile(r'^Dynamic Process')
@@ -41,10 +43,18 @@ class Features:
         self.df_source[self.src_start] = pd.to_datetime(df[self.src_start], format='%Y/%m/%d %H:%M:%S')
         self.init_sensor()
 
+    def getLogDfShape(self):
+        return 'df.shape\t%s' % str(self.df_source.shape)
+
+    def getLogStep(self):
+        return 'STEPS\t%s' % self.steps
+
+    def getLogStat(self):
+        return 'STATS\t%s' % self.stats
+
     def init_sensor(self):
         """Initialize sensor dataset
         """
-        print(self.df_source.shape)
         headers = self.df_source.columns
         # the header name starting with + is not feature
         self.headers_feature = [s for s in headers if not s.startswith('*')]
@@ -55,7 +65,6 @@ class Features:
         units = {}
         steps = list()
         stats = list()
-        print('self.headers_feature ->', len(self.headers_feature))
         for feature in self.headers_feature:
             sensor = None
             # Feature with [unit1][unit2]
@@ -65,7 +74,8 @@ class Features:
                 sensors.append(sensor)
                 if sensor not in units:
                     units[sensor] = result1.group(2)
-                steps.append(int(result1.group(3)))
+                if is_num(result1.group(3)):
+                    steps.append(int(result1.group(3)))
                 stats.append(result1.group(4))
             else:
                 # Feature with [unit]
@@ -75,7 +85,8 @@ class Features:
                     sensors.append(sensor)
                     if sensor not in units:
                         units[sensor] = result2.group(2)
-                    steps.append(int(result2.group(3)))
+                    if is_num(result2.group(3)):
+                        steps.append(int(result2.group(3)))
                     stats.append(result2.group(4))
                 else:
                     # Feature w/o [unit]
@@ -85,7 +96,8 @@ class Features:
                         sensors.append(sensor)
                         if sensor not in units:
                             units[sensor] = ''
-                        steps.append(int(result3.group(2)))
+                        if is_num(result3.group(2)):
+                            steps.append(int(result3.group(2)))
                         stats.append(result3.group(3))
                     else:
                         # No match!
@@ -97,9 +109,9 @@ class Features:
         sensors = sorted(list(set(sensors)))
         stats = sorted(list(set(stats)))
         # Print
-        print('STEPS', steps)
-        print('SENSORS', sensors)
-        print('STATS', stats)
+        # print('STEPS', steps)
+        # print('SENSORS', sensors)
+        # print('STATS', stats)
         #
         self.steps = steps
         self.sensors = sensors
@@ -194,6 +206,7 @@ class Features:
 
     def getSrcDfStart(self):
         return self.src_start
+
     # _________________________________________________________________________
     # for Sensor Table Model
     def getCheckColStart(self):

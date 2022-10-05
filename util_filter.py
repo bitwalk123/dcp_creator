@@ -8,20 +8,15 @@ from dcp_sensor_selection_dock import DCPSensorSelectionDock
 class UtilFilter(AppObject):
     def __init__(self, page: dict):
         super().__init__(page)
-        self.init_button_filter()
+        self.init_sensor_filter()
 
-    def init_button_filter(self):
+    def init_sensor_filter(self):
         dock_sensors: DCPSensorSelectionDock = self.page['sensors'].getDock()
         layout = dock_sensors.getLayout()
         # _____________________________________________________________________
         # Basic Filters
         lab_auto = LabelFrameNarrow('Basic')
         layout.addWidget(lab_auto)
-        # _____________________________________________________________________
-        # filter for excluding step -1
-        but_exclude_step_minus1 = MenuButton('exclude Step -1')
-        but_exclude_step_minus1.clicked.connect(self.exclude_step_minus1)
-        layout.addWidget(but_exclude_step_minus1)
         # _____________________________________________________________________
         # filter for excluding step >= 1000 (dechuck step)
         but_exclude_step_dechuck = MenuButton('exclude Step >= 1000')
@@ -37,12 +32,6 @@ class UtilFilter(AppObject):
         but_exclude_setting_0 = MenuButton('exclude Step setting = 0')
         but_exclude_setting_0.clicked.connect(self.exclude_setting_0)
         layout.addWidget(but_exclude_setting_0)
-
-    def exclude_step_minus1(self):
-        but: QPushButton = self.sender()
-        sensors = self.getPanelSensors()
-        sensors.excludeStepMinus1(but.isChecked())
-        self.updateFeatures()
 
     def exclude_step_dechuck(self):
         but: QPushButton = self.sender()

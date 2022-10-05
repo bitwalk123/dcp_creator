@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QTableView,
     QVBoxLayout,
-    QWidget, QStyle,
+    QWidget, QStyle, QPlainTextEdit, QHBoxLayout,
 )
 
 
@@ -51,6 +51,59 @@ class CheckBox(QCheckBox):
         # self.setStyleSheet('QCheckBox {border:1px solid gray; margin-left:50%; margin-right:50%;}')
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setChecked(True)
+
+
+class LogConsole(QWidget):
+    prompt = '> '
+    eol = '\n'
+
+    def __init__(self):
+        super().__init__()
+        layout_horiz = QHBoxLayout()
+        self.setLayout(layout_horiz)
+        # log
+        self.log = QPlainTextEdit()
+        self.log.setFixedHeight(100)
+        self.log.setStyleSheet('font-family: monospace;')
+        self.log.setReadOnly(True)
+        self.log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        layout_horiz.addWidget(self.log)
+        # control
+        self.control = QWidget()
+        layout_horiz.addWidget(self.control)
+        #
+        layout_vert = VBoxLayout()
+        self.control.setLayout(layout_vert)
+        # save log
+        but_file = QPushButton(
+            QIcon(self.style().standardIcon(QStyle.SP_FileDialogStart)),
+            None
+        )
+        but_file.setToolTip('save log to file.')
+        layout_vert.addWidget(but_file)
+        # padding
+        vpad = QWidget()
+        layout_vert.addWidget(vpad)
+        # trash log
+        vpad.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        but_trash = QPushButton(
+            QIcon(self.style().standardIcon(QStyle.SP_TrashIcon)),
+            None
+        )
+        but_trash.setToolTip('clear log on the console.')
+        layout_vert.addWidget(but_trash)
+
+    def insertIn(self, msg):
+        line = msg + self.eol
+        self.log.insertPlainText(line)
+
+    def insertOut(self, msg):
+        line = self.prompt + msg + self.eol
+        self.log.insertPlainText(line)
+
+    def insertCompleted(self, elapsed: float):
+        line = 'done. (elapsed {:.3f} sec)'.format(elapsed) + self.eol
+        self.log.insertPlainText(line)
 
 
 class ComboBox(QComboBox):
