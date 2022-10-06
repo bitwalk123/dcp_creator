@@ -18,6 +18,7 @@ DCP stands for Data Collection Plan.
 * Database configuration
 * How to run tests
 * Deployment instructions
+  * execute `package.ps1` for executable package with PyInstaller in `..\Packages\dist\`
 
 ### Contribution guidelines ###
 
