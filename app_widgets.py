@@ -1,6 +1,6 @@
-from typing import Union
+from typing import Union, Any
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, QPersistentModelIndex
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -19,8 +19,10 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QTableView,
     QVBoxLayout,
-    QWidget, QStyle, QPlainTextEdit, QHBoxLayout,
+    QWidget, QStyle, QPlainTextEdit, QHBoxLayout, QProxyStyle, QStyledItemDelegate,
 )
+
+from features import Features
 
 
 class MenuButton(QPushButton):
@@ -340,3 +342,72 @@ class WorkInProgress(QProgressDialog):
         self.setCancelButton(None)
         self.setRange(0, 0)
         self.setWindowTitle('progress')
+
+
+# _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+# related to the table with checkbox
+# _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+class ProxyStyle4CheckBoxCenter(QProxyStyle):
+    def subElementRect(self, element, opt, widget=None):
+        if element == self.SE_ItemViewItemCheckIndicator:
+            rect = super().subElementRect(element, opt, widget)
+            rect.moveCenter(opt.rect.center())
+            return rect
+        return super().subElementRect(element, opt, widget)
+
+
+class CheckBoxDelegate(QStyledItemDelegate):
+    def initStyleOption(self, option, index: QModelIndex):
+        value = index.data(Qt.CheckStateRole)
+        if value is None:
+            model = index.model()
+            model.setData(index, Qt.Unchecked, Qt.CheckStateRole)
+        super().initStyleOption(option, index)
+
+
+class SensorStepModel(QAbstractTableModel):
+    def __init__(self, data: Features):
+        super(SensorStepModel, self).__init__()
+        self._data = data
+        # self.check_states = dict()
+
+    def rowCount(self, index: QModelIndex = None):
+        return self._data.getRows()
+
+    def columnCount(self, index: QModelIndex = None):
+        return self._data.getCols()
+
+    def data(self, index: QModelIndex, role: Qt.ItemDataRole):
+        if role == Qt.DisplayRole:
+            row = index.row()
+            column = index.column()
+            value = self._data.getData(row, column)
+            return value
+
+        if role == Qt.CheckStateRole:
+            value = self._data.check_states.get(QPersistentModelIndex(index))
+            if value is not None:
+                return value
+
+    def setData(self, index: QModelIndex, value: Any, role: Qt.ItemDataRole = Qt.EditRole):
+        if role == Qt.CheckStateRole:
+            self._data.check_states[QPersistentModelIndex(index)] = value
+            self.dataChanged.emit(index, index, (role,))
+            return True
+
+        return False
+
+    def flags(self, index: QModelIndex):
+        return (
+                Qt.ItemIsEnabled
+                | Qt.ItemIsSelectable
+                | Qt.ItemIsUserCheckable
+        )
+
+    def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole):
+        # section is the index of the column/row.
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return self._data.getColumnHeader(section)
+            elif orientation == Qt.Vertical:
+                return self._data.getRowIndex(section)

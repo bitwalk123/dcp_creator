@@ -1,10 +1,5 @@
-from typing import Any
-
 from PySide6.QtCore import (
     Qt,
-    QAbstractTableModel,
-    QModelIndex,
-    QPersistentModelIndex,
     QRect,
 )
 from PySide6.QtGui import (
@@ -13,84 +8,17 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import (
     QFrame,
     QHeaderView,
-    QProxyStyle,
     QSizePolicy,
-    QStyledItemDelegate,
     QTableView,
 )
 
-from app_functions import is_num, timeit
+from app_functions import timeit
 from app_widgets import (
     FeatureMatrix,
-    VBoxLayout, TableView,
+    VBoxLayout, ProxyStyle4CheckBoxCenter, CheckBoxDelegate, SensorStepModel,
 )
 from features import Features
 from sensors_chart import SensorChart
-
-class ProxyStyle4CheckBoxCenter(QProxyStyle):
-    def subElementRect(self, element, opt, widget=None):
-        if element == self.SE_ItemViewItemCheckIndicator:
-            rect = super().subElementRect(element, opt, widget)
-            rect.moveCenter(opt.rect.center())
-            return rect
-        return super().subElementRect(element, opt, widget)
-
-
-class CheckBoxDelegate(QStyledItemDelegate):
-    def initStyleOption(self, option, index: QModelIndex):
-        value = index.data(Qt.CheckStateRole)
-        if value is None:
-            model = index.model()
-            model.setData(index, Qt.Unchecked, Qt.CheckStateRole)
-        super().initStyleOption(option, index)
-
-
-class DCPModel(QAbstractTableModel):
-    def __init__(self, data: Features):
-        super(DCPModel, self).__init__()
-        self._data = data
-        # self.check_states = dict()
-
-    def rowCount(self, index: QModelIndex = None):
-        return self._data.getRows()
-
-    def columnCount(self, index: QModelIndex = None):
-        return self._data.getCols()
-
-    def data(self, index: QModelIndex, role: Qt.ItemDataRole):
-        if role == Qt.DisplayRole:
-            row = index.row()
-            column = index.column()
-            value = self._data.getData(row, column)
-            return value
-
-        if role == Qt.CheckStateRole:
-            value = self._data.check_states.get(QPersistentModelIndex(index))
-            if value is not None:
-                return value
-
-    def setData(self, index: QModelIndex, value: Any, role: Qt.ItemDataRole = Qt.EditRole):
-        if role == Qt.CheckStateRole:
-            self._data.check_states[QPersistentModelIndex(index)] = value
-            self.dataChanged.emit(index, index, (role,))
-            return True
-
-        return False
-
-    def flags(self, index: QModelIndex):
-        return (
-                Qt.ItemIsEnabled
-                | Qt.ItemIsSelectable
-                | Qt.ItemIsUserCheckable
-        )
-
-    def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole):
-        # section is the index of the column/row.
-        if role == Qt.DisplayRole:
-            if orientation == Qt.Horizontal:
-                return self._data.getColumnHeader(section)
-            elif orientation == Qt.Vertical:
-                return self._data.getRowIndex(section)
 
 
 class Sensors(FeatureMatrix):
@@ -98,7 +26,7 @@ class Sensors(FeatureMatrix):
     DCPMatrix class
     manage sensor selection
     """
-    win_chart:SensorChart = None
+    win_chart: SensorChart = None
 
     def __init__(self, features: Features):
         super().__init__()
@@ -141,7 +69,7 @@ class Sensors(FeatureMatrix):
         delegate = CheckBoxDelegate(table)
         for col in range(self.features.getCheckColStart(), self.features.getCols()):
             table.setItemDelegateForColumn(col, delegate)
-        model = DCPModel(self.features)
+        model = SensorStepModel(self.features)
         table.setModel(model)
         self.model = model
 
@@ -150,13 +78,6 @@ class Sensors(FeatureMatrix):
             for col in range(self.features.getCheckColStart(), self.features.getCols()):
                 index = model.index(row, col)
                 model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
-
-    """
-    def excludeLargeUnit(self, flag: bool):
-        list_row = self.find_large_unit()
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-    """
 
     def find_sensor_time_dependent(self):
         # Sensor Name
@@ -186,50 +107,6 @@ class Sensors(FeatureMatrix):
                 list_row.append(row)
 
         return list_row
-
-    """
-    def find_large_unit(self):
-        list_row = list()
-        # Unit
-        key_unit = self.name_unit
-        col_unit = self.find_header_label(key_unit)
-        for row in range(self.model.rowCount()):
-            item: QStandardItem = self.model.item(row, col_unit)
-            unit = item.text()
-            if unit == '[MPaG]' or unit == '[PaG]' or unit == '[Torr]':
-                list_row.append(row)
-
-        return list_row
-
-    def setSensorStep(self, flag: bool, list_sensor_step: list):
-        info = {'step': list()}
-        list_sensor = list()
-        rows = self.model.rowCount()
-        cols = self.model.columnCount()
-        for col in range(cols):
-            item: QStandardItem = self.model.horizontalHeaderItem(col).text()
-            if item == self.name_sensor:
-                info[self.name_sensor] = col
-            elif is_num(item):
-                info['step'].append(item)
-                info[item] = col
-
-        for row in range(rows):
-            item: QStandardItem = self.model.item(row, info[self.name_sensor])
-            list_sensor.append(item.text().strip())
-
-        for (sensor, step) in list_sensor_step:
-            row = list_sensor.index(sensor)
-            # item: QStandardItem = self.model.item(row, info[self.name_sensor])
-            col = info[step]
-            # print(sensor, ':', step, 'row', row, 'column', col, ':', item.text())
-            item: QStandardItem = self.model.item(row, col)
-            if item.isCheckable():
-                if flag:
-                    item.setCheckState(Qt.CheckState.Unchecked)
-                else:
-                    item.setCheckState(Qt.CheckState.Checked)
-    """
 
     # _________________________________________________________________________
     # apply new table model
@@ -364,19 +241,11 @@ class Sensors(FeatureMatrix):
             else:
                 self.model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
 
-    def getDCP(self) -> dict:
-        """
-        get_dcp_current
+    def getDCP(self) -> list:
+        """get sensor/tep currently selected.
         """
 
         rows = self.model.rowCount()
-        # cols = self.model.columnCount()
-
-        key_sensor = self.name_sensor
-        col_sensor = self.find_header_label(key_sensor)
-        key_unit = self.name_unit
-        col_unit = self.find_header_label(key_unit)
-
         cols_step = self.get_step_columns()
         list_sensor_steps = list()
         for row in range(rows):
@@ -388,13 +257,12 @@ class Sensors(FeatureMatrix):
                     name_unit = self.features.getUnits()[name_sensor]
                     num_step = self.model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
                     full_sensor = name_sensor + name_unit
-                    dic_element = {'sensor': full_sensor, 'step': str(num_step)}
-                    list_sensor_steps.append(dic_element)
-        dic_dcp = {'sensor_steps': list_sensor_steps, 'statistics': self.features.getStats()}
-        return dic_dcp
+                    dict_element = {'sensor': full_sensor, 'step': str(num_step)}
+                    list_sensor_steps.append(dict_element)
+        return list_sensor_steps
 
     def on_row_section_double_clicked(self, row: int):
-        winrect:QRect = None
+        winrect: QRect = None
         if self.win_chart is not None:
             winrect = self.win_chart.geometry()
             self.win_chart.close()

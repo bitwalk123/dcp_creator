@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 from app_widgets import (
     FeatureMatrix,
     TableView,
-    VBoxLayout,
+    VBoxLayout, CheckBoxDelegate,
 )
 from features import Features
 
@@ -27,10 +27,7 @@ class Stats(FeatureMatrix):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # source
         self.features = features
-        #
         self.init_ui()
-        # count = self.count_checkbox_checked(layout)
-        # print('original count', count)
 
     def init_ui(self):
         """
@@ -42,9 +39,9 @@ class Stats(FeatureMatrix):
         #
         table = TableView()
         model = QStandardItemModel()
-        # headers    QHeaderView,
 
-        headers = [self.name_stat, self.name_sel]
+        # headers    QHeaderView,
+        headers = [self.name_stat]
         model.setHorizontalHeaderLabels(headers)
         model.itemChanged.connect(self.on_check_item)
         table.setModel(model)
@@ -52,6 +49,8 @@ class Stats(FeatureMatrix):
         table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeToContents
         )
+        delegate = CheckBoxDelegate(table)
+        table.setItemDelegateForColumn(1, delegate)
         layout.addWidget(table)
 
         for stat in self.features.getStats():
@@ -59,9 +58,7 @@ class Stats(FeatureMatrix):
             # stat name
             item = QStandardItem()
             item.setText(stat)
-            list_row.append(item)
             # checkbox
-            item = QStandardItem()
             item.setCheckable(True)
             item.setEditable(False)
             item.setCheckState(Qt.CheckState.Checked)
@@ -72,15 +69,12 @@ class Stats(FeatureMatrix):
         # set the model to member variable
         self.model = model
 
-    def get_sel_column(self):
-        list_col = list()
-        for col in range(self.model.columnCount()):
-            item: QStandardItem = self.model.horizontalHeaderItem(col)
-            if item.text() == self.name_sel:
-                list_col.append(col)
-        if len(list_col) == 1:
-            return list_col[0]
-        else:
-            print('ERROR!')
-            return list_col
 
+    def getDCP(self) -> list:
+        list_checked = list()
+        rows = self.model.rowCount()
+        for row in range(rows):
+            item = self.model.item(row, 0)
+            if item.checkState()==Qt.CheckState.Checked:
+                list_checked.append(item.text())
+        return list_checked

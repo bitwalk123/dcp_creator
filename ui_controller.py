@@ -51,9 +51,13 @@ class UIController(AppObject):
         save JSON file for DCP
         _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         """
+        dict_dcp = {}
         # SENSOR/STEP
         sensors = self.getPanelSensors()
-        dict_dcp = sensors.getDCP()
+        dict_dcp['sensor_steps'] = sensors.getDCP()
+        # STAT
+        stats = self.getPanelStats()
+        dict_dcp['statistics'] =  stats.getDCP()
         # _____________________________________________________________________
         # OUTPUT
         with open(filename, 'w') as f:
