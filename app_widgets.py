@@ -68,7 +68,7 @@ class LogConsole(QWidget):
         # log
         self.log = QPlainTextEdit()
         self.log.setFixedHeight(100)
-        self.log.setStyleSheet('font-family: monospace;')
+        self.log.setStyleSheet('font-family: monospace; padding: 5px 5px;')
         self.log.setReadOnly(True)
         self.log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         layout_horiz.addWidget(self.log)
@@ -84,10 +84,12 @@ class LogConsole(QWidget):
             None
         )
         but_file.setToolTip('save log to file.')
+        but_file.setContentsMargins(0, 0, 0, 0)
         layout_vert.addWidget(but_file)
         layout_vert.setContentsMargins(0, 0, 0, 0)
         # padding
         vpad = QWidget()
+        vpad.setContentsMargins(0, 0, 0, 0)
         layout_vert.addWidget(vpad)
         vpad.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         # trash log
@@ -95,6 +97,7 @@ class LogConsole(QWidget):
             QIcon(self.style().standardIcon(QStyle.SP_TrashIcon)),
             None
         )
+        but_trash.setContentsMargins(0, 0, 0, 0)
         but_trash.setToolTip('clear log on the console.')
         layout_vert.addWidget(but_trash)
 
