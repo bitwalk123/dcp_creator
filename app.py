@@ -2,11 +2,10 @@
 # coding: utf-8
 import os
 import sys
+import pandas as pd
 import warnings
 
-warnings.simplefilter('ignore', FutureWarning)
-
-import pandas as pd
+from pathlib import Path
 from PySide6.QtCore import (
     Qt,
     QThread,
@@ -32,6 +31,8 @@ from dcp_summary import DCPSummary
 from features import Features
 from ui_controller import UIController
 
+warnings.simplefilter('ignore', FutureWarning)
+
 
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
@@ -48,6 +49,9 @@ class DCPCreator(QMainWindow):
 
     features: Features = None
     page = dict()
+
+    # directory location
+    opendir: str = None
 
     # thread instances
     reader: CSVReadWorker = None
@@ -71,13 +75,17 @@ class DCPCreator(QMainWindow):
     def button_open_clicked(self):
         """Action for 'Open' button clicked.
         """
+        if self.opendir is None:
+            self.opendir = str(Path.home())
         selection = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select CSV file',
+            dir=self.opendir,
             filter='Zip File (*.zip);; CSV File (*.csv)'
         )
         csvfile = selection[0]
         if len(csvfile) > 0:
+            self.opendir = os.path.dirname(csvfile)
             self.console.insertIn('reading %s.' % csvfile)
             self.read_csv(csvfile)
 

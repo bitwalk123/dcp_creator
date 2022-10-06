@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QPushButton, QWidget, QSizePolicy
 
 from app_widgets import LabelFrameNarrow, MenuButton
 from app_object import AppObject
@@ -32,6 +32,11 @@ class UtilFilter(AppObject):
         but_exclude_setting_0 = MenuButton('exclude Step setting = 0')
         but_exclude_setting_0.clicked.connect(self.exclude_setting_0)
         layout.addWidget(but_exclude_setting_0)
+        # padding
+        vpad = QWidget()
+        vpad.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        layout.addWidget(vpad)
+
 
     def exclude_step_dechuck(self):
         but: QPushButton = self.sender()

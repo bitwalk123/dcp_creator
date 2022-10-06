@@ -61,7 +61,9 @@ class LogConsole(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.setContentsMargins(0, 0, 0, 0)
         layout_horiz = QHBoxLayout()
+        layout_horiz.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout_horiz)
         # log
         self.log = QPlainTextEdit()
@@ -83,11 +85,12 @@ class LogConsole(QWidget):
         )
         but_file.setToolTip('save log to file.')
         layout_vert.addWidget(but_file)
+        layout_vert.setContentsMargins(0, 0, 0, 0)
         # padding
         vpad = QWidget()
         layout_vert.addWidget(vpad)
-        # trash log
         vpad.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        # trash log
         but_trash = QPushButton(
             QIcon(self.style().standardIcon(QStyle.SP_TrashIcon)),
             None
