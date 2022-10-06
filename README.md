@@ -1,12 +1,12 @@
 # dcp_creator
 
-This tool is designed to assist the detailed definition of DCP needed in multivariate analysis effectively.
+This tool is designed to assist the detailed definition of DCP.
 
 DCP stands for Data Collection Plan.
 
 ### What is this repository for? ###
 
-* This repository is for 'dcp_creator' tool, testing DCP creation used for the Fleet Analysis Tool. 
+* This repository is for 'dcp_creator' tool, testing DCP creation. 
 * Version
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
@@ -18,7 +18,8 @@ DCP stands for Data Collection Plan.
 * Database configuration
 * How to run tests
 * Deployment instructions
-  * execute `package.ps1` for executable package with PyInstaller in `..\Packages\dist\`
+  * execute `package.ps1` in your virtual environment for building executable package with [PyInstaller](https://pyinstaller.org/) in `..\Packages\dist\`
+  * For Windows, installer is available built with [Inno Settup](https://jrsoftware.org/isinfo.php).
 
 ### Contribution guidelines ###
 
@@ -28,5 +29,4 @@ DCP stands for Data Collection Plan.
 
 ### Who do I talk to? ###
 
-* Keiichi Takahashi, keiichi.takahashi@tel.com
-* TML, 3i Project
+* Keiichi Takahashi
