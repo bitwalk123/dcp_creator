@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QStatusBar,
     QStyle,
-    QTabWidget, QPlainTextEdit, QWidget, QPushButton, QSizePolicy,
+    QTabWidget,
 )
 
 from app_functions import timeit, getAppLogger
@@ -75,6 +75,7 @@ class DCPCreator(QMainWindow):
     def button_open_clicked(self):
         """Action for 'Open' button clicked.
         """
+        # only at the first time to open
         if self.opendir is None:
             self.opendir = str(Path.home())
         selection = QFileDialog.getOpenFileName(
@@ -85,6 +86,7 @@ class DCPCreator(QMainWindow):
         )
         csvfile = selection[0]
         if len(csvfile) > 0:
+            # remember directory location
             self.opendir = os.path.dirname(csvfile)
             self.console.insertIn('reading %s.' % csvfile)
             self.read_csv(csvfile)
@@ -208,7 +210,6 @@ class DCPCreator(QMainWindow):
         self.console = LogConsole()
         statusbar.addWidget(self.console, stretch=1)
 
-    @timeit
     def main_ui(self):
         """Main UI
         """
