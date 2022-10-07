@@ -103,7 +103,7 @@ class DCPCreator(QMainWindow):
         # _____________________________________________________________________
         # Prep. Threading
         self.reader = CSVReadWorker(csvfile)
-        self.thread_reader = QThread()
+        self.thread_reader = QThread(self)
         self.reader.moveToThread(self.thread_reader)
         # Controller
         self.thread_reader.started.connect(self.reader.run)
@@ -138,7 +138,7 @@ class DCPCreator(QMainWindow):
         # _____________________________________________________________________
         # Prep. Threading
         self.parser = ParseFeaturesWorker(df)
-        self.thread_parser = QThread()
+        self.thread_parser = QThread(self)
         self.parser.moveToThread(self.thread_reader)
         # Controller
         self.thread_parser.started.connect(self.parser.run)
