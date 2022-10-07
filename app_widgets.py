@@ -50,7 +50,6 @@ class CheckBox(QCheckBox):
     def __init__(self):
         super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
-        # self.setStyleSheet('QCheckBox {border:1px solid gray; margin-left:50%; margin-right:50%;}')
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setChecked(True)
 
