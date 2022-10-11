@@ -20,7 +20,6 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from app_functions import timeit, getAppLogger
 from app_thread import CSVReadWorker, ParseFeaturesWorker
 from app_widgets import WorkInProgress, LogConsole, VBoxLayout
 from dcp_creator_toolbar import DCPCreatorToolBar
@@ -38,7 +37,7 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.0.1'
-    __version_minor__ = '20221006'
+    __version_minor__ = '20221011'
 
     # UI components
     console: LogConsole = None
@@ -174,14 +173,17 @@ class DCPCreator(QMainWindow):
         if self.controller is None:
             print('There is no data!')
             return
+        if self.opendir is None:
+            self.opendir = str(Path.home())
         selection = QFileDialog.getSaveFileName(
             parent=self,
             caption='Specify name of JSON file to save',
-            dir='dcp.json',
+            dir=os.path.join(self.opendir, 'dcp.json'),
             filter='JSON File (*.json)'
         )
         jsonfile = selection[0]
         if len(jsonfile) > 0:
+            self.opendir = os.path.dirname(jsonfile)
             self.controller.saveJSON4DCP(jsonfile)
 
     def closeEvent(self, event):

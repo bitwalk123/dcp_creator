@@ -50,6 +50,17 @@ class DCPCreatorToolBar(QToolBar):
         self.addWidget(pad)
         self.addSeparator()
         # _____________________________________________________________________
+        # Option button
+        button_option = QToolButton()
+        button_option.setStyleSheet('margin:0 1em;')
+        button_option.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        button_option.setIcon(
+            QIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        )
+        button_option.setToolTip('Various options and utilities.')
+        self.addWidget(button_option)
+        self.addSeparator()
+        # _____________________________________________________________________
         # Save button
         button_save = QToolButton()
         button_save.setStyleSheet('margin:0 0 0 1em;')
