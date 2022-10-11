@@ -1,9 +1,12 @@
 import csv
 import re
 
-zipname = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845.zip'
-csvname = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845.csv'
-csvname_2 = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845_wo_oes.csv'
+#zipname = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845.zip'
+zipname = '/Users/212295/Downloads/dcp_test_PHC_01_KT_201707012100_202210071845.zip'
+#csvname = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845.csv'
+csvname = '/Users/212295/Downloads/dcp_test_PHC_01_KT_201707012100_202210071845.csv'
+#csvname_2 = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845_wo_oes.csv'
+csvname_2 = '/Users/212295/Downloads/dcp_test_PHC_01_KT_201707012100_202210071845_wo_oes.csv'
 
 if __name__ == "__main__":
     pattern_sensor_oes = re.compile(r'^[0-9\.]{3,6}nm')
@@ -12,7 +15,7 @@ if __name__ == "__main__":
     flag_header = True
     with open(csvname) as f:
         reader = csv.reader(f)
-        with open(csvname_2, 'w') as f2:
+        with open(csvname_2, 'w', newline='') as f2:
             writer = csv.writer(f2)
             list_header = list()
             for row in reader:
