@@ -5,8 +5,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
+
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+
 import seaborn as sns
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -36,7 +38,7 @@ class SensorChart(QMainWindow):
         super().__init__(parent=parent)
         self.features = features
         sensor, unit = self.init_ui(row)
-        self.setWindowTitle('%s%s'%(sensor, unit))
+        self.setWindowTitle('%s%s' % (sensor, unit))
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_ArrowForward))
         )

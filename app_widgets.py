@@ -1,6 +1,6 @@
 from typing import Union, Any
 
-from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, QPersistentModelIndex
+from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, QPersistentModelIndex, QSize
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QTableView,
     QVBoxLayout,
-    QWidget, QStyle, QPlainTextEdit, QHBoxLayout, QProxyStyle, QStyledItemDelegate,
+    QWidget, QStyle, QPlainTextEdit, QHBoxLayout, QProxyStyle, QStyledItemDelegate, QAbstractItemView,
 )
 
 from features import Features
@@ -279,7 +279,7 @@ class RecipeItem(QStandardItem):
 
     def __init__(self, *args, status: int):
         super().__init__(*args)
-        self.setTextAlignment(Qt.AlignRight)
+        self.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.setStatus(status)
 
     def setStatus(self, status):
@@ -402,12 +402,26 @@ class SensorStepModel(QAbstractTableModel):
 
         return False
 
+    def getCheckColStart(self):
+        return self._data.getCheckColStart()
+
     def flags(self, index: QModelIndex):
-        return (
-                Qt.ItemIsEnabled
-                | Qt.ItemIsSelectable
-                | Qt.ItemIsUserCheckable
-        )
+        # return (
+        #        Qt.ItemIsEnabled
+        #        | Qt.ItemIsSelectable
+        #        | Qt.ItemIsUserCheckable
+        # )
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+        elif index.column() >= self.getCheckColStart():
+            # return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+            return (
+                    Qt.ItemIsEnabled
+                    | Qt.ItemIsSelectable
+                    | Qt.ItemIsUserCheckable
+            )
+
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole):
         # section is the index of the column/row.
@@ -416,3 +430,90 @@ class SensorStepModel(QAbstractTableModel):
                 return self._data.getColumnHeader(section)
             elif orientation == Qt.Vertical:
                 return self._data.getRowIndex(section)
+
+
+class FrozenTableView(QTableView):
+    def __init__(self, parent: QTableView = None):
+        super().__init__(parent)
+        self.setAlternatingRowColors(True)
+        self.setFocusPolicy(Qt.NoFocus)
+        # self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.verticalHeader().hide()
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+
+
+class MyTableView(QTableView):
+    def __init__(self, model: SensorStepModel, parent=None, *args):
+        QTableView.__init__(self, parent, *args)
+        self.setModel(model)
+        # self.setMinimumSize(800, 400)
+        self.setEditTriggers(QAbstractItemView.SelectedClicked)
+        self.setStyleSheet('font-family: monospace;')
+        self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
+        # self.resizeColumnsToContents()
+        self.setAlternatingRowColors(True)
+        for col in range(model.getCheckColStart()):
+            self.setColumnWidth(col, self.sizeHintForColumn(col))
+            self.horizontalHeader().resizeSection(col, self.sizeHintForColumn(col))
+            # self.resizeColumnToContents(col)
+
+        # self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.verticalHeader().setDefaultAlignment(Qt.AlignRight)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        # FrozenTableView
+        self.frozenTableView = FrozenTableView(self)
+        self.frozenTableView.setModel(model)
+        # self.frozenTableView.setSelectionModel(QAbstractItemView.selectionModel(self))
+        for col in range(model.getCheckColStart()):
+            self.frozenTableView.setColumnWidth(col, self.frozenTableView.sizeHintForColumn(col))
+            self.frozenTableView.horizontalHeader().resizeSection(col, self.frozenTableView.sizeHintForColumn(col))
+            # self.frozenTableView.resizeColumnToContents(col)
+        # self.frozenTableView.resizeColumnsToContents()
+        self.viewport().stackUnder(self.frozenTableView)
+        self.frozenTableView.show()
+        self.updateFrozenTableGeometry()
+
+        # connect the headers and scrollbars of both tableviews together
+        self.verticalScrollBar().valueChanged.connect(
+            self.frozenTableView.verticalScrollBar().setValue
+        )
+        self.frozenTableView.verticalScrollBar().valueChanged.connect(
+            self.verticalScrollBar().setValue
+        )
+
+    def resizeEvent(self, event):
+        QTableView.resizeEvent(self, event)
+        self.updateFrozenTableGeometry()
+
+    def scrollTo(self, index, hint):
+        if index.column() > 1:
+            QTableView.scrollTo(self, index, hint)
+
+    def updateFrozenTableGeometry(self):
+        if self.verticalHeader().isVisible():
+            self.frozenTableView.setGeometry(
+                self.verticalHeader().width() + self.frameWidth(),
+                self.frameWidth(),
+                self.columnWidth(0) + self.columnWidth(1),
+                self.viewport().height() + self.horizontalHeader().height()
+            )
+        else:
+            self.frozenTableView.setGeometry(
+                self.frameWidth(),
+                self.frameWidth(),
+                self.columnWidth(0) + self.columnWidth(1),
+                self.viewport().height() + self.horizontalHeader().height()
+            )
+
+    def moveCursor(self, cursorAction, modifiers):
+        current = QTableView.moveCursor(self, cursorAction, modifiers)
+        x = self.visualRect(current).topLeft().x()
+        frozen_width = self.frozenTableView.columnWidth(0) + self.frozenTableView.columnWidth(1)
+        if cursorAction == self.MoveLeft and current.column() > 1 and x < frozen_width:
+            new_value = self.horizontalScrollBar().value() + x - frozen_width
+            self.horizontalScrollBar().setValue(new_value)
+        return current

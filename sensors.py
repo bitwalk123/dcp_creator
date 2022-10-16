@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 from app_functions import timeit
 from app_widgets import (
     FeatureMatrix,
-    VBoxLayout, ProxyStyle4CheckBoxCenter, CheckBoxDelegate, SensorStepModel,
+    VBoxLayout, ProxyStyle4CheckBoxCenter, CheckBoxDelegate, SensorStepModel, MyTableView,
 )
 from features import Features
 from sensors_chart import SensorChart
@@ -46,38 +46,40 @@ class Sensors(FeatureMatrix):
         self.setLayout(layout)
         #
         table = QTableView()
+        model = SensorStepModel(self.features)
+        table.setModel(model)
+        # table = MyTableView(model)
+        table.setStyleSheet(self.features.style_disp)
         layout.addWidget(table)
-        #
-        table.setStyle(ProxyStyle4CheckBoxCenter())
+
         table.setWordWrap(False)
         table.setAlternatingRowColors(True)
-        table.verticalHeader().setDefaultAlignment(Qt.AlignRight)
-        # Horizontal Header
-        head_horizontal = table.horizontalHeader()
-        head_horizontal.setLineWidth(2)
-        head_horizontal.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        table.setHorizontalHeader(head_horizontal)
-        head_horizontal.setSectionResizeMode(QHeaderView.ResizeToContents)
         # Vertical Header
         head_vertical = table.verticalHeader()
-        head_vertical.setLineWidth(2)
-        head_vertical.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        head_vertical.sectionDoubleClicked.connect(self.on_row_section_double_clicked)
+        head_vertical.setDefaultAlignment(Qt.AlignRight)
         head_vertical.setSectionResizeMode(QHeaderView.ResizeToContents)
-        table.setVerticalHeader(head_vertical)
-
+        head_vertical.sectionDoubleClicked.connect(self.on_row_section_double_clicked)
+        # checkbox delegation
         delegate = CheckBoxDelegate(table)
         for col in range(self.features.getCheckColStart(), self.features.getCols()):
             table.setItemDelegateForColumn(col, delegate)
-        model = SensorStepModel(self.features)
-        table.setModel(model)
-        self.model = model
-
+        table.setStyle(ProxyStyle4CheckBoxCenter())
+        # column width
+        list_len = self.features.getSensorsMaxLen()
+        width_char = table.fontMetrics().averageCharWidth()
+        head_horizontal = table.horizontalHeader()
+        for col in range(model.getCheckColStart()):
+            width = width_char * (list_len[col] + 2)
+            head_horizontal.resizeSection(col, width)
+        for col in range(model.getCheckColStart(), model.columnCount()):
+            table.resizeColumnToContents(col)
         # set default status
         for row in range(self.features.getRows()):
             for col in range(self.features.getCheckColStart(), self.features.getCols()):
                 index = model.index(row, col)
                 model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
+
+        self.model = model
 
     def find_sensor_time_dependent(self):
         # Sensor Name

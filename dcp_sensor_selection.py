@@ -36,12 +36,13 @@ class DCPSensorSelection(QMainWindow):
         :param info_log:
         """
         # Scroll Area for Central
-        central = QScrollArea()
-        central.setWidgetResizable(True)
-        self.setCentralWidget(central)
+        #central = QScrollArea()
+        #central.setWidgetResizable(True)
+        #self.setCentralWidget(central)
         # widget on the Scroll Area
         sensors = Sensors(features)
-        central.setWidget(sensors)
+        #central.setWidget(sensors)
+        self.setCentralWidget(sensors)
         # _____________________________________________________________________
         # Right Dock
         dock = DCPSensorSelectionDock()

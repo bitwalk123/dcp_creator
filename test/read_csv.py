@@ -2,11 +2,11 @@ import csv
 import re
 
 #zipname = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845.zip'
-zipname = '/Users/212295/Downloads/dcp_test_PHC_01_KT_201707012100_202210071845.zip'
+zipname = '/Users/212295/Downloads/dcp_test_003_KT_202204020014_202205020014.zip'
 #csvname = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845.csv'
-csvname = '/Users/212295/Downloads/dcp_test_PHC_01_KT_201707012100_202210071845.csv'
+csvname = '/Users/212295/Downloads/dcp_test_003_KT_202204020014_202205020014.csv'
 #csvname_2 = '/home/bitwalk/ダウンロード/dcp_test_PHC_01_KT_201707012100_202210071845_wo_oes.csv'
-csvname_2 = '/Users/212295/Downloads/dcp_test_PHC_01_KT_201707012100_202210071845_wo_oes.csv'
+csvname_2 = '/Users/212295/Downloads/dcp_test_003_KT_202204020014_202205020014_wo_oes.csv'
 
 if __name__ == "__main__":
     pattern_sensor_oes = re.compile(r'^[0-9\.]{3,6}nm')

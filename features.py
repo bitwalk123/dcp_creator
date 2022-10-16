@@ -37,6 +37,8 @@ class Features:
     col_sensor = 'Sensor'
     col_unit = 'Unit'
     col_labels = [col_sensor, col_unit]
+    #
+    style_disp = 'font-family:monospace; font-size:10pt;'
 
     def __init__(self, df: pd.DataFrame):
         self.df_source = df
@@ -133,7 +135,8 @@ class Features:
         get/return value of feature
         """
         if stat is None:
-            stat = self.stats[0]
+            #stat = self.stats[0]
+            stat = 'Avg'
         feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
         return list(set(self.df_source[feature]))
 
@@ -148,6 +151,12 @@ class Features:
         get/return sensor list
         """
         return self.sensors
+
+    def getSensorsMaxLen(self) -> list:
+        return [
+            max([len(sensor) for sensor in self.sensors]),
+            max([len(self.units[sensor]) for sensor in self.sensors]),
+        ]
 
     def getStats(self) -> list:
         """

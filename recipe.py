@@ -3,7 +3,7 @@ from PySide6.QtGui import (
     QStandardItem,
     QStandardItemModel,
 )
-from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QSizePolicy, QHeaderView
 
 from app_functions import is_num
 from app_widgets import (
@@ -40,15 +40,22 @@ class Recipe(FeatureMatrix):
         model.setHorizontalHeaderLabels(headers)
         model.itemChanged.connect(self.on_check_item)
         table.setModel(model)
-        table.verticalHeader().setDefaultAlignment(Qt.AlignRight)
+        table.setStyleSheet(self.features.style_disp)
+        table.setWordWrap(False)
+        head_vertical = table.verticalHeader()
+        head_vertical.setSectionResizeMode(QHeaderView.ResizeToContents)
+        head_vertical.setDefaultAlignment(Qt.AlignRight)
         layout.addWidget(table)
 
         pattern = self.features.pattern_sensor_setting
+        sensors_setting = list()
+        units_setting = list()
         for sensor in self.features.getSensors():
             result = pattern.match(sensor)
             if not result:
                 continue
             name_sensor = result.group(1)
+            sensors_setting.append(name_sensor)
             list_row = list()
             # sensor
             item = QStandardItem()
@@ -56,7 +63,9 @@ class Recipe(FeatureMatrix):
             list_row.append(item)
             # unit
             item = QStandardItem()
-            item.setText(self.features.getUnits()[sensor])
+            unit_sensor = self.features.getUnits()[sensor]
+            units_setting.append(unit_sensor)
+            item.setText(unit_sensor)
             list_row.append(item)
             # step
             for step in self.features.getSteps():
@@ -70,7 +79,11 @@ class Recipe(FeatureMatrix):
                         item = RecipeItem(str_value, status=1)
                     else:
                         # valid value
-                        item = RecipeItem(str_value, status=0)
+                        if is_num(str_value):
+                            str_value2 = str(round(float(str_value), 1))
+                            item = RecipeItem(str_value2, status=0)
+                        else:
+                            item = RecipeItem(str_value, status=0)
                 else:
                     # multiple values
                     item = RecipeItem('', status=-1)
@@ -79,6 +92,20 @@ class Recipe(FeatureMatrix):
                 list_row.append(item)
 
             model.appendRow(list_row)
+        # adjust specific column width
+        width_char = table.fontMetrics().averageCharWidth()
+        head_horizontal = table.horizontalHeader()
+        # Sensor column
+        sensor_chars_max = max([len(sensor) for sensor in sensors_setting])
+        width = width_char * (sensor_chars_max + 2)
+        head_horizontal.resizeSection(0, width)
+        # Unit column
+        unit_chars_max = max([len(unit) for unit in units_setting])
+        width = width_char * (unit_chars_max + 2)
+        head_horizontal.resizeSection(1, width)
+        # Steps
+        for col in range(2, model.columnCount()):
+            table.resizeColumnToContents(col)
         #
         self.model = model
 
