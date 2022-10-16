@@ -14,9 +14,9 @@ class UtilFilter(AppObject):
         dock_sensors: DCPSensorSelectionDock = self.page['sensors'].getDock()
         layout = dock_sensors.getLayout()
         # _____________________________________________________________________
-        # Basic Filters
-        lab_auto = LabelFrameNarrow('Basic')
-        layout.addWidget(lab_auto)
+        # Basic Filters for Column
+        lab_step = LabelFrameNarrow('Step Selection')
+        layout.addWidget(lab_step)
         # _____________________________________________________________________
         # filter for excluding step >= 1000 (dechuck step)
         but_exclude_step_dechuck = MenuButton('exclude Step >= 1000')
@@ -27,6 +27,10 @@ class UtilFilter(AppObject):
         but_exclude_no_setting = MenuButton('exclude Step w/o (setting data)')
         but_exclude_no_setting.clicked.connect(self.exclude_no_setting)
         layout.addWidget(but_exclude_no_setting)
+        # _____________________________________________________________________
+        # Basic Filters for Column
+        lab_condition = LabelFrameNarrow('Filter with Condition')
+        layout.addWidget(lab_condition)
         # _____________________________________________________________________
         # filter for excluding steps where (setting data) = 0
         but_exclude_setting_0 = MenuButton('exclude Step setting = 0')

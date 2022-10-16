@@ -132,9 +132,9 @@ class LabelFrameNarrow(Label):
         self.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
         self.setStyleSheet(
             'QLabel {'
-            'margin:1em 0 0 0; '
-            'padding:0.05em 0.4em; '
-            'background-color:#eef;font-size:9pt; '
+            'padding:0.1em 0.4em; '
+            'background-color:#eef; '
+            'font-size:9pt;'
             '}'
         )
 
