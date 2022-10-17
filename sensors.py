@@ -189,6 +189,7 @@ class Sensors(FeatureMatrix):
             return
         self.switch_check_all_rows(col, flag)
 
+    """
     def excludeStepDechuck(self, flag: bool):
         list_col = list()
         for i in range(self.model.columnCount()):
@@ -199,6 +200,7 @@ class Sensors(FeatureMatrix):
                 list_col.append(i)
         for col in list_col:
             self.switch_check_all_rows(col, flag)
+    """
 
     def find_header_label(self, key) -> int:
         col = -1

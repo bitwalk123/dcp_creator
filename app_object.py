@@ -33,6 +33,14 @@ class AppObject(QObject):
         sensors: Sensors = page_sensors.getPanel()
         return sensors
 
+    def getPanelSensorsModel(self):
+        sensors = self.getPanelSensors()
+        return sensors.model
+
+    def getPanelSensorsFeatures(self):
+        sensors = self.getPanelSensors()
+        return sensors.features
+
     def getPanelRecipe(self) -> Recipe:
         """
         getPanelRecipe
