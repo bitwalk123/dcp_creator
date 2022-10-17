@@ -160,6 +160,7 @@ class Sensors(FeatureMatrix):
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
 
+    """
     def excludeSensorWithoutSetting(self, flag: bool, list_sensor_setting: list):
         list_sensor = list()
         for sensor in self.features.getSensors():
@@ -172,12 +173,10 @@ class Sensors(FeatureMatrix):
 
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
+    """
 
+    """
     def excludeSetting0(self, flag: bool, dict_sensor_step_setting_0: dict):
-        """
-        excludeSetting0
-        exclude sensor/step setting = 0
-        """
         list_sensor_step_setting_0 = dict_sensor_step_setting_0.keys()
         for sensor in self.features.getSensors():
             row = self.features.getSensors().index(sensor)
@@ -190,6 +189,7 @@ class Sensors(FeatureMatrix):
                         self.model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
                     else:
                         self.model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
+    """
 
     def excludeStepMinus1(self, flag: bool):
         key = -1

@@ -37,14 +37,14 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.0.1'
-    __version_minor__ = '20221011'
+    __version_minor__ = '20221017'
 
     # UI components
     console: LogConsole = None
+    controller: UIController = None
+    statusbar: QStatusBar = None
     tab: QTabWidget = None
     toolbar: DCPCreatorToolBar = None
-    statusbar: QStatusBar = None
-    controller: UIController = None
 
     features: Features = None
     page = dict()

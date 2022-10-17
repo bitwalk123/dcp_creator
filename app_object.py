@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Qt
 
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_stats_selection import DCPStats
@@ -32,14 +32,6 @@ class AppObject(QObject):
         page_sensors: DCPSensorSelection = self.page['sensors']
         sensors: Sensors = page_sensors.getPanel()
         return sensors
-
-    def getPanelSensorsModel(self):
-        sensors = self.getPanelSensors()
-        return sensors.model
-
-    def getPanelSensorsFeatures(self):
-        sensors = self.getPanelSensors()
-        return sensors.features
 
     def getPanelRecipe(self) -> Recipe:
         """
@@ -78,3 +70,64 @@ class AppObject(QObject):
         # Features Modified
         summary.setFeaturesModified(n_sensor_step_valid * n_stat_valid)
         summary.setStatModified(n_stat_valid)
+
+    # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+    # FILTER REKATED ROUTINES
+    def getPanelSensorsFeatures(self):
+        sensors = self.getPanelSensors()
+        return sensors.features
+
+    def getPanelSensorsModel(self):
+        sensors = self.getPanelSensors()
+        return sensors.model
+
+    def getPanelRecipeSensorWithSetting(self):
+        recipe = self.getPanelRecipe()
+        return recipe.getSensorWithSetting()
+
+    def getPanelRecipeSensorStepSetting0(self):
+        recipe = self.getPanelRecipe()
+        return recipe.getSensorStepSetting0()
+
+    def find_header_label(self, key) -> int:
+        model = self.getPanelSensorsModel()
+        features = self.getPanelSensorsFeatures()
+        col = -1
+        for i in range(features.getCols()):
+            name_head = model.headerData(i, Qt.Horizontal, Qt.DisplayRole)
+            if name_head == key:
+                col = i
+                break
+        return col
+
+    def get_step_columns(self):
+        model = self.getPanelSensorsModel()
+        features = self.getPanelSensorsFeatures()
+        list_col = list()
+        for col in range(features.getCols()):
+            name_head = model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
+            if type(name_head) is int:
+                list_col.append(col)
+        return list_col
+
+    def swicth_check(self, list_row, list_col, flag):
+        model = self.getPanelSensorsModel()
+        for row in list_row:
+            for col in list_col:
+                index = model.index(row, col)
+                if flag:
+                    model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
+                else:
+                    model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
+
+    def switch_check_all_rows(self, col, flag):
+        """check/uncheck checkbox in specified columns
+        """
+        model = self.getPanelSensorsModel()
+        features = self.getPanelSensorsFeatures()
+        for row in range(features.getRows()):
+            index = model.index(row, col)
+            if flag:
+                model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
+            else:
+                model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
