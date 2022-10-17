@@ -67,11 +67,23 @@ class Sensors(FeatureMatrix):
         # column width
         list_len = self.features.getSensorsMaxLen()
         width_char = table.fontMetrics().averageCharWidth()
-        print('width_char =', width_char)
         head_horizontal = table.horizontalHeader()
         for col in range(model.getCheckColStart()):
-            width = width_char * (list_len[col] + 2)
-            head_horizontal.resizeSection(col, width)
+            #width = width_char * (list_len[col] + 2)
+            list_str = list()
+            if col == 0:
+                list_str = self.features.getSensorNameMaxLen()
+            elif col == 1:
+                list_str = self.features.getUnitNameMaxLen()
+            print(list_str)
+            width = 0
+            for name in list_str:
+                qsize = table.fontMetrics().size(Qt.TextSingleLine, name)
+                if qsize.width() > width:
+                    width = qsize.width()
+            print(width)
+            head_horizontal.resizeSection(col, width + width_char)
+
         for col in range(model.getCheckColStart(), model.columnCount()):
             table.resizeColumnToContents(col)
         # set default status

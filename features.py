@@ -135,7 +135,7 @@ class Features:
         get/return value of feature
         """
         if stat is None:
-            #stat = self.stats[0]
+            # stat = self.stats[0]
             stat = 'Avg'
         feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
         return list(set(self.df_source[feature]))
@@ -157,6 +157,13 @@ class Features:
             max([len(sensor) for sensor in self.sensors]),
             max([len(self.units[sensor]) for sensor in self.sensors]),
         ]
+
+    def getSensorNameMaxLen(self) -> list:
+        len_max = max([len(sensor) for sensor in self.sensors])
+        return [sensor for sensor in self.sensors if len(sensor) == len_max]
+    def getUnitNameMaxLen(self) -> list:
+        len_max = max([len(self.units[sensor]) for sensor in self.sensors])
+        return [self.units[sensor] for sensor in self.sensors if len(self.units[sensor]) == len_max]
 
     def getStats(self) -> list:
         """
