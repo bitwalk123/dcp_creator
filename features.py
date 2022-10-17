@@ -137,7 +137,8 @@ class Features:
         """
         if stat is None:
             # stat = self.stats[0]
-            stat = 'Avg'
+            #stat = 'Avg'
+            stat = 'Median'
         feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
         return list(set(self.df_source[feature]))
 

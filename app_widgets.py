@@ -1,25 +1,38 @@
 from typing import Union, Any
 
-from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, QPersistentModelIndex, QSize
+from PySide6.QtCore import (
+    Qt,
+    QAbstractTableModel,
+    QModelIndex,
+    QPersistentModelIndex,
+)
 from PySide6.QtGui import (
     QBrush,
     QColor,
+    QIcon,
     QPalette,
-    QStandardItem, QIcon,
+    QStandardItem,
 )
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QCheckBox,
     QComboBox,
     QFrame,
     QGridLayout,
+    QHBoxLayout,
     QHeaderView,
     QLabel,
+    QPlainTextEdit,
     QProgressDialog,
+    QProxyStyle,
     QPushButton,
+    QRadioButton,
     QSizePolicy,
+    QStyle,
+    QStyledItemDelegate,
     QTableView,
     QVBoxLayout,
-    QWidget, QStyle, QPlainTextEdit, QHBoxLayout, QProxyStyle, QStyledItemDelegate, QAbstractItemView, QRadioButton,
+    QWidget,
 )
 
 from features import Features
@@ -120,12 +133,12 @@ class ComboBox(QComboBox):
 class Label(QLabel):
     def __init__(self, *args):
         super().__init__(*args)
+        self.setContentsMargins(0, 0, 0, 0)
 
 
 class LabelFrameNarrow(Label):
     def __init__(self, *args, flag=False):
         super().__init__(*args)
-        self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
         self.setLineWidth(2)
         if flag:
@@ -138,6 +151,7 @@ class LabelFrameNarrow(Label):
                 'QLabel {'
                 'margin: 1em 0 0 0;'
             )
+
         style_sheet += (
             'padding: 0.1em 0.4em; '
             'background-color: #fef; '

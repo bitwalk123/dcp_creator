@@ -1,5 +1,3 @@
-import traceback
-
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -58,6 +56,8 @@ class SensorChart(QMainWindow):
         stats = self.features.getStats()
         if 'Avg' in stats:
             stat = 'Avg'
+        elif 'Median' in stats:
+            stat = 'Median'
         else:
             stat = stats[0]
         combo_stat.addItems(stats)

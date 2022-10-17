@@ -1,7 +1,15 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QPushButton, QWidget, QSizePolicy, QRadioButton, QButtonGroup
-
-from app_widgets import LabelFrameNarrow, MenuButton, RadioButton
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QPushButton,
+    QSizePolicy,
+    QWidget,
+)
+from app_widgets import (
+    LabelFrameNarrow,
+    MenuButton,
+    RadioButton,
+)
 from app_object import AppObject
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
 

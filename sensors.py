@@ -6,7 +6,6 @@ from PySide6.QtGui import (
     QStandardItem,
 )
 from PySide6.QtWidgets import (
-    QFrame,
     QHeaderView,
     QSizePolicy,
     QTableView,
@@ -14,8 +13,11 @@ from PySide6.QtWidgets import (
 
 from app_functions import timeit
 from app_widgets import (
+    CheckBoxDelegate,
     FeatureMatrix,
-    VBoxLayout, ProxyStyle4CheckBoxCenter, CheckBoxDelegate, SensorStepModel, MyTableView,
+    ProxyStyle4CheckBoxCenter,
+    SensorStepModel,
+    VBoxLayout,
 )
 from features import Features
 from sensors_chart import SensorChart
