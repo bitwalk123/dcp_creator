@@ -28,14 +28,20 @@ from features import Features
 class MenuButton(QPushButton):
     def __init__(self, *args):
         super().__init__(*args)
+        #self.setStyleSheet(
+        #    'QPushButton {'
+        #    'background-color: #eee;'
+        #    'text-align: left;'
+        #    'padding:5px 1em;'
+        #    '}'
+        #    'QPushButton:checked {'
+        #    'background-color: white;'
+        #    '}'
+        #)
         self.setStyleSheet(
             'QPushButton {'
-            'background-color: #eee;'
             'text-align: left;'
-            'padding:5px 10px;'
-            '}'
-            'QPushButton:checked {'
-            'background-color: white;'
+            'padding:5px 1em;'
             '}'
         )
         self.setCheckable(True)

@@ -134,70 +134,6 @@ class Sensors(FeatureMatrix):
         print('layout (', rows, ',', cols, '),', 'checked', count)
         return count
 
-    def excludeSensorDYP(self, flag: bool):
-        list_row = self.find_sensor_with_regex(self.features.pattern_sensor_dyp)
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-
-    def excludeSensorEPD(self, flag: bool):
-        list_row = self.find_sensor_with_regex(self.features.pattern_sensor_epd)
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-
-    def excludeSensorOES(self, flag: bool):
-        list_row = self.find_sensor_with_regex(self.features.pattern_sensor_oes)
-        print(list_row)
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-
-    def excludeSensorSetting(self, flag: bool):
-        list_row = self.find_sensor_with_regex(self.features.pattern_sensor_setting)
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-
-    def excludeSensorGeneralCounter(self, flag: bool):
-        list_row = self.find_sensor_with_regex(self.features.pattern_sensor_general_counter)
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-
-    """
-    def excludeSensorWithoutSetting(self, flag: bool, list_sensor_setting: list):
-        list_sensor = list()
-        for sensor in self.features.getSensors():
-            if sensor not in list_sensor_setting:
-                list_sensor.append(sensor)
-
-        list_row = list()
-        for sensor in list_sensor:
-            list_row.append(self.features.getSensors().index(sensor))
-
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
-    """
-
-    """
-    def excludeSetting0(self, flag: bool, dict_sensor_step_setting_0: dict):
-        list_sensor_step_setting_0 = dict_sensor_step_setting_0.keys()
-        for sensor in self.features.getSensors():
-            row = self.features.getSensors().index(sensor)
-            if sensor in list_sensor_step_setting_0:
-                for step_name in dict_sensor_step_setting_0[sensor]:
-                    col: int = self.find_header_label(step_name)
-
-                    index = self.model.index(row, col)
-                    if flag:
-                        self.model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
-                    else:
-                        self.model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
-    """
-
-    def excludeStepMinus1(self, flag: bool):
-        key = -1
-        col = self.find_header_label(key)
-        if col < 0:
-            return
-        self.switch_check_all_rows(col, flag)
-
     def find_header_label(self, key) -> int:
         col = -1
         for i in range(self.features.getCols()):
@@ -206,40 +142,6 @@ class Sensors(FeatureMatrix):
                 col = i
                 break
         return col
-
-    def find_sensor_with_regex(self, pattern):
-        list_row = list()
-        for row in range(self.features.getRows()):
-            sensor = self.features.getSensors()[row]
-            result = pattern.match(sensor)
-            if result:
-                list_row.append(row)
-        return list(set(list_row))
-
-    def get_step_columns(self):
-        list_col = list()
-        for col in range(self.features.getCols()):
-            name_head = self.model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
-            if type(name_head) is int:
-                list_col.append(col)
-        return list_col
-
-    def swicth_check(self, list_row, list_col, flag):
-        for row in list_row:
-            for col in list_col:
-                index = self.model.index(row, col)
-                if flag:
-                    self.model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
-                else:
-                    self.model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
-
-    def switch_check_all_rows(self, col, flag):
-        for row in range(self.features.getRows()):
-            index = self.model.index(row, col)
-            if flag:
-                self.model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
-            else:
-                self.model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
 
     def getDCP(self) -> list:
         """get sensor/tep currently selected.

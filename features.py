@@ -26,6 +26,7 @@ class Features:
     pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+|All\sSteps)_(.+)$')
     pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
     pattern_sensor_general_counter = re.compile(r'^General Counter')
+    pattern_sensor_add_line = re.compile(r'^Add Line')
     pattern_sensor_dyp = re.compile(r'^Dynamic Process')
     pattern_sensor_epd = re.compile(r'^EPD DATA')
     pattern_sensor_oes = re.compile(r'^[0-9\.]{3,6}nm$')

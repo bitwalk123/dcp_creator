@@ -59,15 +59,25 @@ class UtilFilter(AppObject):
         but_exclude_sensor_setting.clicked.connect(self.excludeSensorSetting)
         layout.addWidget(but_exclude_sensor_setting)
         # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
-        # excluding sensor for General Counter
-        but_exclude_sensor_general_counter = MenuButton('General Counter')
-        but_exclude_sensor_general_counter.clicked.connect(self.excludeSensorGeneralCounter)
-        layout.addWidget(but_exclude_sensor_general_counter)
+        # excluding sensor for Add Line
+        but_exclude_sensor_add_line = MenuButton('Add Line')
+        but_exclude_sensor_add_line.clicked.connect(self.excludeSensorAddLine)
+        layout.addWidget(but_exclude_sensor_add_line)
         # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         # excluding sensor for Dynamic Process
         but_exclude_sensor_dyp = MenuButton('Dynamic Process')
         but_exclude_sensor_dyp.clicked.connect(self.excludeSensorDYP)
         layout.addWidget(but_exclude_sensor_dyp)
+        # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+        # excluding sensor for EPD DATA
+        but_exclude_sensor_epd = MenuButton('EPD DATA')
+        but_exclude_sensor_epd.clicked.connect(self.excludeSensorEPD)
+        layout.addWidget(but_exclude_sensor_epd)
+        # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+        # excluding sensor for General Counter
+        but_exclude_sensor_general_counter = MenuButton('General Counter')
+        but_exclude_sensor_general_counter.clicked.connect(self.excludeSensorGeneralCounter)
+        layout.addWidget(but_exclude_sensor_general_counter)
 
         # _____________________________________________________________________
         # Category Filters
@@ -182,6 +192,8 @@ class UtilFilter(AppObject):
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
 
+        self.updateFeatures()
+
     def excludeSensorOES(self):
         but: QPushButton = self.sender()
         flag = but.isChecked()
@@ -190,6 +202,41 @@ class UtilFilter(AppObject):
         list_row = self.find_sensor_with_regex(features.pattern_sensor_oes)
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
+
+        self.updateFeatures()
+
+    def excludeSensorAddLine(self):
+        but: QPushButton = self.sender()
+        flag = but.isChecked()
+
+        features = self.getPanelSensorsFeatures()
+        list_row = self.find_sensor_with_regex(features.pattern_sensor_add_line)
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+        self.updateFeatures()
+
+    def excludeSensorDYP(self):
+        but: QPushButton = self.sender()
+        flag = but.isChecked()
+
+        features = self.getPanelSensorsFeatures()
+        list_row = self.find_sensor_with_regex(features.pattern_sensor_dyp)
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+        self.updateFeatures()
+
+    def excludeSensorEPD(self):
+        but: QPushButton = self.sender()
+        flag = but.isChecked()
+
+        features = self.getPanelSensorsFeatures()
+        list_row = self.find_sensor_with_regex(features.pattern_sensor_epd)
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+        self.updateFeatures()
 
     def excludeSensorGeneralCounter(self):
         but: QPushButton = self.sender()
@@ -200,11 +247,4 @@ class UtilFilter(AppObject):
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
 
-    def excludeSensorDYP(self, flag: bool):
-        but: QPushButton = self.sender()
-        flag = but.isChecked()
-
-        features = self.getPanelSensorsFeatures()
-        list_row = self.find_sensor_with_regex(features.pattern_sensor_dyp)
-        list_col = self.get_step_columns()
-        self.swicth_check(list_row, list_col, flag)
+        self.updateFeatures()
