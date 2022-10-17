@@ -70,6 +70,7 @@ class Sensors(FeatureMatrix):
         head_horizontal = table.horizontalHeader()
         for col in range(model.getCheckColStart()):
             width = width_char * (list_len[col] + 2)
+            print('col =', col, ', width =', width)
             head_horizontal.resizeSection(col, width)
         for col in range(model.getCheckColStart(), model.columnCount()):
             table.resizeColumnToContents(col)
@@ -188,19 +189,6 @@ class Sensors(FeatureMatrix):
         if col < 0:
             return
         self.switch_check_all_rows(col, flag)
-
-    """
-    def excludeStepDechuck(self, flag: bool):
-        list_col = list()
-        for i in range(self.model.columnCount()):
-            name_head = self.model.headerData(i, Qt.Horizontal, Qt.DisplayRole)
-            if type(name_head) is not int:
-                continue
-            if name_head >= 1000:
-                list_col.append(i)
-        for col in list_col:
-            self.switch_check_all_rows(col, flag)
-    """
 
     def find_header_label(self, key) -> int:
         col = -1
