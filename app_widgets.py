@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QTableView,
     QVBoxLayout,
-    QWidget, QStyle, QPlainTextEdit, QHBoxLayout, QProxyStyle, QStyledItemDelegate, QAbstractItemView,
+    QWidget, QStyle, QPlainTextEdit, QHBoxLayout, QProxyStyle, QStyledItemDelegate, QAbstractItemView, QRadioButton,
 )
 
 from features import Features
@@ -125,18 +125,28 @@ class Label(QLabel):
 
 
 class LabelFrameNarrow(Label):
-    def __init__(self, *args):
+    def __init__(self, *args, flag=False):
         super().__init__(*args)
         self.setContentsMargins(0, 0, 0, 0)
         self.setLineWidth(1)
         self.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
-        self.setStyleSheet(
-            'QLabel {'
-            'padding:0.1em 0.4em; '
-            'background-color:#eef; '
-            'font-size:9pt;'
+        if flag:
+            style_sheet = (
+                'QLabel {'
+            )
+
+        else:
+            style_sheet = (
+                'QLabel {'
+                'margin: 1em 0 0 0;'
+            )
+        style_sheet += (
+            'padding: 0.1em 0.4em; '
+            'background-color: #eef; '
+            'font-size: 9pt;'
             '}'
         )
+        self.setStyleSheet(style_sheet)
 
 
 class LabelCell(QLabel):
@@ -272,6 +282,12 @@ class Pad(QWidget):
         super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+
+class RadioButton(QRadioButton):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.setStyleSheet('padding: 0 1em;')
 
 
 class RecipeItem(QStandardItem):

@@ -2,7 +2,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QDockWidget,
     QSizePolicy,
-    QWidget,
+    QWidget, QScrollArea,
 )
 
 from app_widgets import (
@@ -15,9 +15,13 @@ class DCPSensorSelectionDock(QDockWidget):
     """
     def __init__(self):
         super().__init__('Filter')
+        sarea = QScrollArea()
+        sarea.setWidgetResizable(True)
+        self.setWidget(sarea)
         base = QWidget()
-        base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.setWidget(base)
+        base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sarea.setWidget(base)
+
         # Layout for the dock
         self.layout = VBoxLayout()
         base.setLayout(self.layout)

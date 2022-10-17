@@ -100,6 +100,16 @@ class AppObject(QObject):
                 break
         return col
 
+    def find_sensor_with_regex(self, pattern):
+        features = self.getPanelSensorsFeatures()
+        list_row = list()
+        for row in range(features.getRows()):
+            sensor = features.getSensors()[row]
+            result = pattern.match(sensor)
+            if result:
+                list_row.append(row)
+        return list(set(list_row))
+
     def get_step_columns(self):
         model = self.getPanelSensorsModel()
         features = self.getPanelSensorsFeatures()
