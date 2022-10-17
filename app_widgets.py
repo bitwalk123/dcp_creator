@@ -31,7 +31,9 @@ class MenuButton(QPushButton):
         self.setStyleSheet(
             'QPushButton {'
             'text-align: left;'
-            'padding:5px 1em;'
+            'padding:0.1em 1em;'
+            'font-family: monospace;'
+            'font-size: 10pt;'
             '}'
         )
         self.setCheckable(True)
@@ -124,8 +126,8 @@ class LabelFrameNarrow(Label):
     def __init__(self, *args, flag=False):
         super().__init__(*args)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setLineWidth(1)
-        self.setFrameStyle(QFrame.StyledPanel | QFrame.Plain)
+        self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
+        self.setLineWidth(2)
         if flag:
             style_sheet = (
                 'QLabel {'
@@ -138,7 +140,8 @@ class LabelFrameNarrow(Label):
             )
         style_sheet += (
             'padding: 0.1em 0.4em; '
-            'background-color: #eef; '
+            'background-color: #fef; '
+            'font-family: monospace;'
             'font-size: 9pt;'
             '}'
         )
