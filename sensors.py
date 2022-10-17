@@ -64,26 +64,22 @@ class Sensors(FeatureMatrix):
         for col in range(self.features.getCheckColStart(), self.features.getCols()):
             table.setItemDelegateForColumn(col, delegate)
         table.setStyle(ProxyStyle4CheckBoxCenter())
-        # column width
-        list_len = self.features.getSensorsMaxLen()
+        # column width (Sensor Name and Unit)
         width_char = table.fontMetrics().averageCharWidth()
         head_horizontal = table.horizontalHeader()
         for col in range(model.getCheckColStart()):
-            #width = width_char * (list_len[col] + 2)
             list_str = list()
             if col == 0:
                 list_str = self.features.getSensorNameMaxLen()
             elif col == 1:
                 list_str = self.features.getUnitNameMaxLen()
-            print(list_str)
             width = 0
             for name in list_str:
                 qsize = table.fontMetrics().size(Qt.TextSingleLine, name)
                 if qsize.width() > width:
                     width = qsize.width()
-            print(width)
-            head_horizontal.resizeSection(col, width + width_char)
-
+            head_horizontal.resizeSection(col, width + width_char * 2)
+        # column width (CheckBox)
         for col in range(model.getCheckColStart(), model.columnCount()):
             table.resizeColumnToContents(col)
         # set default status
