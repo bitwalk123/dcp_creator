@@ -67,10 +67,10 @@ class Sensors(FeatureMatrix):
         # column width
         list_len = self.features.getSensorsMaxLen()
         width_char = table.fontMetrics().averageCharWidth()
+        print('width_char =', width_char)
         head_horizontal = table.horizontalHeader()
         for col in range(model.getCheckColStart()):
             width = width_char * (list_len[col] + 2)
-            print('col =', col, ', width =', width)
             head_horizontal.resizeSection(col, width)
         for col in range(model.getCheckColStart(), model.columnCount()):
             table.resizeColumnToContents(col)
