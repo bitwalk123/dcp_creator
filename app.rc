@@ -18,7 +18,7 @@ VSVersionInfo(
         StringStruct(u'FileDescription', u'DCP Creator'),
         StringStruct(u'FileVersion', u'0.0.1'),
         StringStruct(u'InternalName', u'dcp_creator'),
-        StringStruct(u'LegalCopyright', u'\xa9 All rights reserved.'),
+        StringStruct(u'LegalCopyright', u'\xa9 Keiichi Takahashi, All rights reserved.'),
         StringStruct(u'OriginalFilename', u'dcp_creator.exe'),
         StringStruct(u'ProductName', u'DCP Creator'),
         StringStruct(u'ProductVersion', u'0.0.1.0')])
