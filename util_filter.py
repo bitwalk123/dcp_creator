@@ -18,7 +18,7 @@ class UtilFilter(AppObject):
         layout = dock_sensors.getLayout()
         # _____________________________________________________________________
         # Basic Filters for Column
-        lab_step = LabelFrameNarrow('‣ Step Selection', flag=True)
+        lab_step = LabelFrameNarrow('▸ Step Selection', flag=True)
         layout.addWidget(lab_step)
         # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         # filter for excluding step 1 (usually this step is just for stability)
@@ -32,7 +32,7 @@ class UtilFilter(AppObject):
         layout.addWidget(but_exclude_dechuck_steps)
         # _____________________________________________________________________
         # Condition Filters
-        lab_condition = LabelFrameNarrow('‣ Filter to exclude by condition')
+        lab_condition = LabelFrameNarrow('▸ Filter to exclude by condition')
         layout.addWidget(lab_condition)
         # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         # filter for excluding steps without (setting data)
@@ -46,7 +46,7 @@ class UtilFilter(AppObject):
         layout.addWidget(but_exclude_step_setting_0)
         # _____________________________________________________________________
         # Filters for Specific Sensor
-        lab_specific = LabelFrameNarrow('‣ Specific Sensor to exclude')
+        lab_specific = LabelFrameNarrow('▸ Specific Sensor to exclude')
         layout.addWidget(lab_specific)
         # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         # excluding OES sensor
@@ -81,7 +81,7 @@ class UtilFilter(AppObject):
 
         # _____________________________________________________________________
         # Category Filters
-        lab_category = LabelFrameNarrow('‣ Sensor Category')
+        lab_category = LabelFrameNarrow('▸ Sensor Category')
         layout.addWidget(lab_category)
         rb_category_group = QButtonGroup()
         # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
