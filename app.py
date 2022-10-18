@@ -75,7 +75,7 @@ class DCPCreator(QMainWindow):
         )
         self.console.insertOut('Python %s' % sys.version)
         self.console.insertOut('PySide (Python for Qt) %s' % PySide6.__version__)
-        self.console.insertOut('DCP Creator %s, %s' %(self.__version__, self.__version_minor__))
+        self.console.insertOut('DCP Creator %s, %s' % (self.__version__, self.__version_minor__))
 
     def button_open_clicked(self):
         """Action for 'Open' button clicked.
