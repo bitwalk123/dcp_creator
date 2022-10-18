@@ -4,6 +4,7 @@ import os
 import sys
 import zipfile
 
+import PySide6
 import pandas as pd
 import warnings
 
@@ -72,6 +73,8 @@ class DCPCreator(QMainWindow):
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
         )
+        self.console.insertOut('Python %s' % sys.version)
+        self.console.insertOut('PySide (Python for Qt) %s' % PySide6.__version__)
         self.console.insertOut('DCP Creator %s, %s' %(self.__version__, self.__version_minor__))
 
     def button_open_clicked(self):
