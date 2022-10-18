@@ -68,13 +68,3 @@ class Stats(FeatureMatrix):
             model.appendRow(list_row)
         # set the model to member variable
         self.model = model
-
-
-    def getDCP(self) -> list:
-        list_checked = list()
-        rows = self.model.rowCount()
-        for row in range(rows):
-            item = self.model.item(row, 0)
-            if item.checkState()==Qt.CheckState.Checked:
-                list_checked.append(item.text())
-        return list_checked

@@ -92,6 +92,9 @@ class Sensors(FeatureMatrix):
 
         self.model = model
 
+    def getModel(self):
+        return self.model
+
     def find_sensor_time_dependent(self):
         # Sensor Name
         key_name = self.name_sensor
@@ -145,26 +148,6 @@ class Sensors(FeatureMatrix):
                 col = i
                 break
         return col
-
-    def getDCP(self) -> list:
-        """get sensor/tep currently selected.
-        """
-
-        rows = self.model.rowCount()
-        cols_step = self.get_step_columns()
-        list_sensor_steps = list()
-        for row in range(rows):
-            for col in cols_step:
-                index = self.model.index(row, col)
-                value = self.model.data(index, role=Qt.CheckStateRole)
-                if value == Qt.CheckState.Checked:
-                    name_sensor = self.features.getSensors()[row]
-                    name_unit = self.features.getUnits()[name_sensor]
-                    num_step = self.model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
-                    full_sensor = name_sensor + name_unit
-                    dict_element = {'sensor': full_sensor, 'step': str(num_step)}
-                    list_sensor_steps.append(dict_element)
-        return list_sensor_steps
 
     def on_row_section_double_clicked(self, row: int):
         winrect: QRect = None

@@ -5,7 +5,7 @@ from util_filter import UtilFilter
 
 
 class UIController(AppObject):
-    """UI controler, especially for cross-tab management
+    """UI controller, especially for cross-tab management
     """
 
     def __init__(self, page: dict):
@@ -51,17 +51,13 @@ class UIController(AppObject):
         save JSON file for DCP
         _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         """
-        dict_dcp = {}
-        # SENSOR/STEP
-        sensors = self.getPanelSensors()
-        dict_dcp['sensor_steps'] = sensors.getDCP()
-        # STAT
-        stats = self.getPanelStats()
-        dict_dcp['statistics'] =  stats.getDCP()
+        dict_dcp = {
+            'sensor_steps': self.getDCPSensorStep(),
+            'statistics': self.getDCPStats()
+        }
         # _____________________________________________________________________
         # OUTPUT
         with open(filename, 'w') as f:
             json.dump(dict_dcp, f, indent=4)
         # for debug
         print(json.dumps(dict_dcp, indent=4))
-
