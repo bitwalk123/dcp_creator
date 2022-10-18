@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QMainWindow, QScrollArea
+from PySide6.QtWidgets import QScrollArea
 
+from app_widgets import TabWindow
 from features import Features
 from summary import Summary
 
 
-class DCPSummary(QMainWindow):
+class DCPSummary(TabWindow):
     """
     Summary Window/Panel/Tab
     """
@@ -26,6 +27,7 @@ class DCPSummary(QMainWindow):
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
         self.summary = Summary(self.features)
+        self.summary.logMessage.connect(self.showLog)
         central.setWidget(self.summary)
 
     def getPanel(self) -> Summary:

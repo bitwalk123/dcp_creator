@@ -111,10 +111,9 @@ class Summary(FeatureMatrix):
         if len(list_chamber) > 0:
             self.lab_chamber.setValue(len(list_chamber))
             # for debug purpose
-            print('Chambers')
+            self.logMessage.emit('Chambers:')
             for chamber in list_chamber:
-                print(chamber)
-        # self.combo_chamber.addItems(list_chamber)
+                self.logMessage.emit(chamber)
 
     def setWafers(self):
         self.lab_wafer.setValue(self.features.getWafers())

@@ -1,15 +1,14 @@
 from PySide6.QtWidgets import (
-    QMainWindow,
     QScrollArea,
 )
 
+from app_widgets import TabWindow
 from features import Features
 from stats import Stats
 
 
-class DCPStats(QMainWindow):
-    """
-    Panel for Summary Statistics
+class DCPStats(TabWindow):
+    """Panel for Summary Statistics
     """
     stats = None
 
@@ -18,10 +17,7 @@ class DCPStats(QMainWindow):
         self.init_ui(features)
 
     def init_ui(self, features: Features):
-        """
-        init_ui
-        initialize UI
-        :param info_log:
+        """initialize UI
         """
         # Scroll Area for Central
         central = QScrollArea()
@@ -29,6 +25,7 @@ class DCPStats(QMainWindow):
         self.setCentralWidget(central)
         # widget on the Scroll Area
         self.stats = stats = Stats(features)
+        stats.logMessage.connect(self.showLog)
         central.setWidget(stats)
 
     def getPanel(self) -> Stats:

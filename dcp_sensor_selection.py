@@ -4,16 +4,15 @@ from PySide6.QtCore import (
 )
 from PySide6.QtWidgets import (
     QDockWidget,
-    QScrollArea,
-    QMainWindow,
 )
 
-from features import Features
+from app_widgets import TabWindow
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
+from features import Features
 from sensors import Sensors
 
 
-class DCPSensorSelection(QMainWindow):
+class DCPSensorSelection(TabWindow):
     """
     SensorSelectionMain
     Main windows for Sensor Selection
@@ -26,22 +25,13 @@ class DCPSensorSelection(QMainWindow):
 
     def __init__(self, features: Features):
         super().__init__()
-        # self.setAutoFillBackground(True)
         self.init_ui(features)
 
     def init_ui(self, features: Features):
+        """initialize UI
         """
-        init_ui
-        initialize UI
-        :param info_log:
-        """
-        # Scroll Area for Central
-        #central = QScrollArea()
-        #central.setWidgetResizable(True)
-        #self.setCentralWidget(central)
-        # widget on the Scroll Area
         sensors = Sensors(features)
-        #central.setWidget(sensors)
+        sensors.logMessage.connect(self.showLog)
         self.setCentralWidget(sensors)
         # _____________________________________________________________________
         # Right Dock
@@ -54,13 +44,11 @@ class DCPSensorSelection(QMainWindow):
         self.dock = dock
 
     def getPanel(self) -> Sensors:
-        """
-        get/return instance of this panel
+        """get/return instance of this panel
         """
         return self.sensors
 
     def getDock(self) -> DCPSensorSelectionDock:
-        """
-        get/return instance of the dock at right
+        """get/return instance of the dock at right
         """
         return self.dock

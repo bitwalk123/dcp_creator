@@ -1,15 +1,14 @@
 from PySide6.QtWidgets import (
-    QMainWindow,
     QScrollArea,
 )
 
+from app_widgets import TabWindow
 from features import Features
 from recipe import Recipe
 
 
-class DCPStepValueSetting(QMainWindow):
-    """
-    Step Value Setting, Recipe-like information
+class DCPStepValueSetting(TabWindow):
+    """Step Value Setting, Recipe-like information
     """
     recipe = None
 

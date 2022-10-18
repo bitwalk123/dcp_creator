@@ -4,14 +4,14 @@ from PySide6.QtCore import (
     Qt,
     QAbstractTableModel,
     QModelIndex,
-    QPersistentModelIndex,
+    QPersistentModelIndex, Signal,
 )
 from PySide6.QtGui import (
     QBrush,
     QColor,
     QIcon,
     QPalette,
-    QStandardItem,
+    QStandardItem, QTextCursor,
 )
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
     QStyledItemDelegate,
     QTableView,
     QVBoxLayout,
-    QWidget,
+    QWidget, QMainWindow,
 )
 
 from features import Features
@@ -78,7 +78,11 @@ class LogConsole(QWidget):
         # log
         self.log = QPlainTextEdit()
         self.log.setFixedHeight(100)
-        self.log.setStyleSheet('font-family: monospace; padding: 5px 5px;')
+        self.log.setStyleSheet(
+            'font-family: monospace; '
+            'font-size: 9pt; '
+            'padding: 5px 5px;'
+        )
         self.log.setReadOnly(True)
         self.log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         layout_horiz.addWidget(self.log)
@@ -111,17 +115,25 @@ class LogConsole(QWidget):
         but_trash.setToolTip('clear log on the console.')
         layout_vert.addWidget(but_trash)
 
+    def insertLine(self, line):
+        self.log.insertPlainText(line)
+        self.log.moveCursor(QTextCursor.End)
+
     def insertIn(self, msg):
         line = msg + self.eol
-        self.log.insertPlainText(line)
+        self.insertLine(line)
 
     def insertOut(self, msg):
         line = self.prompt + msg + self.eol
-        self.log.insertPlainText(line)
+        self.insertLine(line)
 
     def insertCompleted(self, elapsed: float):
         line = 'done. (elapsed {:.3f} sec)'.format(elapsed) + self.eol
-        self.log.insertPlainText(line)
+        self.insertLine(line)
+
+    def insertAttention(self):
+        line = '■■■ ATTENTION ■■■' + self.eol
+        self.insertLine(line)
 
 
 class ComboBox(QComboBox):
@@ -139,13 +151,12 @@ class Label(QLabel):
 class LabelFrameNarrow(Label):
     def __init__(self, *args, flag=False):
         super().__init__(*args)
-        self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
-        self.setLineWidth(2)
+        self.setFrameStyle(QFrame.Box | QFrame.Plain)
+        self.setLineWidth(1)
         if flag:
             style_sheet = (
                 'QLabel {'
             )
-
         else:
             style_sheet = (
                 'QLabel {'
@@ -154,7 +165,6 @@ class LabelFrameNarrow(Label):
 
         style_sheet += (
             'padding: 0.1em 0.4em; '
-            'background-color: #fef; '
             'font-family: monospace;'
             'font-size: 9pt;'
             '}'
@@ -221,10 +231,9 @@ class LabelSensor(LabelCell):
 
 
 class FeatureMatrix(QWidget):
+    """base class for managing matrix data
     """
-    FeatureMatrix
-    base class for managing matrix data
-    """
+    logMessage = Signal(str)
     name_sensor = 'Sensor Name'
     name_stat = 'Summary Stats'
     name_unit = 'unit'
@@ -263,7 +272,8 @@ class FeatureMatrix(QWidget):
                 if item.isCheckable():
                     if item.checkState() == Qt.CheckState.Checked:
                         count += 1
-        print('layout (', rows, ',', cols, '),', 'checked', count)
+        msg = 'layout (%d, %d) checked %d' % (rows, cols, count)
+        self.logMessage.emit(msg)
         return count
 
     def find_header_label(self, key) -> int:
@@ -336,6 +346,18 @@ class RecipeItem(QStandardItem):
     def setValueZero(self):
         self.setBackground(QColor(240, 240, 240))
         self.setForeground(QBrush(QColor(128, 128, 128)))
+
+
+class TabWindow(QMainWindow):
+    """Tab Window/Panel/Tab
+    """
+    logMessage = Signal(str)
+
+    def __init__(self):
+        super().__init__()
+
+    def showLog(self, msg: str):
+        self.logMessage.emit(msg)
 
 
 class TableView(QTableView):

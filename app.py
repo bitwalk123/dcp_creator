@@ -2,6 +2,8 @@
 # coding: utf-8
 import os
 import sys
+import zipfile
+
 import pandas as pd
 import warnings
 
@@ -21,7 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from app_thread import CSVReadWorker, ParseFeaturesWorker
-from app_widgets import WorkInProgress, LogConsole, VBoxLayout
+from app_widgets import WorkInProgress, LogConsole
 from dcp_creator_toolbar import DCPCreatorToolBar
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_stats_selection import DCPStats
@@ -37,7 +39,7 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.0.1'
-    __version_minor__ = '20221017'
+    __version_minor__ = '20221018'
 
     # UI components
     console: LogConsole = None
@@ -65,11 +67,12 @@ class DCPCreator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.init_ui()
-        self.resize(1000, 600)
+        self.resize(900, 600)
         self.setWindowTitle('DCP Creator')
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
         )
+        self.console.insertOut('DCP Creator %s, %s' %(self.__version__, self.__version_minor__))
 
     def button_open_clicked(self):
         """Action for 'Open' button clicked.
@@ -97,8 +100,23 @@ class DCPCreator(QMainWindow):
         ----------
         csvfile: str
         """
+        # check if csvfile exists
         if not os.path.exists(csvfile):
             return pd.DataFrame()
+        # check contents of csvfile if the file is zip file
+        ext = os.path.splitext(csvfile)[1]
+        if ext == '.zip':
+            zip_f = zipfile.ZipFile(csvfile)
+            list_file = zip_f.namelist()
+            zip_f.close()
+            self.console.insertIn('Contents of the zip file:')
+            for name_file in list_file:
+                self.console.insertIn('- %s' % name_file)
+            if len(list_file) > 1:
+                self.console.insertAttention()
+                self.console.insertIn('Several files are included in this zip file.')
+                self.console.insertIn('Sorry, this type of file cannot be read.')
+                return
         # _____________________________________________________________________
         # Prep. Threading
         self.reader = CSVReadWorker(csvfile)
@@ -160,6 +178,7 @@ class DCPCreator(QMainWindow):
         self.progress_parser.cancel()
         # Log
         self.console.insertCompleted(elapsed)
+
         self.console.insertOut(features.getLogDfShape())
         self.console.insertOut(features.getLogStep())
         self.console.insertOut(features.getLogStat())
@@ -232,12 +251,20 @@ class DCPCreator(QMainWindow):
         self.tab.addTab(page['sensors'], 'Sensor Selection')
         self.tab.addTab(page['recipe'], 'Setting Data')
         self.tab.addTab(page['stats'], 'Summary Stats')
+        # Log event
+        page['summary'].logMessage.connect(self.showLog)
+        page['sensors'].logMessage.connect(self.showLog)
+        page['recipe'].logMessage.connect(self.showLog)
+        page['stats'].logMessage.connect(self.showLog)
         # _____________________________________________________________________
         # for tab click event
         self.tab.currentChanged.connect(self.tab_changed)
         # _____________________________________________________________________
         # Controller for tab and other UI interaction
         self.controller = UIController(page)
+
+    def showLog(self, msg):
+        self.console.insertIn(msg)
 
     def tab_changed(self):
         """Event handler for tab changed

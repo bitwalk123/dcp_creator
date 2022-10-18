@@ -1,6 +1,6 @@
 from PySide6.QtCore import (
     Qt,
-    QRect,
+    QRect, Signal,
 )
 from PySide6.QtGui import (
     QStandardItem,
@@ -28,6 +28,7 @@ class Sensors(FeatureMatrix):
     DCPMatrix class
     manage sensor selection
     """
+    logMessage = Signal(str)
     win_chart: SensorChart = None
 
     def __init__(self, features: Features):
@@ -38,7 +39,6 @@ class Sensors(FeatureMatrix):
         #
         self.init_ui()
 
-    @timeit
     def init_ui(self):
         """
         init_ui
@@ -133,7 +133,8 @@ class Sensors(FeatureMatrix):
                 value = self.model.data(index, role=Qt.CheckStateRole)
                 if value == Qt.CheckState.Checked:
                     count += 1
-        print('layout (', rows, ',', cols, '),', 'checked', count)
+        msg = 'layout (%d, %d) checked %d' % (rows, cols, count)
+        self.logMessage.emit(msg)
         return count
 
     def find_header_label(self, key) -> int:
