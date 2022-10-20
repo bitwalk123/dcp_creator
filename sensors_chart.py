@@ -1,58 +1,46 @@
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from PySide6.QtCore import Qt
+import numpy as np
+
+from PySide6.QtCharts import (
+    QChart,
+    QChartView,
+    QDateTimeAxis,
+    QScatterSeries,
+    QValueAxis,
+)
+from PySide6.QtCore import QDateTime, Qt
 from PySide6.QtGui import QIcon
-
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
-import seaborn as sns
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QMainWindow,
-    QScrollArea,
-    QSizePolicy, QToolBar, QComboBox, QLabel, QStyle,
+    QStyle,
+    QWidget,
 )
 
-from app_functions import getAppLogger
 from features import Features
 
 
-class SensorStepScatter(FigureCanvas):
-    def __init__(self, df):
-        mpl.rcParams.update({'font.size': 9})
-        facet = sns.FacetGrid(data=df, col='step', height=2, aspect=0.6)
-        facet.map_dataframe(sns.scatterplot, x='*start_time', y='value', hue='*chamber')
-        facet.set(xticklabels=[])
-        facet.tight_layout()
-        self.fig: Figure = facet.figure
-        super().__init__(self.fig)
-
-
 class SensorChart(QMainWindow):
-    canvas: SensorStepScatter = None
 
     def __init__(self, parent, features: Features, row: int):
         super().__init__(parent=parent)
+        self.win = QWidget()
+        self.setCentralWidget(self.win)
+
         self.features = features
-        sensor, unit = self.init_ui(row)
-        self.setWindowTitle('%s%s' % (sensor, unit))
+        sensor, unit, stat = self.init_ui(row)
+        self.setWindowTitle('%s%s - %s' % (sensor, unit, stat))
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.SP_ArrowForward))
         )
         self.resize(1000, 200)
 
     def init_ui(self, row):
-        # _____________________________________________________________________
-        # Toolbar
-        toolbar = QToolBar()
-        self.addToolBar(Qt.TopToolBarArea, toolbar)
-        label_stat = QLabel('Summary Statistics')
-        label_stat.setStyleSheet('margin:0 1em 0 0;')
-        toolbar.addWidget(label_stat)
-        combo_stat = QComboBox()
-        toolbar.addWidget(combo_stat)
-        # for combo
+        layout = QHBoxLayout()
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.win.setLayout(layout)
+        sensor = self.features.getSensors()[row]
+        unit = self.features.getUnits()[sensor]
         stats = self.features.getStats()
         if 'Avg' in stats:
             stat = 'Avg'
@@ -60,49 +48,58 @@ class SensorChart(QMainWindow):
             stat = 'Median'
         else:
             stat = stats[0]
-        combo_stat.addItems(stats)
-        combo_stat.setCurrentText(stat)
-        # _____________________________________________________________________
-        # Central Widget
-        central = QScrollArea()
-        central.setWidgetResizable(True)
-        self.setCentralWidget(central)
-        base = QMainWindow()
-        base.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        central.setWidget(base)
-        # dataframe for facetgrid
-        df, sensor, unit = self.get_df4facetgrid(row, stat)
-        self.canvas = SensorStepScatter(df)
-        base.setCentralWidget(self.canvas)
-
-        return sensor, unit
-
-    def get_df4facetgrid(self, row, stat):
-        sensor = self.features.getSensors()[row]
-        unit = self.features.getUnits()[sensor]
-        list_df_step = list()
         steps = self.features.getSteps()
+
+        list_y_max = list()
+        list_y_min = list()
         for step in steps:
-            # full feature name
-            features_full = '%s%s_%s_%s' % (sensor, unit, step, stat)
+            features_full = '%s%s_%s_%s' % (sensor, unit, step, stat)  # full feature name
             if features_full in self.features.getSrcDfColumns():
-                list_cols = [self.features.getSrcDfStart(),
-                             self.features.getSrcDfChamberCol()]
+                list_y_max.append(max(self.features.getSrcDf()[features_full]))
+                list_y_min.append(min(self.features.getSrcDf()[features_full]))
+        y_max = max(list_y_max)
+        y_min = min(list_y_min)
+        if y_max == y_min:
+            y_max += 1
+            y_min -= 1
+
+        for step in steps:
+            features_full = '%s%s_%s_%s' % (sensor, unit, step, stat)  # full feature name
+            if features_full in self.features.getSrcDfColumns():
+                list_cols = [self.features.getSrcDfStart(), self.features.getSrcDfChamberCol()]
                 df_step = self.features.getSrcDf()[list_cols].copy()
                 df_step['value'] = self.features.getSrcDf()[features_full].copy()
                 df_step['step'] = step
-                list_df_step.append(df_step)
-            else:
-                try:
-                    raise Exception
-                except:
-                    logger = getAppLogger(__name__)
-                    logger.debug('Error in features_full = %s' % features_full)
+                df_step['datetime'] = [QDateTime.fromString(str(dt), 'yyyy-MM-dd hh:mm:ss') for dt in df_step['*start_time']]
 
-        df = pd.concat(list_df_step)
+                series = QScatterSeries()
+                for (dt, value) in zip(df_step['datetime'], df_step['value']):
+                    series.append(np.int64(dt.toMSecsSinceEpoch()), float(value))
+                series.setMarkerSize(10.0)
 
-        return df, sensor, unit
+                chart = QChart()
+                chart.setContentsMargins(0, 0, 0, 0)
+                chart.layout().setContentsMargins(0, 0, 0, 0)
+                chart.setBackgroundRoundness(0)
+                chart.legend().hide()
+                chart.setTitle('step %d' % step)
+                chart.addSeries(series)
 
-    def closeEvent(self, event):
-        plt.close(self.canvas.fig)
-        event.accept()
+                axis_x = QDateTimeAxis()
+                axis_x.setFormat('MM/dd')
+                axis_x.setTitleText('date')
+                chart.addAxis(axis_x, Qt.AlignBottom)
+                series.attachAxis(axis_x)
+
+                axis_y = QValueAxis()
+                axis_y.setMax(y_max)
+                axis_y.setMin(y_min)
+                chart.addAxis(axis_y, Qt.AlignLeft)
+                series.attachAxis(axis_y)
+
+                chart_view = QChartView(chart)
+                chart_view.setStyleSheet('background-color:blue;')
+
+                layout.addWidget(chart_view)
+
+        return sensor, unit, stat

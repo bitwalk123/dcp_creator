@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QTableView,
 )
 
-from app_functions import timeit
 from app_widgets import (
     CheckBoxDelegate,
     FeatureMatrix,

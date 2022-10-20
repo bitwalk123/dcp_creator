@@ -405,7 +405,7 @@ class WorkInProgress(QProgressDialog):
 # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
 class ProxyStyle4CheckBoxCenter(QProxyStyle):
     def subElementRect(self, element, opt, widget=None):
-        if element == self.SE_ItemViewItemCheckIndicator:
+        if element == self.SubElement.SE_ItemViewItemCheckIndicator:
             rect = super().subElementRect(element, opt, widget)
             rect.moveCenter(opt.rect.center())
             return rect
