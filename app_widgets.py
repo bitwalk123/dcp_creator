@@ -94,7 +94,7 @@ class LogConsole(QWidget):
         self.control.setLayout(layout_vert)
         # save log
         but_file = QPushButton(
-            QIcon(self.style().standardIcon(QStyle.SP_FileDialogStart)),
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogStart)),
             None
         )
         but_file.setToolTip('save log to file.')
@@ -108,7 +108,7 @@ class LogConsole(QWidget):
         vpad.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         # trash log
         but_trash = QPushButton(
-            QIcon(self.style().standardIcon(QStyle.SP_TrashIcon)),
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TrashIcon)),
             None
         )
         but_trash.setContentsMargins(0, 0, 0, 0)
@@ -151,7 +151,7 @@ class Label(QLabel):
 class LabelFrameNarrow(Label):
     def __init__(self, *args, flag=False):
         super().__init__(*args)
-        self.setFrameStyle(QFrame.Box | QFrame.Plain)
+        self.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
         self.setLineWidth(1)
         if flag:
             style_sheet = (
@@ -180,7 +180,7 @@ class LabelCell(QLabel):
 
     def __init__(self, name: str, style_cell: str):
         super().__init__(name)
-        self.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Sunken)
         self.setStyleSheet(style_cell)
 
 
@@ -192,7 +192,7 @@ class LabelHead(QLabel):
 
     def __init__(self, name: str, style_cell: str):
         super().__init__(name)
-        self.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
         self.setLineWidth(1)
         self.setStyleSheet(style_cell)
 
@@ -373,7 +373,7 @@ class TableView(QTableView):
             'QHeaderView::section {background-color:#eee;}'
         )
         self.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents
+            QHeaderView.ResizeMode.ResizeToContents
         )
 
 
@@ -392,7 +392,7 @@ class WorkInProgress(QProgressDialog):
     def __init__(self, parent, title='Working...'):
         super().__init__(parent=parent, labelText=title)
         self.setWindowIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
         )
         self.setWindowModality(Qt.WindowModal)
         self.setCancelButton(None)
@@ -448,6 +448,7 @@ class SensorStepModel(QAbstractTableModel):
     def setData(self, index: QModelIndex, value: Any, role: Qt.ItemDataRole = Qt.EditRole):
         if role == Qt.CheckStateRole:
             self._data.check_states[QPersistentModelIndex(index)] = value
+            # TODO
             self.dataChanged.emit(index, index, (role,))
             return True
 
@@ -492,7 +493,7 @@ class FrozenTableView(QTableView):
         self.verticalHeader().hide()
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
 
 class MyTableView(QTableView):
@@ -500,7 +501,7 @@ class MyTableView(QTableView):
         QTableView.__init__(self, parent, *args)
         self.setModel(model)
         # self.setMinimumSize(800, 400)
-        self.setEditTriggers(QAbstractItemView.SelectedClicked)
+        self.setEditTriggers(QAbstractItemView.EditTrigger.SelectedClicked)
         self.setStyleSheet('font-family: monospace;')
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         # self.resizeColumnsToContents()
@@ -513,8 +514,8 @@ class MyTableView(QTableView):
         # self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.verticalHeader().setDefaultAlignment(Qt.AlignRight)
-        self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         # FrozenTableView
         self.frozenTableView = FrozenTableView(self)
         self.frozenTableView.setModel(model)
@@ -564,6 +565,7 @@ class MyTableView(QTableView):
         current = QTableView.moveCursor(self, cursorAction, modifiers)
         x = self.visualRect(current).topLeft().x()
         frozen_width = self.frozenTableView.columnWidth(0) + self.frozenTableView.columnWidth(1)
+        # TODO
         if cursorAction == self.MoveLeft and current.column() > 1 and x < frozen_width:
             new_value = self.horizontalScrollBar().value() + x - frozen_width
             self.horizontalScrollBar().setValue(new_value)

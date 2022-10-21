@@ -7,11 +7,17 @@ from PySide6.QtCharts import (
     QScatterSeries,
     QValueAxis,
 )
-from PySide6.QtCore import QDateTime, Qt
+from PySide6.QtCore import (
+    Qt,
+    QDateTime,
+    QMargins,
+)
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QMainWindow,
+    QScrollArea,
+    QSizePolicy,
     QStyle,
     QWidget,
 )
@@ -20,17 +26,22 @@ from features import Features
 
 
 class SensorChart(QMainWindow):
-
     def __init__(self, parent, features: Features, row: int):
         super().__init__(parent=parent)
+        # Scroll Area for Central
+        central = QScrollArea()
+        central.setWidgetResizable(True)
+        self.setCentralWidget(central)
+
         self.win = QWidget()
-        self.setCentralWidget(self.win)
+        self.win.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        central.setWidget(self.win)
 
         self.features = features
         sensor, unit, stat = self.init_ui(row)
         self.setWindowTitle('%s%s - %s' % (sensor, unit, stat))
         self.setWindowIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_ArrowForward))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_ArrowForward))
         )
         self.resize(1000, 200)
 
@@ -78,6 +89,7 @@ class SensorChart(QMainWindow):
                 series.setMarkerSize(10.0)
 
                 chart = QChart()
+                chart.setMargins(QMargins(0, 0, 0, 0))
                 chart.setContentsMargins(0, 0, 0, 0)
                 chart.layout().setContentsMargins(0, 0, 0, 0)
                 chart.setBackgroundRoundness(0)
@@ -98,6 +110,7 @@ class SensorChart(QMainWindow):
                 series.attachAxis(axis_y)
 
                 chart_view = QChartView(chart)
+                chart_view.setFixedWidth(200)
                 chart_view.setStyleSheet('background-color:blue;')
 
                 layout.addWidget(chart_view)

@@ -47,7 +47,7 @@ class Stats(FeatureMatrix):
         table.setModel(model)
         table.verticalHeader().setDefaultAlignment(Qt.AlignRight)
         table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents
+            QHeaderView.ResizeMode.ResizeToContents
         )
         delegate = CheckBoxDelegate(table)
         table.setItemDelegateForColumn(1, delegate)

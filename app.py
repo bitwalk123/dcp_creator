@@ -70,9 +70,7 @@ class DCPCreator(QMainWindow):
         self.init_ui()
         self.resize(900, 600)
         self.setWindowTitle('DCP Creator')
-        self.setWindowIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
-        )
+        self.setWindowIcon(QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton)))
         self.console.insertOut('Python %s' % sys.version)
         self.console.insertOut('PySide (Python for Qt) %s' % PySide6.__version__)
         self.console.insertOut('DCP Creator %s, %s' % (self.__version__, self.__version_minor__))

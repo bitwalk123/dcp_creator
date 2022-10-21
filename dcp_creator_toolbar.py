@@ -26,7 +26,7 @@ class DCPCreatorToolBar(QToolBar):
         button_open.setStyleSheet('margin:0 1em 0 0;')
         button_open.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_open.setIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_DialogOpenButton))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DialogOpenButton))
         )
         button_open.setToolTip('read summary stat data exported from the Fleet Analysis Tool.')
         button_open.clicked.connect(self.openClicked.emit)
@@ -38,7 +38,7 @@ class DCPCreatorToolBar(QToolBar):
         button_dcp.setStyleSheet('margin:0 1em;')
         button_dcp.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_dcp.setIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_DriveFDIcon))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DriveFDIcon))
         )
         button_dcp.setToolTip('load DCP file previously saved.')
         button_dcp.clicked.connect(self.dcpClicked.emit)
@@ -55,7 +55,7 @@ class DCPCreatorToolBar(QToolBar):
         button_option.setStyleSheet('margin:0 1em;')
         button_option.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_option.setIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView))
         )
         button_option.setToolTip('Various options and utilities.')
         self.addWidget(button_option)
@@ -66,7 +66,7 @@ class DCPCreatorToolBar(QToolBar):
         button_save.setStyleSheet('margin:0 0 0 1em;')
         button_save.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_save.setIcon(
-            QIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton))
         )
         button_save.setToolTip('save DCP info importing to the Fleet Analysis Tool.')
         button_save.clicked.connect(self.saveClicked.emit)

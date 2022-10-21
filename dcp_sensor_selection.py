@@ -36,7 +36,7 @@ class DCPSensorSelection(TabWindow):
         # _____________________________________________________________________
         # Right Dock
         dock = DCPSensorSelectionDock()
-        dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+        dock.setFeatures(QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
         dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, dock)
         #

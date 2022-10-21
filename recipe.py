@@ -43,7 +43,7 @@ class Recipe(FeatureMatrix):
         table.setStyleSheet(self.features.style_disp)
         table.setWordWrap(False)
         head_vertical = table.verticalHeader()
-        head_vertical.setSectionResizeMode(QHeaderView.ResizeToContents)
+        head_vertical.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         head_vertical.setDefaultAlignment(Qt.AlignRight)
         layout.addWidget(table)
 

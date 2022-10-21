@@ -58,7 +58,7 @@ class Sensors(FeatureMatrix):
         # Vertical Header
         head_vertical = table.verticalHeader()
         head_vertical.setDefaultAlignment(Qt.AlignRight)
-        head_vertical.setSectionResizeMode(QHeaderView.ResizeToContents)
+        head_vertical.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         head_vertical.sectionDoubleClicked.connect(self.on_row_section_double_clicked)
         # checkbox delegation
         delegate = CheckBoxDelegate(table)
@@ -76,7 +76,7 @@ class Sensors(FeatureMatrix):
                 list_str = self.features.getUnitNameMaxLen()
             width = 0
             for name in list_str:
-                qsize = table.fontMetrics().size(Qt.TextSingleLine, name)
+                qsize = table.fontMetrics().size(Qt.TextSingleLine, name, 0)
                 if qsize.width() > width:
                     width = qsize.width()
             head_horizontal.resizeSection(col, width + width_char * 2)
@@ -88,8 +88,8 @@ class Sensors(FeatureMatrix):
             for col in range(self.features.getCheckColStart(), self.features.getCols()):
                 index = model.index(row, col)
                 model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
-
         self.model = model
+
 
     def getModel(self):
         return self.model
@@ -102,6 +102,7 @@ class Sensors(FeatureMatrix):
         list_pattern = [self.features.pattern_sensor_general_counter]
         for pattern in list_pattern:
             for row in range(self.model.rowCount()):
+                # TODO
                 item: QStandardItem = self.model.item(row, col_name)
                 sensor = item.text()
                 result = pattern.match(sensor)
@@ -111,6 +112,7 @@ class Sensors(FeatureMatrix):
         key_unit = self.name_unit
         col_unit = self.find_header_label(key_unit)
         for row in range(self.model.rowCount()):
+            # TODO
             item: QStandardItem = self.model.item(row, col_unit)
             unit = item.text()
             if unit == '[sec]' \
