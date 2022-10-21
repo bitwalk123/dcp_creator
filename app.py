@@ -40,7 +40,7 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.0.4'
-    __version_minor__ = '20221020'
+    __version_minor__ = '20221021'
 
     # UI components
     console: LogConsole = None
