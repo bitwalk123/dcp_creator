@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from app_widgets import Pad
 from features import Features
 
 
@@ -60,7 +61,7 @@ class SensorChart(QMainWindow):
         else:
             stat = stats[0]
         steps = self.features.getSteps()
-
+        # ckecking y axis range for common use
         list_y_max = list()
         list_y_min = list()
         for step in steps:
@@ -70,10 +71,13 @@ class SensorChart(QMainWindow):
                 list_y_min.append(min(self.features.getSrcDf()[features_full]))
         y_max = max(list_y_max)
         y_min = min(list_y_min)
+        y_range = y_max - y_min
+        y_max = y_max + y_range * 0.05
+        y_min = y_min - y_range * 0.05
         if y_max == y_min:
             y_max += 1
             y_min -= 1
-
+        # plot each steps
         for step in steps:
             features_full = '%s%s_%s_%s' % (sensor, unit, step, stat)  # full feature name
             if features_full in self.features.getSrcDfColumns():
@@ -100,6 +104,7 @@ class SensorChart(QMainWindow):
                 axis_x = QDateTimeAxis()
                 axis_x.setFormat('MM/dd')
                 axis_x.setTitleText('date')
+
                 chart.addAxis(axis_x, Qt.AlignBottom)
                 series.attachAxis(axis_x)
 
@@ -110,9 +115,11 @@ class SensorChart(QMainWindow):
                 series.attachAxis(axis_y)
 
                 chart_view = QChartView(chart)
-                chart_view.setFixedWidth(200)
+                chart_view.setFixedWidth(150)
                 chart_view.setStyleSheet('background-color:blue;')
 
                 layout.addWidget(chart_view)
 
+        pad = Pad()
+        layout.addWidget(pad)
         return sensor, unit, stat
