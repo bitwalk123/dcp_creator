@@ -113,6 +113,16 @@ class AppObject(QObject):
                 list_row.append(row)
         return list(set(list_row))
 
+    def find_sensor_without_regex(self, pattern):
+        features = self.getPanelSensorsFeatures()
+        list_row = list()
+        for row in range(features.getRows()):
+            sensor = features.getSensors()[row]
+            result = pattern.match(sensor)
+            if not result:
+                list_row.append(row)
+        return list(set(list_row))
+
     def get_step_columns(self) -> list:
         model = self.getPanelSensorsModel()
         features = self.getPanelSensorsFeatures()

@@ -38,6 +38,7 @@ class UtilFilter(AppObject):
         but_exclude_dechuck_steps = MenuButton('exclude Step >= 1000')
         but_exclude_dechuck_steps.clicked.connect(self.excludeStepDechuck)
         layout.addWidget(but_exclude_dechuck_steps)
+
         # _____________________________________________________________________
         # Condition Filters
         lab_condition = LabelFrameNarrow('▸ Filter to exclude by condition')
@@ -52,6 +53,7 @@ class UtilFilter(AppObject):
         but_exclude_step_setting_0 = MenuButton('Step Setting = 0')
         but_exclude_step_setting_0.clicked.connect(self.excludeStepSettingIs0)
         layout.addWidget(but_exclude_step_setting_0)
+
         # _____________________________________________________________________
         # Filters for Specific Sensor
         lab_specific = LabelFrameNarrow('▸ Specific Sensor to exclude')
@@ -88,6 +90,16 @@ class UtilFilter(AppObject):
         layout.addWidget(but_exclude_sensor_general_counter)
 
         # _____________________________________________________________________
+        # Filters for Selection
+        lab_specific = LabelFrameNarrow('▸ Specific Sensor to select')
+        layout.addWidget(lab_specific)
+        # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+        # excluding sensor for General Counter
+        but_select_sensor_setting_data = MenuButton('Sensor with (setting data)')
+        but_select_sensor_setting_data.clicked.connect(self.selectSensorSettingData)
+        layout.addWidget(but_select_sensor_setting_data)
+
+        # _____________________________________________________________________
         # Category Filters
         lab_category = LabelFrameNarrow('▸ Sensor Category')
         layout.addWidget(lab_category)
@@ -96,7 +108,10 @@ class UtilFilter(AppObject):
         list_category = ['ALL', 'ESC', 'Other', 'Pressure', 'RF', 'Temperature']
         for category in list_category:
             rb_category = RadioButton(category)
-            rb_category.setEnabled(False)
+            if category == 'ALL':
+                rb_category.setChecked(True)
+            else:
+                rb_category.setEnabled(False)
             rb_category_group.addButton(rb_category)
             layout.addWidget(rb_category)
         # _____________________________________________________________________
@@ -252,6 +267,17 @@ class UtilFilter(AppObject):
 
         features = self.getPanelSensorsFeatures()
         list_row = self.find_sensor_with_regex(features.pattern_sensor_general_counter)
+        list_col = self.get_step_columns()
+        self.swicth_check(list_row, list_col, flag)
+
+        self.updateFeatures()
+
+    def selectSensorSettingData(self):
+        but: QPushButton = self.sender()
+        flag = but.isChecked()
+
+        features = self.getPanelSensorsFeatures()
+        list_row = self.find_sensor_without_regex(features.pattern_sensor_setting)
         list_col = self.get_step_columns()
         self.swicth_check(list_row, list_col, flag)
 

@@ -68,7 +68,7 @@ class DCPCreator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.init_ui()
-        self.resize(900, 600)
+        self.resize(900, 800)
         self.setWindowTitle('DCP Creator')
         self.setWindowIcon(QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton)))
         self.console.insertOut('Python %s' % sys.version)

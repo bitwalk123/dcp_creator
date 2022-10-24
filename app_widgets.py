@@ -43,8 +43,8 @@ class MenuButton(QPushButton):
         super().__init__(*args)
         self.setStyleSheet(
             'QPushButton {'
+            'padding:0.25em 1em;'
             'text-align: left;'
-            'padding:0.1em 1em;'
             'font-family: monospace;'
             'font-size: 10pt;'
             '}'
@@ -165,8 +165,11 @@ class LabelFrameNarrow(Label):
 
         style_sheet += (
             'padding: 0.1em 0.4em; '
+            'color #444400;'
+            'background-color: #fffff8;'
             'font-family: monospace;'
             'font-size: 9pt;'
+            'font-weight: bold;'
             '}'
         )
         self.setStyleSheet(style_sheet)
@@ -310,7 +313,15 @@ class Pad(QWidget):
 class RadioButton(QRadioButton):
     def __init__(self, *args):
         super().__init__(*args)
-        self.setStyleSheet('padding: 0 1em;')
+        #self.setStyleSheet('padding: 0 1em;')
+        self.setStyleSheet(
+            'QRadioButton {'
+            'padding:0.05em 1em;'
+            'text-align: left;'
+            'font-family: monospace;'
+            'font-size: 10pt;'
+            '}'
+        )
 
 
 class RecipeItem(QStandardItem):
