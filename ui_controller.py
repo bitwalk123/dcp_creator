@@ -1,5 +1,7 @@
 import json
 
+from PySide6.QtCore import Qt
+
 from app_object import AppObject
 from util_filter import UtilFilter
 
@@ -61,3 +63,42 @@ class UIController(AppObject):
             json.dump(dict_dcp, f, indent=4)
         # for debug
         print(json.dumps(dict_dcp, indent=4))
+
+    def getDCPSensorStep(self) -> list:
+        """get sensor/tep currently selected.
+        """
+        model = self.getPanelSensorsModel()
+        features = self.getPanelSensorsFeatures()
+        rows = model.rowCount()
+        cols_step = self.get_step_columns()
+        list_sensor_steps = list()
+
+        for row in range(rows):
+            for col in cols_step:
+                index = model.index(row, col)
+                state = model.data(index, role=Qt.CheckStateRole)
+                # check whether state is Qt.CheckState enum or int
+                # This is measure in case that checkbox have Qt.CheckState or int.
+                if isinstance(state, Qt.CheckState):
+                    val = state.value
+                else:
+                    val = state
+                # check comparing with int
+                if val == Qt.CheckState.Checked.value:
+                    name_sensor = features.getSensors()[row]
+                    name_unit = features.getUnits()[name_sensor]
+                    num_step = model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
+                    full_sensor = name_sensor + name_unit
+                    dict_element = {'sensor': full_sensor, 'step': str(num_step)}
+                    list_sensor_steps.append(dict_element)
+        return list_sensor_steps
+
+    def getDCPStats(self) -> list:
+        list_checked = list()
+        model = self.getPanelStatsModel()
+        rows = model.rowCount()
+        for row in range(rows):
+            item = model.item(row, 0)
+            if item.checkState() == Qt.CheckState.Checked:
+                list_checked.append(item.text())
+        return list_checked

@@ -72,7 +72,7 @@ class AppObject(QObject):
         summary.setStatModified(n_stat_valid)
 
     # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
-    # FILTER REKATED ROUTINES
+    # FILTER RELATED ROUTINES
     def getPanelSensorsFeatures(self):
         sensors = self.getPanelSensors()
         return sensors.features
@@ -80,6 +80,7 @@ class AppObject(QObject):
     def getPanelSensorsModel(self):
         sensors = self.getPanelSensors()
         return sensors.model
+
     def getPanelStatsModel(self):
         stats = self.getPanelStats()
         return stats.model
@@ -154,35 +155,3 @@ class AppObject(QObject):
                 model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
             else:
                 model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
-
-    def getDCPSensorStep(self) -> list:
-        """get sensor/tep currently selected.
-        """
-        model = self.getPanelSensorsModel()
-        features = self.getPanelSensorsFeatures()
-        rows = model.rowCount()
-
-        cols_step = self.get_step_columns()
-        list_sensor_steps = list()
-        for row in range(rows):
-            for col in cols_step:
-                index = model.index(row, col)
-                value = model.data(index, role=Qt.CheckStateRole)
-                if value == Qt.CheckState.Checked:
-                    name_sensor = features.getSensors()[row]
-                    name_unit = features.getUnits()[name_sensor]
-                    num_step = model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
-                    full_sensor = name_sensor + name_unit
-                    dict_element = {'sensor': full_sensor, 'step': str(num_step)}
-                    list_sensor_steps.append(dict_element)
-        return list_sensor_steps
-
-    def getDCPStats(self) -> list:
-        list_checked = list()
-        model = self.getPanelStatsModel()
-        rows = model.rowCount()
-        for row in range(rows):
-            item = model.item(row, 0)
-            if item.checkState() == Qt.CheckState.Checked:
-                list_checked.append(item.text())
-        return list_checked
