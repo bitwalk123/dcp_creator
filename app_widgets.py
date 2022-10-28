@@ -313,7 +313,7 @@ class Pad(QWidget):
 class RadioButton(QRadioButton):
     def __init__(self, *args):
         super().__init__(*args)
-        #self.setStyleSheet('padding: 0 1em;')
+        # self.setStyleSheet('padding: 0 1em;')
         self.setStyleSheet(
             'QRadioButton {'
             'padding:0.05em 1em;'
@@ -436,7 +436,6 @@ class SensorStepModel(QAbstractTableModel):
     def __init__(self, data: Features):
         super(SensorStepModel, self).__init__()
         self._data = data
-        # self.check_states = dict()
 
     def rowCount(self, index: QModelIndex = None):
         return self._data.getRows()
@@ -444,7 +443,7 @@ class SensorStepModel(QAbstractTableModel):
     def columnCount(self, index: QModelIndex = None):
         return self._data.getCols()
 
-    def data(self, index: QModelIndex, role: Qt.ItemDataRole):
+    def data(self, index: QModelIndex, role: int = Qt.DisplayRole):
         if role == Qt.DisplayRole:
             row = index.row()
             column = index.column()
@@ -469,15 +468,9 @@ class SensorStepModel(QAbstractTableModel):
         return self._data.getCheckColStart()
 
     def flags(self, index: QModelIndex):
-        # return (
-        #        Qt.ItemIsEnabled
-        #        | Qt.ItemIsSelectable
-        #        | Qt.ItemIsUserCheckable
-        # )
         if not index.isValid():
             return Qt.ItemIsEnabled
         elif index.column() >= self.getCheckColStart():
-            # return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
             return (
                     Qt.ItemIsEnabled
                     | Qt.ItemIsSelectable
@@ -486,7 +479,7 @@ class SensorStepModel(QAbstractTableModel):
 
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole):
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
@@ -500,7 +493,6 @@ class FrozenTableView(QTableView):
         super().__init__(parent)
         self.setAlternatingRowColors(True)
         self.setFocusPolicy(Qt.NoFocus)
-        # self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.verticalHeader().hide()
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -511,16 +503,13 @@ class MyTableView(QTableView):
     def __init__(self, model: SensorStepModel, parent=None, *args):
         QTableView.__init__(self, parent, *args)
         self.setModel(model)
-        # self.setMinimumSize(800, 400)
         self.setEditTriggers(QAbstractItemView.EditTrigger.SelectedClicked)
         self.setStyleSheet('font-family: monospace;')
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
-        # self.resizeColumnsToContents()
         self.setAlternatingRowColors(True)
         for col in range(model.getCheckColStart()):
             self.setColumnWidth(col, self.sizeHintForColumn(col))
             self.horizontalHeader().resizeSection(col, self.sizeHintForColumn(col))
-            # self.resizeColumnToContents(col)
 
         # self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
@@ -530,12 +519,9 @@ class MyTableView(QTableView):
         # FrozenTableView
         self.frozenTableView = FrozenTableView(self)
         self.frozenTableView.setModel(model)
-        # self.frozenTableView.setSelectionModel(QAbstractItemView.selectionModel(self))
         for col in range(model.getCheckColStart()):
             self.frozenTableView.setColumnWidth(col, self.frozenTableView.sizeHintForColumn(col))
             self.frozenTableView.horizontalHeader().resizeSection(col, self.frozenTableView.sizeHintForColumn(col))
-            # self.frozenTableView.resizeColumnToContents(col)
-        # self.frozenTableView.resizeColumnsToContents()
         self.viewport().stackUnder(self.frozenTableView)
         self.frozenTableView.show()
         self.updateFrozenTableGeometry()

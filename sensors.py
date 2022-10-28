@@ -49,7 +49,6 @@ class Sensors(FeatureMatrix):
         table = QTableView()
         model = SensorStepModel(self.features)
         table.setModel(model)
-        # table = MyTableView(model)
         table.setStyleSheet(self.features.style_disp)
         layout.addWidget(table)
 
