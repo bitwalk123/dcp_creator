@@ -4,14 +4,16 @@ from PySide6.QtCore import (
     Qt,
     QAbstractTableModel,
     QModelIndex,
-    QPersistentModelIndex, Signal,
+    QPersistentModelIndex,
+    Signal,
 )
 from PySide6.QtGui import (
     QBrush,
     QColor,
     QIcon,
     QPalette,
-    QStandardItem, QTextCursor,
+    QStandardItem,
+    QTextCursor,
 )
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -22,6 +24,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QMainWindow,
     QPlainTextEdit,
     QProgressDialog,
     QProxyStyle,
@@ -32,7 +35,7 @@ from PySide6.QtWidgets import (
     QStyledItemDelegate,
     QTableView,
     QVBoxLayout,
-    QWidget, QMainWindow,
+    QWidget,
 )
 
 from features import Features

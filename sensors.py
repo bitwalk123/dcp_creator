@@ -1,6 +1,7 @@
 from PySide6.QtCore import (
     Qt,
-    QRect, Signal,
+    QRect,
+    Signal,
 )
 from PySide6.QtGui import (
     QStandardItem,
