@@ -14,9 +14,9 @@ class DCPCreatorToolBar(QToolBar):
     DCPCreatorToolBar
     toolbar class of the sensor window
     """
-    openClicked = Signal()
-    dcpClicked = Signal()
-    saveClicked = Signal()
+    openCSVClicked = Signal()
+    dcpReadClicked = Signal()
+    dcpSaveClicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -28,8 +28,8 @@ class DCPCreatorToolBar(QToolBar):
         button_open.setIcon(
             QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DialogOpenButton))
         )
-        button_open.setToolTip('read summary stat data exported from the Fleet Analysis Tool.')
-        button_open.clicked.connect(self.openClicked.emit)
+        button_open.setToolTip('read Summary Stat data.')
+        button_open.clicked.connect(self.openCSVClicked.emit)
         self.addWidget(button_open)
         self.addSeparator()
         # _____________________________________________________________________
@@ -40,8 +40,8 @@ class DCPCreatorToolBar(QToolBar):
         button_dcp.setIcon(
             QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DriveFDIcon))
         )
-        button_dcp.setToolTip('load DCP file previously saved.')
-        button_dcp.clicked.connect(self.dcpClicked.emit)
+        button_dcp.setToolTip('load DCP file in JSON, previously saved.')
+        button_dcp.clicked.connect(self.dcpReadClicked.emit)
         self.addWidget(button_dcp)
         self.addSeparator()
         # Pad
@@ -68,6 +68,6 @@ class DCPCreatorToolBar(QToolBar):
         button_save.setIcon(
             QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton))
         )
-        button_save.setToolTip('save DCP info importing to the Fleet Analysis Tool.')
-        button_save.clicked.connect(self.saveClicked.emit)
+        button_save.setToolTip('save DCP file in JSON.')
+        button_save.clicked.connect(self.dcpSaveClicked.emit)
         self.addWidget(button_save)

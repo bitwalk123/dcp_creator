@@ -39,8 +39,8 @@ warnings.simplefilter('ignore', FutureWarning)
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '0.0.7'
-    __version_minor__ = '20221028'
+    __version__ = '0.0.8'
+    __version_minor__ = '20221031'
 
     # UI components
     console: LogConsole = None
@@ -222,8 +222,8 @@ class DCPCreator(QMainWindow):
         # _____________________________________________________________________
         # Toolbar
         self.toolbar = DCPCreatorToolBar()
-        self.toolbar.openClicked.connect(self.button_open_clicked)
-        self.toolbar.saveClicked.connect(self.button_save_clicked)
+        self.toolbar.openCSVClicked.connect(self.button_open_clicked)
+        self.toolbar.dcpSaveClicked.connect(self.button_save_clicked)
         self.addToolBar(Qt.TopToolBarArea, self.toolbar)
         # _____________________________________________________________________
         # Statusbar
