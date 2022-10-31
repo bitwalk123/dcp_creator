@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
     QStyledItemDelegate,
     QTableView,
     QVBoxLayout,
-    QWidget,
+    QWidget, QMessageBox,
 )
 
 from features import Features
@@ -66,6 +66,18 @@ class CheckBox(QCheckBox):
         self.setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setChecked(True)
+
+
+class DialogWarn(QMessageBox):
+    def __init__(self, msg: str):
+        super().__init__()
+        self.setWindowTitle('Warning')
+        self.setWindowIcon(
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning))
+        )
+        self.setText(msg)
+        self.setStandardButtons(QMessageBox.StandardButton.Ok)
+        self.setIcon(QMessageBox.Icon.Warning)
 
 
 class LogConsole(QWidget):
@@ -304,6 +316,19 @@ class GridLayout(QGridLayout):
         super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
+
+
+class OptionWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowIcon(
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView))
+        )
+        self.setWindowTitle('Option Window')
+        layout = QVBoxLayout()
+        self.label = QLabel('Not Implemented yet!')
+        layout.addWidget(self.label)
+        self.setLayout(layout)
 
 
 class Pad(QWidget):

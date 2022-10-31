@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from app_thread import CSVReadWorker, ParseFeaturesWorker
-from app_widgets import WorkInProgress, LogConsole
+from app_widgets import WorkInProgress, LogConsole, DialogWarn, OptionWindow
 from dcp_creator_toolbar import DCPCreatorToolBar
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_stats_selection import DCPStats
@@ -65,22 +65,29 @@ class DCPCreator(QMainWindow):
     progress_reader: WorkInProgress = None
     progress_parser: WorkInProgress = None
 
+    # Option Window
+    option_win = None
+
     def __init__(self):
         super().__init__()
         self.init_ui()
         self.resize(900, 800)
         self.setWindowTitle('DCP Creator')
-        self.setWindowIcon(QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton)))
+        self.setWindowIcon(
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton))
+        )
+        # Console output
         self.console.insertOut('Python %s' % sys.version)
         self.console.insertOut('PySide (Python for Qt) %s' % PySide6.__version__)
         self.console.insertOut('DCP Creator %s, %s' % (self.__version__, self.__version_minor__))
 
-    def button_open_clicked(self):
+    def button_open_csv_clicked(self):
         """Action for 'Open' button clicked.
         """
         # only at the first time to open
         if self.opendir is None:
             self.opendir = str(Path.home())
+        # dialog
         selection = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select CSV file',
@@ -187,7 +194,31 @@ class DCPCreator(QMainWindow):
         self.features = features
         self.main_ui()
 
-    def button_save_clicked(self):
+    def button_dcp_read_clicked(self):
+        if self.features is None:
+            dlg = DialogWarn('At first, please read summary statistics!')
+            dlg.exec()
+            return
+        # Not Implemented Yet!
+        dlg = DialogWarn('Sorry, not implemented yet!')
+        dlg.exec()
+        return
+        #
+        if self.opendir is None:
+            self.opendir = str(Path.home())
+        # dialog
+        selection = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select JSON file',
+            dir=self.opendir,
+            filter='JSON File (*.json)'
+        )
+        jsonfile = selection[0]
+        if len(jsonfile) > 0:
+            self.opendir = os.path.dirname(jsonfile)
+            print(jsonfile)
+
+    def button_dcp_save_clicked(self):
         """Action for 'Save' button clicked.
         """
         if self.controller is None:
@@ -206,6 +237,11 @@ class DCPCreator(QMainWindow):
             self.opendir = os.path.dirname(jsonfile)
             self.controller.saveJSON4DCP(jsonfile)
 
+
+    def button_option_button_clicked(self):
+        self.option_win = OptionWindow()
+        self.option_win.show()
+
     def closeEvent(self, event):
         """Close event handling.
 
@@ -222,8 +258,10 @@ class DCPCreator(QMainWindow):
         # _____________________________________________________________________
         # Toolbar
         self.toolbar = DCPCreatorToolBar()
-        self.toolbar.openCSVClicked.connect(self.button_open_clicked)
-        self.toolbar.dcpSaveClicked.connect(self.button_save_clicked)
+        self.toolbar.openCSVClicked.connect(self.button_open_csv_clicked)
+        self.toolbar.dcpReadClicked.connect(self.button_dcp_read_clicked)
+        self.toolbar.dcpSaveClicked.connect(self.button_dcp_save_clicked)
+        self.toolbar.optionButtonClicked.connect(self.button_option_button_clicked)
         self.addToolBar(Qt.TopToolBarArea, self.toolbar)
         # _____________________________________________________________________
         # Statusbar

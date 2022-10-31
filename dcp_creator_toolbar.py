@@ -17,6 +17,7 @@ class DCPCreatorToolBar(QToolBar):
     openCSVClicked = Signal()
     dcpReadClicked = Signal()
     dcpSaveClicked = Signal()
+    optionButtonClicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -58,6 +59,7 @@ class DCPCreatorToolBar(QToolBar):
             QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView))
         )
         button_option.setToolTip('Various options and utilities.')
+        button_option.clicked.connect(self.optionButtonClicked.emit)
         self.addWidget(button_option)
         self.addSeparator()
         # _____________________________________________________________________
