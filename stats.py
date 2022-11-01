@@ -40,7 +40,7 @@ class Stats(FeatureMatrix):
         table = TableView()
         model = QStandardItemModel()
 
-        # headers    QHeaderView,
+        # headers QHeaderView,
         headers = [self.name_stat]
         model.setHorizontalHeaderLabels(headers)
         model.itemChanged.connect(self.on_check_item)
@@ -61,7 +61,11 @@ class Stats(FeatureMatrix):
             # checkbox
             item.setCheckable(True)
             item.setEditable(False)
-            item.setCheckState(Qt.CheckState.Checked)
+            # In initial selection, Avg and Stddev are selected.
+            if stat == 'Avg' or stat == 'Stddev':
+                item.setCheckState(Qt.CheckState.Checked)
+            else:
+                item.setCheckState(Qt.CheckState.Unchecked)
             #
             list_row.append(item)
             #

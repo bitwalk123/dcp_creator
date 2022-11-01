@@ -40,7 +40,7 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.0.8'
-    __version_minor__ = '20221031'
+    __version_minor__ = '20221101'
 
     # UI components
     console: LogConsole = None
@@ -200,9 +200,8 @@ class DCPCreator(QMainWindow):
             dlg.exec()
             return
         # Not Implemented Yet!
-        dlg = DialogWarn('Sorry, not implemented yet!')
+        dlg = DialogWarn('Sorry, not all functions\'ve been implemented yet!\nThis is under development.')
         dlg.exec()
-        return
         #
         if self.opendir is None:
             self.opendir = str(Path.home())
