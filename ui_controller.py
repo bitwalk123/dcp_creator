@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 from PySide6.QtCore import Qt
 
@@ -102,3 +103,14 @@ class UIController(AppObject):
             if item.checkState() == Qt.CheckState.Checked:
                 list_checked.append(item.text())
         return list_checked
+
+    def readJSON4DCP(self, jsonfile):
+        """
+        _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+        read JSON file for DCP
+        _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+        """
+        with open(jsonfile) as f:
+            dict_dcp = json.load(f)
+        # for debug
+        print(json.dumps(dict_dcp, indent=4))

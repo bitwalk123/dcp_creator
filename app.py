@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+import json
 import os
 import sys
 import zipfile
+from collections import OrderedDict
 
 import PySide6
 import pandas as pd
@@ -39,8 +41,8 @@ warnings.simplefilter('ignore', FutureWarning)
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '0.0.8'
-    __version_minor__ = '20221101'
+    __version__ = '0.0.9'
+    __version_minor__ = '20221107'
 
     # UI components
     console: LogConsole = None
@@ -215,7 +217,8 @@ class DCPCreator(QMainWindow):
         jsonfile = selection[0]
         if len(jsonfile) > 0:
             self.opendir = os.path.dirname(jsonfile)
-            print(jsonfile)
+            self.controller.readJSON4DCP(jsonfile)
+
 
     def button_dcp_save_clicked(self):
         """Action for 'Save' button clicked.
