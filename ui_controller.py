@@ -124,7 +124,7 @@ class UIController(AppObject):
         self.setDCPStats(dict_dcp)
 
     def clearDCPSensorStep(self):
-        """clear sensor/step selection.
+        """clear check status of sensor/step selection.
         """
         model = self.getPanelSensorsModel()
         rows = model.rowCount()
@@ -136,7 +136,7 @@ class UIController(AppObject):
                 model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
 
     def clearDCPStats(self):
-        """clear summary statistics.
+        """clear check status of summary statistics.
         """
         model = self.getPanelStatsModel()
         rows = model.rowCount()
@@ -145,6 +145,8 @@ class UIController(AppObject):
             item.setData(Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
 
     def setDCPSensorStep(self, dict_dcp: dict):
+        """set sensor/step checked based on dict
+        """
         features = self.getPanelSensorsFeatures()
         model = self.getPanelSensorsModel()
 
@@ -182,6 +184,8 @@ class UIController(AppObject):
             model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
 
     def setDCPStats(self, dict_dcp: dict):
+        """set summary statistics checked based on dict
+        """
         model = self.getPanelStatsModel()
         rows = model.rowCount()
 
@@ -189,6 +193,8 @@ class UIController(AppObject):
             for row in range(rows):
                 item = model.item(row, 0)
                 if item.text() == name_stat:
-                    print(name_stat)
-                    item.setData(2, role=Qt.CheckStateRole)
+                    # ** ATTENTION **
+                    # Probably, this should be following:
+                    # -> item.setData(Qt.CheckState.Checked, role=Qt.CheckStateRole)
+                    item.setData(Qt.CheckState.Checked.value, role=Qt.CheckStateRole)
 

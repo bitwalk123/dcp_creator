@@ -42,7 +42,7 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.0.9'
-    __version_minor__ = '20221107'
+    __version_minor__ = '20221108'
 
     # UI components
     console: LogConsole = None
@@ -201,10 +201,7 @@ class DCPCreator(QMainWindow):
             dlg = DialogWarn('At first, please read summary statistics!')
             dlg.exec()
             return
-        # Not Implemented Yet!
-        dlg = DialogWarn('Sorry, not all functions\'ve been implemented yet!\nThis is under development.')
-        dlg.exec()
-        #
+        # default directory to open
         if self.opendir is None:
             self.opendir = str(Path.home())
         # dialog
@@ -226,8 +223,10 @@ class DCPCreator(QMainWindow):
         if self.controller is None:
             print('There is no data!')
             return
+        # default directory to open
         if self.opendir is None:
             self.opendir = str(Path.home())
+        # dialog
         selection = QFileDialog.getSaveFileName(
             parent=self,
             caption='Specify name of JSON file to save',
