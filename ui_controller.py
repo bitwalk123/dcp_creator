@@ -66,7 +66,7 @@ class UIController(AppObject):
         print(json.dumps(dict_dcp, indent=4))
 
     def getDCPSensorStep(self) -> list:
-        """get sensor/tep currently selected.
+        """get sensor/step currently selected.
         """
         model = self.getPanelSensorsModel()
         features = self.getPanelSensorsFeatures()
@@ -95,6 +95,8 @@ class UIController(AppObject):
         return list_sensor_steps
 
     def getDCPStats(self) -> list:
+        """get summary statistics currently selected.
+        """
         list_checked = list()
         model = self.getPanelStatsModel()
         rows = model.rowCount()
@@ -113,4 +115,80 @@ class UIController(AppObject):
         with open(jsonfile) as f:
             dict_dcp = json.load(f)
         # for debug
-        print(json.dumps(dict_dcp, indent=4))
+        # print(json.dumps(dict_dcp, indent=4))
+        # reset ChackState in Sensor/Stap and Summary Statistics
+        self.clearDCPSensorStep()
+        self.clearDCPStats()
+        # reflect jason file on the CheckStates
+        self.setDCPSensorStep(dict_dcp)
+        self.setDCPStats(dict_dcp)
+
+    def clearDCPSensorStep(self):
+        """clear sensor/step selection.
+        """
+        model = self.getPanelSensorsModel()
+        rows = model.rowCount()
+        cols_step = self.get_step_columns()
+
+        for row in range(rows):
+            for col in cols_step:
+                index = model.index(row, col)
+                model.setData(index, Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
+
+    def clearDCPStats(self):
+        """clear summary statistics.
+        """
+        model = self.getPanelStatsModel()
+        rows = model.rowCount()
+        for row in range(rows):
+            item = model.item(row, 0)
+            item.setData(Qt.CheckState.Unchecked, role=Qt.CheckStateRole)
+
+    def setDCPSensorStep(self, dict_dcp: dict):
+        features = self.getPanelSensorsFeatures()
+        model = self.getPanelSensorsModel()
+
+        for dict_sensor_step in dict_dcp['sensor_steps']:
+            sensor_unit = dict_sensor_step['sensor']
+            step = dict_sensor_step['step']
+
+            sensor = None
+            unit = None
+
+            # Feature with [unit1][unit2]
+            result1 = features.pattern_feature_2_units_nostepstat.match(sensor_unit)
+            if result1:
+                sensor = result1.group(1)
+                unit = result1.group(2)
+            else:
+                # Feature with [unit]
+                result2 = features.pattern_feature_1_unit_nostepstat.match(sensor_unit)
+                if result2:
+                    sensor = result2.group(1)
+                    unit= result2.group(2)
+                else:
+                    # Feature w/o [unit]
+                    result3 = features.pattern_feature_no_unit_nostepstat.match(sensor_unit)
+                    if result3:
+                        sensor = result3.group(1)
+                        units = ''
+                    else:
+                        # No match!
+                        print('ERROR @ %s' % sensor_unit)
+            # set CheckState.Checked
+            row = self.get_sensor_row(sensor)
+            col = self.find_header_label(int(step))
+            index = model.index(row, col)
+            model.setData(index, Qt.CheckState.Checked, role=Qt.CheckStateRole)
+
+    def setDCPStats(self, dict_dcp: dict):
+        model = self.getPanelStatsModel()
+        rows = model.rowCount()
+
+        for name_stat in dict_dcp['statistics']:
+            for row in range(rows):
+                item = model.item(row, 0)
+                if item.text() == name_stat:
+                    print(name_stat)
+                    item.setData(2, role=Qt.CheckStateRole)
+

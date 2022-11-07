@@ -24,6 +24,11 @@ class Features:
     pattern_feature_2_units = re.compile(r'^([^_]+\[.+\])(\[.+\])_([+-]?\d+|All\sSteps)_(.+)$')
     pattern_feature_1_unit = re.compile(r'^([^_]+)(\[.+\])_([+-]?\d+|All\sSteps)_(.+)$')
     pattern_feature_no_unit = re.compile(r'^([^_]+)_([+-]?\d+|All\sSteps)_(.+)$')
+
+    pattern_feature_2_units_nostepstat = re.compile(r'^([^_]+\[.+\])(\[.+\])$')
+    pattern_feature_1_unit_nostepstat = re.compile(r'^([^_]+)(\[.+\])$')
+    pattern_feature_no_unit_nostepstat = re.compile(r'^([^_]+)$')
+
     pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
     pattern_sensor_general_counter = re.compile(r'^General Counter')
     pattern_sensor_add_line = re.compile(r'^Add Line')
@@ -69,42 +74,7 @@ class Features:
         steps = list()
         stats = list()
         for feature in self.headers_feature:
-            sensor = None
-            # Feature with [unit1][unit2]
-            result1 = self.pattern_feature_2_units.match(feature)
-            if result1:
-                sensor = result1.group(1)
-                sensors.append(sensor)
-                if sensor not in units:
-                    units[sensor] = result1.group(2)
-                if is_num(result1.group(3)):
-                    steps.append(int(result1.group(3)))
-                stats.append(result1.group(4))
-            else:
-                # Feature with [unit]
-                result2 = self.pattern_feature_1_unit.match(feature)
-                if result2:
-                    sensor = result2.group(1)
-                    sensors.append(sensor)
-                    if sensor not in units:
-                        units[sensor] = result2.group(2)
-                    if is_num(result2.group(3)):
-                        steps.append(int(result2.group(3)))
-                    stats.append(result2.group(4))
-                else:
-                    # Feature w/o [unit]
-                    result3 = self.pattern_feature_no_unit.match(feature)
-                    if result3:
-                        sensor = result3.group(1)
-                        sensors.append(sensor)
-                        if sensor not in units:
-                            units[sensor] = ''
-                        if is_num(result3.group(2)):
-                            steps.append(int(result3.group(2)))
-                        stats.append(result3.group(3))
-                    else:
-                        # No match!
-                        print('ERROR @ %s' % feature)
+            self.sensor_unit_step(feature, sensors, stats, steps, units)
 
         # _____________________________________________________________________
         # Unique, Sort
@@ -120,6 +90,44 @@ class Features:
         self.sensors = sensors
         self.stats = stats
         self.units = units
+
+    def sensor_unit_step(self, feature, sensors, stats, steps, units):
+        sensor = None
+        # Feature with [unit1][unit2]
+        result1 = self.pattern_feature_2_units.match(feature)
+        if result1:
+            sensor = result1.group(1)
+            sensors.append(sensor)
+            if sensor not in units:
+                units[sensor] = result1.group(2)
+            if is_num(result1.group(3)):
+                steps.append(int(result1.group(3)))
+            stats.append(result1.group(4))
+        else:
+            # Feature with [unit]
+            result2 = self.pattern_feature_1_unit.match(feature)
+            if result2:
+                sensor = result2.group(1)
+                sensors.append(sensor)
+                if sensor not in units:
+                    units[sensor] = result2.group(2)
+                if is_num(result2.group(3)):
+                    steps.append(int(result2.group(3)))
+                stats.append(result2.group(4))
+            else:
+                # Feature w/o [unit]
+                result3 = self.pattern_feature_no_unit.match(feature)
+                if result3:
+                    sensor = result3.group(1)
+                    sensors.append(sensor)
+                    if sensor not in units:
+                        units[sensor] = ''
+                    if is_num(result3.group(2)):
+                        steps.append(int(result3.group(2)))
+                    stats.append(result3.group(3))
+                else:
+                    # No match!
+                    print('ERROR @ %s' % feature)
 
     def checkFeatureValid(self, sensor: str, step: int, stat: str = None) -> bool:
         """

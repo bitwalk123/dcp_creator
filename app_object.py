@@ -104,6 +104,12 @@ class AppObject(QObject):
                 break
         return col
 
+    def get_sensor_row(self, sensor)-> int:
+        features = self.getPanelSensorsFeatures()
+        for row in range(features.getRows()):
+            if features.getSensors()[row] == sensor:
+                return row
+
     def find_sensor_with_regex(self, pattern):
         features = self.getPanelSensorsFeatures()
         list_row = list()
