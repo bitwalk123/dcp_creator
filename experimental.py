@@ -1,15 +1,15 @@
 import pandas as pd
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QSizePolicy, QWidget
-
+from PySide6.QtWidgets import (
+    QSizePolicy,
+    QWidget, QFrame,
+)
 from app_widgets import (
-    GridLayout,
     HBoxLayout,
-    LabelCell,
-    LabelHead,
     VBoxLayout,
 )
-from base.feature_matrix import FeatureMatrix
+from experimental_dataframe import ExperimentalDataframe
+from features import Features
 
 
 class Experimental(QWidget):
@@ -18,50 +18,50 @@ class Experimental(QWidget):
     panel_1 = None
     #
     df = None
+    col_chamber = None
 
-    def __init__(self):
+    def __init__(self, features: Features):
         super().__init__()
+        self.features = features
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         #
         self.init_ui()
 
     def init_ui(self):
-        """
-        init_ui
-        initialize UI
+        """Initialize UI
         """
         layout_base = VBoxLayout()
         self.setLayout(layout_base)
-        #
-        layout_row_0 = HBoxLayout()
-        layout_base.addLayout(layout_row_0)
-        # Dataframe Information
+        # row 0
+        row_0_layout = HBoxLayout()
+        layout_base.addLayout(row_0_layout)
+        # panel_1: Dataframe Information
         self.panel_1 = ExperimentalDataframe()
-        layout_row_0.addWidget(self.panel_1)
+        row_0_layout.addWidget(self.panel_1)
+        # row 1
+        row_1_frame = QFrame()
+        row_1_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        row_1_frame.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Sunken)
+        row_1_frame.setLineWidth(2)
+        layout_base.addWidget(row_1_frame)
 
-    def update_ui(self, df: pd.DataFrame):
+    def update_ui(self, df: pd.DataFrame, col_chamber: str, list_feature_selected: list):
         self.df = df
-        # ExperimentalDataframe
+        self.col_chamber = col_chamber
+        # _____________________________________________________________________
+        # panel_1: ExperimentalDataframe
         # shape
         self.panel_1.set_df_shape(str(df.shape))
+        # Wafer
+        self.panel_1.set_info_wafer(df.shape[0])
+        # Recipe
+        list_recipe = self.features.getRecipe()
+        self.panel_1.set_info_recipe(list_recipe)
+        # Tool/Chamber
+        list_chamber = sorted(list(set(df[col_chamber])))
+        self.panel_1.set_info_chamber(list_chamber)
+        # Features
+        self.panel_1.set_info_feature(list_feature_selected)
 
-class ExperimentalDataframe(QWidget):
-    style_cell = 'padding:2px 5px; font-family:monospace;'
-    lab_df_shape = None
-
-    def __init__(self):
-        super().__init__()
-        layout = GridLayout()
-        self.setLayout(layout)
-        #
-        row = 0
-        lab = LabelHead('DataFrame', self.style_cell)
-        layout.addWidget(lab, row, 0)
-        self.lab_df_shape = LabelCell('', self.style_cell)
-        layout.addWidget(self.lab_df_shape, row, 1)
-        row += 1
-        lab = LabelHead('', self.style_cell)
-        layout.addWidget(lab, row, 0)
-
-    def set_df_shape(self, shape: str):
-        self.lab_df_shape.setText(shape)
+    def clear_ui(self):
+        pass

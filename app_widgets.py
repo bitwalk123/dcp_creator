@@ -9,7 +9,6 @@ from PySide6.QtCore import (
 from PySide6.QtGui import (
     QIcon,
     QPalette,
-    QTextCursor,
 )
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -20,7 +19,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
-    QPlainTextEdit,
     QProgressDialog,
     QProxyStyle,
     QPushButton,
@@ -36,20 +34,6 @@ from PySide6.QtWidgets import (
 from features import Features
 
 
-class MenuButton(QPushButton):
-    def __init__(self, *args):
-        super().__init__(*args)
-        self.setStyleSheet(
-            'QPushButton {'
-            'padding:0.25em 1em;'
-            'text-align: left;'
-            'font-family: monospace;'
-            'font-size: 10pt;'
-            '}'
-        )
-        self.setCheckable(True)
-
-
 class CheckBox(QCheckBox):
     """
     CheckBox
@@ -63,6 +47,12 @@ class CheckBox(QCheckBox):
         self.setChecked(True)
 
 
+class ComboBox(QComboBox):
+    def __init__(self):
+        super().__init__()
+        self.setContentsMargins(0, 0, 0, 0)
+
+
 class DialogWarn(QMessageBox):
     def __init__(self, msg: str):
         super().__init__()
@@ -73,83 +63,6 @@ class DialogWarn(QMessageBox):
         self.setText(msg)
         self.setStandardButtons(QMessageBox.StandardButton.Ok)
         self.setIcon(QMessageBox.Icon.Warning)
-
-
-class LogConsole(QWidget):
-    prompt = '> '
-    eol = '\n'
-
-    def __init__(self):
-        super().__init__()
-        self.setContentsMargins(0, 0, 0, 0)
-        layout_horiz = QHBoxLayout()
-        layout_horiz.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout_horiz)
-        # log
-        self.log = QPlainTextEdit()
-        self.log.setFixedHeight(100)
-        self.log.setStyleSheet(
-            'font-family: monospace; '
-            'font-size: 9pt; '
-            'padding: 5px 5px;'
-        )
-        self.log.setReadOnly(True)
-        self.log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        layout_horiz.addWidget(self.log)
-        # control
-        self.control = QWidget()
-        layout_horiz.addWidget(self.control)
-        #
-        layout_vert = VBoxLayout()
-        self.control.setLayout(layout_vert)
-        # save log
-        but_file = QPushButton(
-            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogStart)),
-            None
-        )
-        but_file.setToolTip('save log to file.')
-        but_file.setContentsMargins(0, 0, 0, 0)
-        layout_vert.addWidget(but_file)
-        layout_vert.setContentsMargins(0, 0, 0, 0)
-        # padding
-        vpad = QWidget()
-        vpad.setContentsMargins(0, 0, 0, 0)
-        layout_vert.addWidget(vpad)
-        vpad.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        # trash log
-        but_trash = QPushButton(
-            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TrashIcon)),
-            None
-        )
-        but_trash.setContentsMargins(0, 0, 0, 0)
-        but_trash.setToolTip('clear log on the console.')
-        layout_vert.addWidget(but_trash)
-
-    def insertLine(self, line):
-        self.log.insertPlainText(line)
-        self.log.moveCursor(QTextCursor.End)
-
-    def insertIn(self, msg):
-        line = msg + self.eol
-        self.insertLine(line)
-
-    def insertOut(self, msg):
-        line = self.prompt + msg + self.eol
-        self.insertLine(line)
-
-    def insertCompleted(self, elapsed: float):
-        line = 'done. (elapsed {:.3f} sec)'.format(elapsed) + self.eol
-        self.insertLine(line)
-
-    def insertAttention(self):
-        line = '■■■ ATTENTION ■■■' + self.eol
-        self.insertLine(line)
-
-
-class ComboBox(QComboBox):
-    def __init__(self):
-        super().__init__()
-        self.setContentsMargins(0, 0, 0, 0)
 
 
 class Label(QLabel):
@@ -214,10 +127,10 @@ class LabelNumeric(LabelCell):
     LabelNumeric
     """
 
-    def __init__(self, num: Union[float, int], style_cell: str):
+    def __init__(self, num: Union[float, int, str], style_cell: str):
         super().__init__(str(num), style_cell)
         self.setAlignment(Qt.AlignRight)
-        self.setStyleSheet('background-color:white;')
+        # self.setStyleSheet('background-color:white;')
         # align
 
     def setValue(self, num: Union[float, int]):
@@ -261,6 +174,20 @@ class HBoxLayout(QHBoxLayout):
         super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
+
+
+class MenuButton(QPushButton):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.setStyleSheet(
+            'QPushButton {'
+            'padding:0.25em 1em;'
+            'text-align: left;'
+            'font-family: monospace;'
+            'font-size: 10pt;'
+            '}'
+        )
+        self.setCheckable(True)
 
 
 class OptionWindow(QWidget):

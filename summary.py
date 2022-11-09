@@ -12,6 +12,7 @@ from features import Features
 
 class Summary(FeatureMatrix):
     style_cell = 'padding:2px 5px; font-family:monospace;'
+    style_numeric = 'padding:2px 5px; font-family:monospace; background-color:white'
 
     # Recipe
     combo_recipe: ComboBox = None
@@ -56,13 +57,13 @@ class Summary(FeatureMatrix):
         row += 1
         lab = LabelHead('Chamber', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_chamber = LabelNumeric(0, self.style_cell)
+        self.lab_chamber = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_chamber, row, 1)
         #
         row += 1
         lab = LabelHead('Wafer', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_wafer = LabelNumeric(0, self.style_cell)
+        self.lab_wafer = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_wafer, row, 1)
         #
         row += 1
@@ -76,29 +77,29 @@ class Summary(FeatureMatrix):
         row += 1
         lab = LabelHead('Feature', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_feature_original = LabelNumeric(0, self.style_cell)
+        self.lab_feature_original = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_feature_original, row, 1)
-        self.lab_feature_modified = LabelNumeric(0, self.style_cell)
+        self.lab_feature_modified = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_feature_modified, row, 2)
         #
         row += 1
         lab = LabelHead('Sensor', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_sensor = LabelNumeric(0, self.style_cell)
+        self.lab_sensor = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_sensor, row, 1)
         #
         row += 1
         lab = LabelHead('Step', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_step = LabelNumeric(0, self.style_cell)
+        self.lab_step = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_step, row, 1)
         #
         row += 1
         lab = LabelHead('Statistics', self.style_cell)
         layout.addWidget(lab, row, 0)
-        self.lab_stat_original = LabelNumeric(0, self.style_cell)
+        self.lab_stat_original = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_stat_original, row, 1)
-        self.lab_stat_modified = LabelNumeric(0, self.style_cell)
+        self.lab_stat_modified = LabelNumeric(0, self.style_numeric)
         layout.addWidget(self.lab_stat_modified, row, 2)
 
     def setRecipe(self):

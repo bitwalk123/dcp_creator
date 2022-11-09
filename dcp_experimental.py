@@ -16,6 +16,7 @@ class DCPExperimental(TabWindow):
     """
     experimental = None
     col_chamber = 'Tool/Chamber'
+    list_feature_selected = None
     # for PCA
     df = None
 
@@ -43,10 +44,9 @@ class DCPExperimental(TabWindow):
         central = QScrollArea()
         central.setWidgetResizable(True)
         self.setCentralWidget(central)
-        self.experimental = Experimental()
+        self.experimental = Experimental(self.features)
         self.experimental.logMessage.connect(self.showLog)
         central.setWidget(self.experimental)
-
 
     def prep_df_from_dcp(self):
         """Based on DCP, prepare Dataframe from source data currently loaded to this application.
@@ -59,5 +59,7 @@ class DCPExperimental(TabWindow):
         df: pd.DataFrame = self.features.df_source[colname_dcp]
         df.insert(0, self.col_chamber, self.features.df_source[self.features.src_chamber])
         self.df = df
+        self.list_feature_selected = colname_dcp
+
     def update_experimental(self):
-        self.experimental.update_ui(self.df)
+        self.experimental.update_ui(self.df, self.col_chamber, self.list_feature_selected)

@@ -28,7 +28,8 @@ from PySide6.QtWidgets import (
 )
 
 from app_thread import CSVReadWorker, ParseFeaturesWorker
-from app_widgets import WorkInProgress, LogConsole, DialogWarn, OptionWindow
+from app_widgets import WorkInProgress, DialogWarn, OptionWindow
+from base.log_console import LogConsole
 from app_toolbar import DCPCreatorToolBar
 from dcp_experimental import DCPExperimental
 from dcp_sensor_selection import DCPSensorSelection
