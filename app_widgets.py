@@ -186,8 +186,7 @@ class LabelFrameNarrow(Label):
 
 
 class LabelCell(QLabel):
-    """
-    LabelCell
+    """    LabelCell
     label for the cell in the DCP matrix
     """
 

@@ -11,7 +11,7 @@ from features import Features
 
 
 class Summary(FeatureMatrix):
-    style_cell = 'padding:2px 5px;'
+    style_cell = 'padding:2px 5px; font-family:monospace;'
 
     # Recipe
     combo_recipe: ComboBox = None

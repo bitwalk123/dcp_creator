@@ -11,6 +11,8 @@ import pandas as pd
 import warnings
 
 from pathlib import Path
+
+import sklearn
 from PySide6.QtCore import (
     Qt,
     QThread,
@@ -58,6 +60,9 @@ class DCPCreator(QMainWindow):
     # directory location
     opendir: str = None
 
+    # image/icon location
+    imgdir = 'image'
+
     # thread instances
     reader: CSVReadWorker = None
     parser: ParseFeaturesWorker = None
@@ -76,18 +81,19 @@ class DCPCreator(QMainWindow):
         self.init_ui()
         self.resize(1000, 800)
         self.setWindowTitle('DCP Creator')
-        self.setWindowIcon(QIcon(self.style().standardIcon(
-            QStyle.StandardPixmap.SP_TitleBarMenuButton
-        )))
+        self.setWindowIcon(QIcon(os.path.join(self.imgdir, 'logo.png')))
         # Console output
         self.console.insertOut(
-            'Python %s' % sys.version
+            'Python {}'.format(sys.version)
         )
         self.console.insertOut(
-            'PySide (Python for Qt) %s' % PySide6.__version__
+            'PySide (Python for Qt) {}'.format(PySide6.__version__)
         )
         self.console.insertOut(
-            'DCP Creator %s, %s' % (self.__version__, self.__version_minor__)
+            'scikit-learn {}'.format(sklearn.__version__)
+        )
+        self.console.insertOut(
+            'DCP Creator {}, {}'.format(self.__version__, self.__version_minor__)
         )
 
     def button_open_csv_clicked(self):
