@@ -24,7 +24,7 @@ class Experimental(QWidget):
         super().__init__()
         self.features = features
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        #
+        # initialize UI
         self.init_ui()
 
     def init_ui(self):
