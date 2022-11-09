@@ -14,11 +14,11 @@ from PySide6.QtWidgets import (
 
 from app_widgets import (
     CheckBoxDelegate,
-    FeatureMatrix,
     ProxyStyle4CheckBoxCenter,
     SensorStepModel,
     VBoxLayout,
 )
+from base.feature_matrix import FeatureMatrix
 from features import Features
 from sensors_chart import SensorChart
 

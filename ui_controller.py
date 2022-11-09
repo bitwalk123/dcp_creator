@@ -54,16 +54,20 @@ class UIController(AppObject):
         save JSON file for DCP
         _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
         """
-        dict_dcp = {
-            'sensor_steps': self.getDCPSensorStep(),
-            'statistics': self.getDCPStats()
-        }
+        dict_dcp = self.getDictDCP()
         # _____________________________________________________________________
         # OUTPUT
         with open(filename, 'w') as f:
             json.dump(dict_dcp, f, indent=4)
         # for debug
         print(json.dumps(dict_dcp, indent=4))
+
+    def getDictDCP(self):
+        dict_dcp = {
+            'sensor_steps': self.getDCPSensorStep(),
+            'statistics': self.getDCPStats()
+        }
+        return dict_dcp
 
     def getDCPSensorStep(self) -> list:
         """get sensor/step currently selected.
@@ -116,7 +120,7 @@ class UIController(AppObject):
             dict_dcp = json.load(f)
         # for debug
         # print(json.dumps(dict_dcp, indent=4))
-        # reset ChackState in Sensor/Stap and Summary Statistics
+        # reset CheckState in Sensor/Stap and Summary Statistics
         self.clearDCPSensorStep()
         self.clearDCPStats()
         # reflect jason file on the CheckStates

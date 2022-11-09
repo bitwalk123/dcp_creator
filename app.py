@@ -27,7 +27,8 @@ from PySide6.QtWidgets import (
 
 from app_thread import CSVReadWorker, ParseFeaturesWorker
 from app_widgets import WorkInProgress, LogConsole, DialogWarn, OptionWindow
-from dcp_creator_toolbar import DCPCreatorToolBar
+from app_toolbar import DCPCreatorToolBar
+from dcp_experimental import DCPExperimental
 from dcp_sensor_selection import DCPSensorSelection
 from dcp_stats_selection import DCPStats
 from dcp_step_value_setting import DCPStepValueSetting
@@ -41,8 +42,8 @@ warnings.simplefilter('ignore', FutureWarning)
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '0.0.9'
-    __version_minor__ = '20221108'
+    __version__ = '0.1.0'
+    __version_minor__ = '20221109'
 
     # UI components
     console: LogConsole = None
@@ -73,15 +74,21 @@ class DCPCreator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.init_ui()
-        self.resize(900, 800)
+        self.resize(1000, 800)
         self.setWindowTitle('DCP Creator')
-        self.setWindowIcon(
-            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton))
-        )
+        self.setWindowIcon(QIcon(self.style().standardIcon(
+            QStyle.StandardPixmap.SP_TitleBarMenuButton
+        )))
         # Console output
-        self.console.insertOut('Python %s' % sys.version)
-        self.console.insertOut('PySide (Python for Qt) %s' % PySide6.__version__)
-        self.console.insertOut('DCP Creator %s, %s' % (self.__version__, self.__version_minor__))
+        self.console.insertOut(
+            'Python %s' % sys.version
+        )
+        self.console.insertOut(
+            'PySide (Python for Qt) %s' % PySide6.__version__
+        )
+        self.console.insertOut(
+            'DCP Creator %s, %s' % (self.__version__, self.__version_minor__)
+        )
 
     def button_open_csv_clicked(self):
         """Action for 'Open' button clicked.
@@ -102,6 +109,156 @@ class DCPCreator(QMainWindow):
             self.opendir = os.path.dirname(csvfile)
             self.console.insertIn('reading %s.' % csvfile)
             self.read_csv(csvfile)
+
+    def button_dcp_read_clicked(self):
+        if self.features is None:
+            dlg = DialogWarn('At first, please read summary statistics!')
+            dlg.exec()
+            return
+        # default directory to open
+        if self.opendir is None:
+            self.opendir = str(Path.home())
+        # dialog
+        selection = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select JSON file',
+            dir=self.opendir,
+            filter='JSON File (*.json)'
+        )
+        jsonfile = selection[0]
+        if len(jsonfile) > 0:
+            self.opendir = os.path.dirname(jsonfile)
+            self.controller.readJSON4DCP(jsonfile)
+
+    def button_dcp_save_clicked(self):
+        """Action for 'Save' button clicked.
+        """
+        if self.controller is None:
+            print('There is no data!')
+            return
+        # default directory to open
+        if self.opendir is None:
+            self.opendir = str(Path.home())
+        # dialog
+        selection = QFileDialog.getSaveFileName(
+            parent=self,
+            caption='Specify name of JSON file to save',
+            dir=os.path.join(self.opendir, 'dcp.json'),
+            filter='JSON File (*.json)'
+        )
+        jsonfile = selection[0]
+        if len(jsonfile) > 0:
+            self.opendir = os.path.dirname(jsonfile)
+            self.controller.saveJSON4DCP(jsonfile)
+
+    def button_option_button_clicked(self):
+        self.option_win = OptionWindow()
+        self.option_win.show()
+
+    def closeEvent(self, event):
+        """Close event handling.
+
+        Parameters
+        ----------
+        event: QCloseEvent
+        """
+        print('Exiting application ...')
+        event.accept()
+
+    def init_ui(self):
+        """Initialize UI
+        """
+        # _____________________________________________________________________
+        # Toolbar
+        self.toolbar = DCPCreatorToolBar()
+        self.toolbar.openCSVClicked.connect(self.button_open_csv_clicked)
+        self.toolbar.dcpReadClicked.connect(self.button_dcp_read_clicked)
+        self.toolbar.dcpSaveClicked.connect(self.button_dcp_save_clicked)
+        self.toolbar.optionButtonClicked.connect(self.button_option_button_clicked)
+        self.addToolBar(Qt.TopToolBarArea, self.toolbar)
+        # _____________________________________________________________________
+        # Statusbar
+        statusbar = QStatusBar()
+        self.setStatusBar(statusbar)
+        self.console = LogConsole()
+        statusbar.addWidget(self.console, stretch=1)
+
+    def main_ui(self):
+        """Main UI
+        """
+        # remove central widget if exists.
+        self.takeCentralWidget()
+        # make new tab widget
+        self.tab = tab = QTabWidget()
+        self.setCentralWidget(tab)
+        # page creation to be added to tab
+        page = {
+            'summary': DCPSummary(self.features),
+            'sensors': DCPSensorSelection(self.features),
+            'recipe': DCPStepValueSetting(self.features),
+            'stats': DCPStats(self.features),
+        }
+        # tab creation
+        self.tab.addTab(page['summary'], 'Summary')
+        self.tab.addTab(page['sensors'], 'Sensor Selection')
+        self.tab.addTab(page['recipe'], 'Setting Data')
+        self.tab.addTab(page['stats'], 'Summary Stats')
+        # Log event
+        page['summary'].logMessage.connect(self.showLog)
+        page['sensors'].logMessage.connect(self.showLog)
+        page['recipe'].logMessage.connect(self.showLog)
+        page['stats'].logMessage.connect(self.showLog)
+        # _____________________________________________________________________
+        # for tab click event
+        self.tab.currentChanged.connect(self.tab_changed)
+        # _____________________________________________________________________
+        # Controller for tab and other UI interaction
+        self.controller = UIController(page)
+        # Experimental
+        page['experimental'] = DCPExperimental(self.features, self.controller)
+        self.tab.addTab(page['experimental'], 'Experimental')
+        page['experimental'].logMessage.connect(self.showLog)
+
+    def parse_features(self, df: pd.DataFrame):
+        """Parser for exported summary statistics (feature) in dataframe.
+
+        Parameters
+        ----------
+        df: pd.DataFrame
+        """
+        # _____________________________________________________________________
+        # Prep. Threading
+        self.parser = ParseFeaturesWorker(df)
+        self.thread_parser = QThread(self)
+        self.parser.moveToThread(self.thread_reader)
+        # Controller
+        self.thread_parser.started.connect(self.parser.run)
+        self.parser.finished.connect(self.thread_parser.quit)
+        self.parser.finished.connect(self.parser.deleteLater)
+        self.thread_parser.finished.connect(self.thread_parser.deleteLater)
+        self.parser.parseCompleted.connect(self.parse_features_completed)
+        # Start Threading
+        self.thread_parser.start()
+        self.progress_parser = WorkInProgress(self, 'Parsing ...')
+        self.progress_parser.show()
+
+    def parse_features_completed(self, features: Features, elapsed: float):
+        """Event handler when thread of parse_feature is completed.
+
+        Parameters
+        ----------
+        features: Features
+        """
+        self.progress_parser.cancel()
+        # Log
+        self.console.insertCompleted(elapsed)
+
+        self.console.insertOut(features.getLogDfShape())
+        self.console.insertOut(features.getLogStep())
+        self.console.insertOut(features.getLogStat())
+        #
+        self.features = features
+        self.main_ui()
 
     def read_csv(self, csvfile: str):
         """Read CSV file in a thread.
@@ -154,154 +311,6 @@ class DCPCreator(QMainWindow):
         self.console.insertCompleted(elapsed)
         self.console.insertIn('Parsing data.')
         self.parse_features(df)
-
-    def parse_features(self, df: pd.DataFrame):
-        """Parser for exported summary statistics (feature) in dataframe.
-
-        Parameters
-        ----------
-        df: pd.DataFrame
-        """
-        # _____________________________________________________________________
-        # Prep. Threading
-        self.parser = ParseFeaturesWorker(df)
-        self.thread_parser = QThread(self)
-        self.parser.moveToThread(self.thread_reader)
-        # Controller
-        self.thread_parser.started.connect(self.parser.run)
-        self.parser.finished.connect(self.thread_parser.quit)
-        self.parser.finished.connect(self.parser.deleteLater)
-        self.thread_parser.finished.connect(self.thread_parser.deleteLater)
-        self.parser.parseCompleted.connect(self.parse_features_completed)
-        # Start Threading
-        self.thread_parser.start()
-        self.progress_parser = WorkInProgress(self, 'Parsing ...')
-        self.progress_parser.show()
-
-    def parse_features_completed(self, features: Features, elapsed: float):
-        """Event handler when thread of parse_feature is completed.
-
-        Parameters
-        ----------
-        features: Features
-        """
-        self.progress_parser.cancel()
-        # Log
-        self.console.insertCompleted(elapsed)
-
-        self.console.insertOut(features.getLogDfShape())
-        self.console.insertOut(features.getLogStep())
-        self.console.insertOut(features.getLogStat())
-        #
-        self.features = features
-        self.main_ui()
-
-    def button_dcp_read_clicked(self):
-        if self.features is None:
-            dlg = DialogWarn('At first, please read summary statistics!')
-            dlg.exec()
-            return
-        # default directory to open
-        if self.opendir is None:
-            self.opendir = str(Path.home())
-        # dialog
-        selection = QFileDialog.getOpenFileName(
-            parent=self,
-            caption='Select JSON file',
-            dir=self.opendir,
-            filter='JSON File (*.json)'
-        )
-        jsonfile = selection[0]
-        if len(jsonfile) > 0:
-            self.opendir = os.path.dirname(jsonfile)
-            self.controller.readJSON4DCP(jsonfile)
-
-
-    def button_dcp_save_clicked(self):
-        """Action for 'Save' button clicked.
-        """
-        if self.controller is None:
-            print('There is no data!')
-            return
-        # default directory to open
-        if self.opendir is None:
-            self.opendir = str(Path.home())
-        # dialog
-        selection = QFileDialog.getSaveFileName(
-            parent=self,
-            caption='Specify name of JSON file to save',
-            dir=os.path.join(self.opendir, 'dcp.json'),
-            filter='JSON File (*.json)'
-        )
-        jsonfile = selection[0]
-        if len(jsonfile) > 0:
-            self.opendir = os.path.dirname(jsonfile)
-            self.controller.saveJSON4DCP(jsonfile)
-
-
-    def button_option_button_clicked(self):
-        self.option_win = OptionWindow()
-        self.option_win.show()
-
-    def closeEvent(self, event):
-        """Close event handling.
-
-        Parameters
-        ----------
-        event: QCloseEvent
-        """
-        print('Exiting application ...')
-        event.accept()
-
-    def init_ui(self):
-        """Initialize UI
-        """
-        # _____________________________________________________________________
-        # Toolbar
-        self.toolbar = DCPCreatorToolBar()
-        self.toolbar.openCSVClicked.connect(self.button_open_csv_clicked)
-        self.toolbar.dcpReadClicked.connect(self.button_dcp_read_clicked)
-        self.toolbar.dcpSaveClicked.connect(self.button_dcp_save_clicked)
-        self.toolbar.optionButtonClicked.connect(self.button_option_button_clicked)
-        self.addToolBar(Qt.TopToolBarArea, self.toolbar)
-        # _____________________________________________________________________
-        # Statusbar
-        statusbar = QStatusBar()
-        self.setStatusBar(statusbar)
-        self.console = LogConsole()
-        statusbar.addWidget(self.console, stretch=1)
-
-    def main_ui(self):
-        """Main UI
-        """
-        # remove central widget if exists.
-        self.takeCentralWidget()
-        # make new tab widget
-        self.tab = tab = QTabWidget()
-        self.setCentralWidget(tab)
-        # page creation to be added to tab
-        page = {
-            'summary': DCPSummary(self.features),
-            'sensors': DCPSensorSelection(self.features),
-            'recipe': DCPStepValueSetting(self.features),
-            'stats': DCPStats(self.features)
-        }
-        # tab creation
-        self.tab.addTab(page['summary'], 'Summary')
-        self.tab.addTab(page['sensors'], 'Sensor Selection')
-        self.tab.addTab(page['recipe'], 'Setting Data')
-        self.tab.addTab(page['stats'], 'Summary Stats')
-        # Log event
-        page['summary'].logMessage.connect(self.showLog)
-        page['sensors'].logMessage.connect(self.showLog)
-        page['recipe'].logMessage.connect(self.showLog)
-        page['stats'].logMessage.connect(self.showLog)
-        # _____________________________________________________________________
-        # for tab click event
-        self.tab.currentChanged.connect(self.tab_changed)
-        # _____________________________________________________________________
-        # Controller for tab and other UI interaction
-        self.controller = UIController(page)
 
     def showLog(self, msg):
         self.console.insertIn(msg)

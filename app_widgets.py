@@ -5,14 +5,10 @@ from PySide6.QtCore import (
     QAbstractTableModel,
     QModelIndex,
     QPersistentModelIndex,
-    Signal,
 )
 from PySide6.QtGui import (
-    QBrush,
-    QColor,
     QIcon,
     QPalette,
-    QStandardItem,
     QTextCursor,
 )
 from PySide6.QtWidgets import (
@@ -24,7 +20,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
-    QMainWindow,
     QPlainTextEdit,
     QProgressDialog,
     QProxyStyle,
@@ -248,68 +243,19 @@ class LabelSensor(LabelCell):
         self.setPalette(pal)
 
 
-class FeatureMatrix(QWidget):
-    """base class for managing matrix data
-    """
-    logMessage = Signal(str)
-    name_sensor = 'Sensor Name'
-    name_stat = 'Summary Stats'
-    name_unit = 'unit'
-    name_sel = 'selection'
-
-    model = None
-    style_cell = 'padding:2px 5px;'
-
-    def __init__(self):
-        super().__init__()
-
-    def on_check_item(self, item: QStandardItem):
-        """
-        on_check_item
-        examine check status
-        """
-        if item.isCheckable():
-            row = item.row()
-            col = item.column()
-            if item.checkState() == Qt.CheckState.Checked:
-                msg = 'checked'
-            else:
-                msg = 'unchecked'
-            # print('(%d, %d) -> %s' % (row, col, msg))
-
-    def count_checkbox_checked(self):
-        """
-        count_checkbox_checked
-        """
-        count = 0
-        rows = self.model.rowCount()
-        cols = self.model.columnCount()
-        for row in range(rows):
-            for col in range(cols):
-                item: QStandardItem = self.model.item(row, col)
-                if item.isCheckable():
-                    if item.checkState() == Qt.CheckState.Checked:
-                        count += 1
-        msg = 'layout (%d, %d) checked %d' % (rows, cols, count)
-        self.logMessage.emit(msg)
-        return count
-
-    def find_header_label(self, key) -> int:
-        """
-        find_header_label
-        """
-        col = -1
-        for i in range(self.model.columnCount()):
-            item: QStandardItem = self.model.horizontalHeaderItem(i)
-            if item.text() == key:
-                col = i
-                break
-        return col
-
-
 class GridLayout(QGridLayout):
     """
     VBoxLayout
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSpacing(0)
+
+
+class HBoxLayout(QHBoxLayout):
+    """HBoxLayout
     """
 
     def __init__(self):
@@ -350,53 +296,6 @@ class RadioButton(QRadioButton):
             'font-size: 10pt;'
             '}'
         )
-
-
-class RecipeItem(QStandardItem):
-    status = 0
-
-    def __init__(self, *args, status: int):
-        super().__init__(*args)
-        self.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.setStatus(status)
-
-    def setStatus(self, status):
-        if status == -1:
-            # multiple values
-            self.setValueMultiple()
-        elif status == 0:
-            # valid value
-            self.setValueValid()
-        elif status == 1:
-            # setting data == 0
-            self.setValueZero()
-        else:
-            pass
-        #
-        self.status = status
-
-    def setValueMultiple(self):
-        self.setBackground(QColor(255, 224, 224))
-
-    def setValueValid(self):
-        self.setBackground(QColor(240, 240, 255))
-        self.setForeground(QBrush(QColor(0, 0, 32)))
-
-    def setValueZero(self):
-        self.setBackground(QColor(240, 240, 240))
-        self.setForeground(QBrush(QColor(128, 128, 128)))
-
-
-class TabWindow(QMainWindow):
-    """Tab Window/Panel/Tab
-    """
-    logMessage = Signal(str)
-
-    def __init__(self):
-        super().__init__()
-
-    def showLog(self, msg: str):
-        self.logMessage.emit(msg)
 
 
 class TableView(QTableView):

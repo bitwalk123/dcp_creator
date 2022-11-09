@@ -1,3 +1,5 @@
+import os
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -73,3 +75,20 @@ class DCPCreatorToolBar(QToolBar):
         button_save.setToolTip('save DCP file in JSON.')
         button_save.clicked.connect(self.dcpSaveClicked.emit)
         self.addWidget(button_save)
+
+
+class ExperimentalToolBar(QToolBar):
+    performPCAClicked = Signal()
+
+    basedir = 'image'
+
+    def __init__(self):
+        super().__init__()
+        # _____________________________________________________________________
+        # PCA button
+        button_pca = QToolButton()
+        button_pca.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        button_pca.setIcon(QIcon(os.path.join(self.basedir, 'pca.png')))
+        button_pca.setToolTip('perform PCA')
+        button_pca.clicked.connect(self.performPCAClicked.emit)
+        self.addWidget(button_pca)

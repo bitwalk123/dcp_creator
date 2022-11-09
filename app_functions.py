@@ -44,3 +44,15 @@ def getAppLogger(name):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
+
+def convert_dcp_dict2colname(dict_dcp):
+    list_sensor_step = dict_dcp['sensor_steps']
+    list_stat = dict_dcp['statistics']
+    list_colname = list()
+    for dict_sensor_step in list_sensor_step:
+        sensor = dict_sensor_step['sensor']
+        step = dict_sensor_step['step']
+        for stat in list_stat:
+            list_colname.append('%s_%s_%s' % (sensor, step, stat))
+    return list_colname

@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
 )
 
-from app_widgets import TabWindow
+from base.tab_window import TabWindow
 from features import Features
 from stats import Stats
 

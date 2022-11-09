@@ -7,11 +7,11 @@ from PySide6.QtWidgets import QSizePolicy, QHeaderView
 
 from app_functions import is_num
 from app_widgets import (
-    FeatureMatrix,
-    RecipeItem,
     TableView,
     VBoxLayout,
 )
+from base.recipe_item import RecipeItem
+from base.feature_matrix import FeatureMatrix
 from features import Features
 
 

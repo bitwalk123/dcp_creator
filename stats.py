@@ -9,10 +9,10 @@ from PySide6.QtWidgets import (
 )
 
 from app_widgets import (
-    FeatureMatrix,
     TableView,
     VBoxLayout, CheckBoxDelegate,
 )
+from base.feature_matrix import FeatureMatrix
 from features import Features
 
 

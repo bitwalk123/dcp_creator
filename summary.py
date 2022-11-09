@@ -2,11 +2,11 @@ from PySide6.QtWidgets import QSizePolicy
 
 from app_widgets import (
     ComboBox,
-    FeatureMatrix,
     GridLayout,
     LabelHead,
     LabelNumeric, Pad,
 )
+from base.feature_matrix import FeatureMatrix
 from features import Features
 
 

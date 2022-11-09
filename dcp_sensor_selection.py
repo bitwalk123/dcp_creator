@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QDockWidget,
 )
 
-from app_widgets import TabWindow
+from base.tab_window import TabWindow
 from dcp_sensor_selection_dock import DCPSensorSelectionDock
 from features import Features
 from sensors import Sensors
