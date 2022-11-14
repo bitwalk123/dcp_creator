@@ -78,7 +78,7 @@ class DCPCreatorToolBar(QToolBar):
 
 
 class ExperimentalToolBar(QToolBar):
-    performPCAClicked = Signal()
+    performUpdateClicked = Signal()
 
     imgdir = 'image'
 
@@ -90,5 +90,5 @@ class ExperimentalToolBar(QToolBar):
         button_pca.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_pca.setIcon(QIcon(os.path.join(self.imgdir, 'update.png')))
         button_pca.setToolTip('perform PCA')
-        button_pca.clicked.connect(self.performPCAClicked.emit)
+        button_pca.clicked.connect(self.performUpdateClicked.emit)
         self.addWidget(button_pca)

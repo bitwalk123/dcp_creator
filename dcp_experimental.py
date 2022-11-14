@@ -38,7 +38,7 @@ class DCPExperimental(TabWindow):
         toolbar = ExperimentalToolBar()
         self.addToolBar(Qt.TopToolBarArea, toolbar)
         # PCA
-        toolbar.performPCAClicked.connect(self.button_perform_pca_clicked)
+        toolbar.performUpdateClicked.connect(self.button_perform_pca_clicked)
 
         # Scroll Area for Central
         central = QScrollArea()

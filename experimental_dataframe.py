@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QSizePolicy
 
-from app_widgets import GridLayout, LabelHead, LabelCell, LabelNumeric, ComboBox
+from app_widgets import GridLayout, LabelHead, LabelCell, LabelNumeric, ComboBox, Pad
 
 
 class ExperimentalDataframe(QWidget):
@@ -61,6 +61,8 @@ class ExperimentalDataframe(QWidget):
         self.combo_feature.setStyleSheet(self.style_combo)
         self.combo_feature.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout.addWidget(self.combo_feature, row, 2)
+        pad = Pad()
+        layout.addWidget(pad, row, 3)
 
     def set_df_shape(self, shape: str):
         self.lab_df_shape.setText(shape)

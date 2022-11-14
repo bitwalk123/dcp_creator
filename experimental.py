@@ -4,10 +4,15 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QWidget, QFrame,
 )
+from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
+
 from app_widgets import (
     HBoxLayout,
     VBoxLayout,
 )
+from custom_scaler import CustomScaler
+from experimental_charts import Scatter
 from experimental_dataframe import ExperimentalDataframe
 from features import Features
 
@@ -39,11 +44,8 @@ class Experimental(QWidget):
         self.panel_1 = ExperimentalDataframe()
         row_0_layout.addWidget(self.panel_1)
         # row 1
-        row_1_frame = QFrame()
-        row_1_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        row_1_frame.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Sunken)
-        row_1_frame.setLineWidth(2)
-        layout_base.addWidget(row_1_frame)
+        self.row_1_layout = row_2_layout = HBoxLayout()
+        layout_base.addLayout(row_2_layout)
 
     def update_ui(self, df: pd.DataFrame, col_chamber: str, list_feature_selected: list):
         self.df = df
@@ -62,6 +64,22 @@ class Experimental(QWidget):
         self.panel_1.set_info_chamber(list_chamber)
         # Features
         self.panel_1.set_info_feature(list_feature_selected)
+        # _____________________________________________________________________
+        # PCA
+        pipe = Pipeline([
+            ('scaler', CustomScaler()),
+            ('PCA', PCA())
+        ])
+        x = df[list_feature_selected].values
+        components = pipe.fit_transform(x)
+        df_pca = pd.DataFrame(
+            data=components,
+            columns=['PC{}'.format(i + 1) for i in range(components.shape[1])]
+        )
+        df_pca.insert(0, 'Tool/Chamber', df[col_chamber])
+        canvas = Scatter(df_pca[['Tool/Chamber', 'PC1', 'PC2']], x='PC1', y='PC2', hue='Tool/Chamber')
+        canvas.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.row_1_layout.addWidget(canvas)
 
     def clear_ui(self):
         pass
