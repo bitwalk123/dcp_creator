@@ -88,7 +88,7 @@ class ExperimentalToolBar(QToolBar):
         # PCA button
         button_pca = QToolButton()
         button_pca.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        button_pca.setIcon(QIcon(os.path.join(self.imgdir, 'pca.png')))
+        button_pca.setIcon(QIcon(os.path.join(self.imgdir, 'update.png')))
         button_pca.setToolTip('perform PCA')
         button_pca.clicked.connect(self.performPCAClicked.emit)
         self.addWidget(button_pca)
