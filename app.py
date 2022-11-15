@@ -211,10 +211,12 @@ class DCPCreator(QMainWindow):
         self.tab.addTab(page['recipe'], 'Setting Data')
         self.tab.addTab(page['stats'], 'Summary Stats')
         # Log event
-        page['summary'].logMessage.connect(self.showLog)
-        page['sensors'].logMessage.connect(self.showLog)
-        page['recipe'].logMessage.connect(self.showLog)
-        page['stats'].logMessage.connect(self.showLog)
+        for key in page.keys():
+            page[key].logMessage.connect(self.showLog)
+        #page['sensors'].logMessage.connect(self.showLog)
+        #page['recipe'].logMessage.connect(self.showLog)
+        #page['stats'].logMessage.connect(self.showLog)
+        #page['experimental'].logMessage.connect(self.showLog)
         # _____________________________________________________________________
         # for tab click event
         self.tab.currentChanged.connect(self.tab_changed)

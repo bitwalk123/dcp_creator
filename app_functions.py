@@ -21,6 +21,7 @@ def timeit(f: callable):
     """
     decolator for benchmark
     """
+
     def wrap(*args, **kwargs):
         time_start = time.time()
         ret = f(*args, **kwargs)
@@ -56,3 +57,9 @@ def convert_dcp_dict2colname(dict_dcp):
         for stat in list_stat:
             list_colname.append('%s_%s_%s' % (sensor, step, stat))
     return list_colname
+
+
+def get_error_header():
+    """return error header to display on the og console
+    """
+    return '*** ERROR ******************************'

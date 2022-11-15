@@ -1,13 +1,14 @@
 import csv
 import re
 
-zipname = 'C:/Users/212295/Downloads/dcp_test_001_KT_202203100900_202203120900.zip'
-csvname = 'C:/Users/212295/Downloads/dcp_test_001_KT_202203100900_202203120900.csv'
-csvname_2 = 'C:/Users/212295/Downloads/dcp_test_001_KT_202203100900_202203120900_wo_oes.csv'
+zipname = 'C:/Users/212295/Downloads/WLDC_150s/WLDC_150s General_202203010000_202203080000.zip'
+csvname = 'C:/Users/212295/Downloads/WLDC_150s/WLDC_150s General_202203010000_202203080000.csv'
+csvname_2 = 'C:/Users/212295/Downloads/WLDC_150s/WLDC_150s General_202203010000_202203080000_wo_oes.csv'
 
 if __name__ == "__main__":
     pattern_sensor_oes = re.compile(r'^[0-9\.]{3,6}nm')
-    row_max = 20
+    #row_max = 20
+    row_max = 1048576 # max row of Excel
     r = 0
     flag_header = True
     with open(csvname) as f:

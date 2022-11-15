@@ -261,7 +261,7 @@ class WorkInProgress(QProgressDialog):
         self.setWindowModality(Qt.WindowModal)
         self.setCancelButton(None)
         self.setRange(0, 0)
-        self.setWindowTitle('progress')
+        self.setWindowTitle('In progress')
 
 
 # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_

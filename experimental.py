@@ -1,18 +1,21 @@
 import pandas as pd
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
+    QFrame,
+    QScrollArea,
     QSizePolicy,
-    QWidget, QFrame,
+    QWidget,
 )
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 
+from app_functions import get_error_header
 from app_widgets import (
     HBoxLayout,
-    VBoxLayout,
+    VBoxLayout, Pad,
 )
 from custom_scaler import CustomScaler
-from experimental_charts import Scatter
+from experimental_charts import PCAScatter
 from experimental_dataframe import ExperimentalDataframe
 from features import Features
 
@@ -21,6 +24,7 @@ class Experimental(QWidget):
     logMessage = Signal(str)
     # instance of internal panels
     panel_1 = None
+    panel_2 = None
     #
     df = None
     col_chamber = None
@@ -28,7 +32,7 @@ class Experimental(QWidget):
     def __init__(self, features: Features):
         super().__init__()
         self.features = features
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         # initialize UI
         self.init_ui()
 
@@ -38,13 +42,17 @@ class Experimental(QWidget):
         layout_base = VBoxLayout()
         self.setLayout(layout_base)
         # row 0
-        row_0_layout = HBoxLayout()
-        layout_base.addLayout(row_0_layout)
+        #row_0_layout = HBoxLayout()
+        #layout_base.addLayout(row_0_layout)
         # panel_1: Dataframe Information
         self.panel_1 = ExperimentalDataframe()
-        row_0_layout.addWidget(self.panel_1)
+        #row_0_layout.addWidget(self.panel_1)
+        layout_base.addWidget(self.panel_1)
         # row 1
-        self.row_1_layout = row_2_layout = HBoxLayout()
+        self.panel_2 = TargetTolerance()
+        layout_base.addWidget(self.panel_2)
+        # row 2
+        self.row_2_layout = row_2_layout = HBoxLayout()
         layout_base.addLayout(row_2_layout)
 
     def update_ui(self, df: pd.DataFrame, col_chamber: str, list_feature_selected: list):
@@ -65,21 +73,55 @@ class Experimental(QWidget):
         # Features
         self.panel_1.set_info_feature(list_feature_selected)
         # _____________________________________________________________________
+        # panel_2:
+        #self.panel_2 =
+        # _____________________________________________________________________
         # PCA
         pipe = Pipeline([
             ('scaler', CustomScaler()),
             ('PCA', PCA())
         ])
         x = df[list_feature_selected].values
-        components = pipe.fit_transform(x)
+
+        try:
+            pipe.fit(x)
+        except ValueError as error:
+            self.logMessage.emit(get_error_header())
+            self.logMessage.emit('@ PCA fitting model')
+            self.logMessage.emit(str(error))
+            return
+
+        components = pipe.transform(x)
         df_pca = pd.DataFrame(
             data=components,
             columns=['PC{}'.format(i + 1) for i in range(components.shape[1])]
         )
         df_pca.insert(0, 'Tool/Chamber', df[col_chamber])
-        canvas = Scatter(df_pca[['Tool/Chamber', 'PC1', 'PC2']], x='PC1', y='PC2', hue='Tool/Chamber')
-        canvas.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.row_1_layout.addWidget(canvas)
+        # for test
+        info = {
+            'x': 'PC1',
+            'y': 'PC2',
+            'hue': 'Tool/Chamber',
+            'title' : self.features.getRecipe()[0],
+        }
+        canvas = PCAScatter(
+            df_pca[[info['hue'], info['x'], info['y']]],
+            info
+        )
+        canvas.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.row_2_layout.addWidget(canvas)
+        pad = Pad()
+        self.row_2_layout.addWidget(pad)
+
+        # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+        self.logMessage.emit('> updated Experimental window.')
 
     def clear_ui(self):
         pass
+class TargetTolerance(QScrollArea):
+    def __init__(self):
+        super().__init__()
+        self.setWidgetResizable(True)
+        base = QFrame()
+        base.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setWidget(base)
