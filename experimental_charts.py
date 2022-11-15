@@ -21,7 +21,7 @@ import seaborn as sns
 
 class PCAScatter(FigureCanvas):
     # fig = Figure(rcParams["figure.figsize"])
-    fig = Figure([6, 4])
+    fig = Figure(figsize=[6, 4])
 
     def __init__(self, df: pd.DataFrame, info: dict):
         super().__init__(self.fig)
