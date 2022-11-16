@@ -2,7 +2,7 @@ import pandas as pd
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import (
     QSizePolicy,
-    QWidget, QSplitter, QFrame,
+    QWidget, QSplitter, QFrame, QLabel,
 )
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
@@ -10,7 +10,7 @@ from sklearn.pipeline import Pipeline
 from app_functions import get_error_header
 from app_widgets import (
     HBoxLayout,
-    VBoxLayout, Pad,
+    VBoxLayout, Pad, LabelTitle,
 )
 from custom_scaler import CustomScaler
 from experimental_charts import PCAScatter
@@ -21,6 +21,7 @@ from features import Features
 
 class Experimental(QWidget):
     logMessage = Signal(str)
+
     # instance of internal panels
     panel_info = None
     panel_recipe = None
@@ -42,17 +43,22 @@ class Experimental(QWidget):
         self.setLayout(layout_base)
         # row 0
         self.panel_info = ExperimentalDataframe()
-        # row_0_layout.addWidget(self.panel_1)
         layout_base.addWidget(self.panel_info)
         # row 1
-        splitter = QSplitter(Qt.Vertical)
-        layout_base.addWidget(splitter)
+        title_dcp = LabelTitle('DCP')
+        layout_base.addWidget(title_dcp)
+        # row 2
+        #splitter = QSplitter(Qt.Vertical)
+        #layout_base.addWidget(splitter)
         #
         self.panel_recipe = TargetTolerance()
-        splitter.addWidget(self.panel_recipe)
+        #splitter.addWidget(self.panel_recipe)
+        layout_base.addWidget(self.panel_recipe)
         #
         self.panel_chart = panel_chart = QFrame()
-        splitter.addWidget(panel_chart)
+        panel_chart.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        #splitter.addWidget(panel_chart)
+        layout_base.addWidget(panel_chart)
 
     def update_ui(self, df: pd.DataFrame, col_chamber: str, list_feature_selected: list):
         self.df = df
@@ -85,8 +91,9 @@ class Experimental(QWidget):
             'sensors': sensors,
             'units': units,
             'steps': steps,
+            'feature': list_feature_selected,
         }
-        self.panel_recipe.set_dimension(info)
+        self.panel_recipe.gen_table(info, self.features)
         # _____________________________________________________________________
         # PCA
         pipe = Pipeline([

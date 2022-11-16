@@ -87,7 +87,7 @@ class DCPCreator(QMainWindow):
             'Python {}'.format(sys.version)
         )
         self.console.insertOut(
-            'PySide (Python for Qt) {}'.format(PySide6.__version__)
+            'PySide6 (Python for Qt) {}'.format(PySide6.__version__)
         )
         self.console.insertOut(
             'matplotlib {}'.format(matplotlib.__version__)

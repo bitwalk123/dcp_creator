@@ -15,6 +15,10 @@ class Features:
     sensors = None
     stats = None
     units = {}
+
+    sensors_setting = None
+    sensors_setting_step = None
+
     headers_feature = None
     headers_others = None
     # Regular Expression
@@ -29,7 +33,7 @@ class Features:
     pattern_feature_1_unit_nostepstat = re.compile(r'^([^_]+)(\[.+\])$')
     pattern_feature_no_unit_nostepstat = re.compile(r'^([^_]+)$')
 
-    pattern_sensor_setting = re.compile(r'^(.+)\(setting\sdata\)$')
+    pattern_sensor_setting = re.compile(r'^(.+)\s\(setting\sdata\)$')
     pattern_sensor_general_counter = re.compile(r'^General Counter')
     pattern_sensor_add_line = re.compile(r'^Add Line')
     pattern_sensor_dyp = re.compile(r'^Dynamic Process')
@@ -51,14 +55,153 @@ class Features:
         self.df_source[self.src_start] = pd.to_datetime(df[self.src_start], format='%Y/%m/%d %H:%M:%S')
         self.init_sensor()
 
+    def checkFeatureValid(self, sensor: str, step: int, stat: str = None) -> bool:
+        """
+        check if the feature is valid or not.
+        """
+        for stat in self.stats:
+            feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
+            if feature not in self.headers_feature:
+                return False
+        return True
+
+    def getChambers(self) -> list:
+        """
+        get/return chamber list
+        """
+        return sorted(list(set(self.df_source[self.src_chamber])))
+
+    def getFeaturesOriginal(self) -> int:
+        """
+        get/return original size of features
+        """
+        return len(self.headers_feature)
+
+    def getFeatureValue(self, sensor: str, step: int, stat: str = None):
+        """
+        get/return value of feature
+        """
+        if stat is None:
+            # stat = self.stats[0]
+            # stat = 'Avg'
+            stat = 'Median'
+        feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
+        return list(set(self.df_source[feature]))
+
     def getLogDfShape(self):
         return 'df.shape\t%s' % str(self.df_source.shape)
+
+    def getLogStat(self):
+        return 'STATS\t%s' % self.stats
 
     def getLogStep(self):
         return 'STEPS\t%s' % self.steps
 
-    def getLogStat(self):
-        return 'STATS\t%s' % self.stats
+    def getRecipe(self) -> list:
+        """
+        get/return recipe list
+        """
+        col_recipe = '*recipe'
+        pattern_recipe = re.compile(r'.+/([^/]+)$')
+
+        if col_recipe not in self.headers_others:
+            return None
+        list_recipe = list()
+        for recipe_full in self.df_source[col_recipe]:
+            result = pattern_recipe.match(recipe_full)
+            if result:
+                list_recipe.append(result.group(1))
+        return sorted(list(set(list_recipe)))
+
+    def getSensorNameMaxLen(self) -> list:
+        len_max = max([len(sensor) for sensor in self.sensors])
+        return [sensor for sensor in self.sensors if len(sensor) == len_max]
+
+    def getSensors(self) -> list:
+        """
+        get/return sensor list
+        """
+        return self.sensors
+
+    def getSensorSetting(self) -> list:
+        return self.sensor_setting
+
+    def getSensorSettingStep(self) -> dict:
+        return self.sensor_setting_step
+
+    def getSensorsMaxLen(self) -> list:
+        return [
+            max([len(sensor) for sensor in self.sensors]),
+            max([len(self.units[sensor]) for sensor in self.sensors]),
+        ]
+
+    def getSrcDf(self):
+        return self.df_source
+
+    def getSrcDfChamberCol(self):
+        return self.src_chamber
+
+    def getSrcDfColumns(self):
+        return self.df_source.columns
+
+    def getSrcDfStart(self):
+        return self.src_start
+
+    def getStats(self) -> list:
+        """
+        get/return stat list
+        """
+        return self.stats
+
+    def getSteps(self) -> list:
+        """
+        get/return recipe steps
+        """
+        return self.steps
+
+    def getUnitNameMaxLen(self) -> list:
+        len_max = max([len(self.units[sensor]) for sensor in self.sensors])
+        return [self.units[sensor] for sensor in self.sensors if len(self.units[sensor]) == len_max]
+
+    def getUnits(self) -> dict:
+        """
+        get/return unit dictionary
+        """
+        return self.units
+
+    def getWafers(self) -> int:
+        """
+        get/return number of wafer
+        """
+        return self.df_source.shape[0]
+
+    # _________________________________________________________________________
+    # for Sensor Table Model
+    def getCheckColStart(self):
+        return len(self.col_labels)
+
+    def getCols(self):
+        return len(self.col_labels) + len(self.steps)
+
+    def getColumnHeader(self, index: int):
+        if index < len(self.col_labels):
+            return self.col_labels[index]
+        else:
+            return self.steps[index - len(self.col_labels)]
+
+    def getData(self, row: int, col: int):
+        if col == 0:
+            return self.sensors[row]
+        elif col == 1:
+            return self.units[self.sensors[row]]
+        else:
+            return None
+
+    def getRowIndex(self, index: int):
+        return str(index + 1)
+
+    def getRows(self):
+        return len(self.sensors)
 
     def init_sensor(self):
         """Initialize sensor dataset
@@ -129,135 +272,9 @@ class Features:
                     # No match!
                     print('ERROR @ %s' % feature)
 
-    def checkFeatureValid(self, sensor: str, step: int, stat: str = None) -> bool:
-        """
-        check if the feature is valid or not.
-        """
-        for stat in self.stats:
-            feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
-            if feature not in self.headers_feature:
-                return False
-        return True
+    def setSensorSetting(self, sensor_setting: list):
+        self.sensor_setting = sensor_setting
 
-    def getFeatureValue(self, sensor: str, step: int, stat: str = None):
-        """
-        get/return value of feature
-        """
-        if stat is None:
-            # stat = self.stats[0]
-            # stat = 'Avg'
-            stat = 'Median'
-        feature = '%s%s_%d_%s' % (sensor, self.units[sensor], step, stat)
-        return list(set(self.df_source[feature]))
+    def setSensorSettingStep(self, sensor_setting_step: dict):
+        self.sensor_setting_step = sensor_setting_step
 
-    def getSteps(self) -> list:
-        """
-        get/return recipe steps
-        """
-        return self.steps
-
-    def getSensors(self) -> list:
-        """
-        get/return sensor list
-        """
-        return self.sensors
-
-    def getSensorsMaxLen(self) -> list:
-        return [
-            max([len(sensor) for sensor in self.sensors]),
-            max([len(self.units[sensor]) for sensor in self.sensors]),
-        ]
-
-    def getSensorNameMaxLen(self) -> list:
-        len_max = max([len(sensor) for sensor in self.sensors])
-        return [sensor for sensor in self.sensors if len(sensor) == len_max]
-
-    def getUnitNameMaxLen(self) -> list:
-        len_max = max([len(self.units[sensor]) for sensor in self.sensors])
-        return [self.units[sensor] for sensor in self.sensors if len(self.units[sensor]) == len_max]
-
-    def getStats(self) -> list:
-        """
-        get/return stat list
-        """
-        return self.stats
-
-    def getUnits(self) -> dict:
-        """
-        get/return unit dictionary
-        """
-        return self.units
-
-    def getRecipe(self) -> list:
-        """
-        get/return recipe list
-        """
-        col_recipe = '*recipe'
-        pattern_recipe = re.compile(r'.+/([^/]+)$')
-
-        if col_recipe not in self.headers_others:
-            return None
-        list_recipe = list()
-        for recipe_full in self.df_source[col_recipe]:
-            result = pattern_recipe.match(recipe_full)
-            if result:
-                list_recipe.append(result.group(1))
-        return sorted(list(set(list_recipe)))
-
-    def getChambers(self) -> list:
-        """
-        get/return chamber list
-        """
-        return sorted(list(set(self.df_source[self.src_chamber])))
-
-    def getWafers(self) -> int:
-        """
-        get/return number of wafer
-        """
-        return self.df_source.shape[0]
-
-    def getFeaturesOriginal(self) -> int:
-        """
-        get/return original size of features
-        """
-        return len(self.headers_feature)
-
-    def getSrcDf(self):
-        return self.df_source
-
-    def getSrcDfColumns(self):
-        return self.df_source.columns
-
-    def getSrcDfChamberCol(self):
-        return self.src_chamber
-
-    def getSrcDfStart(self):
-        return self.src_start
-
-    # _________________________________________________________________________
-    # for Sensor Table Model
-    def getCheckColStart(self):
-        return len(self.col_labels)
-
-    def getCols(self):
-        return len(self.col_labels) + len(self.steps)
-
-    def getColumnHeader(self, index: int):
-        if index < len(self.col_labels):
-            return self.col_labels[index]
-        else:
-            return self.steps[index - len(self.col_labels)]
-
-    def getData(self, row: int, col: int):
-        if col == 0:
-            return self.sensors[row]
-        elif col == 1:
-            return self.units[self.sensors[row]]
-        else:
-            return None
-
-    def getRowIndex(self, index: int):
-        return str(index + 1)
-
-    def getRows(self):
-        return len(self.sensors)

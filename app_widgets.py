@@ -129,9 +129,11 @@ class LabelNumeric(LabelCell):
 
     def __init__(self, num: Union[float, int, str], style_cell: str):
         super().__init__(str(num), style_cell)
+        self.num = num
         self.setAlignment(Qt.AlignRight)
-        # self.setStyleSheet('background-color:white;')
-        # align
+
+    def getValue(self) -> Union[float, int]:
+        return self.num
 
     def setValue(self, num: Union[float, int]):
         self.setText(str(num))
@@ -153,6 +155,20 @@ class LabelSensor(LabelCell):
         pal.setColor(QPalette.Window, Qt.white)
         self.setAutoFillBackground(True)
         self.setPalette(pal)
+
+class LabelTitle(QLabel):
+    """
+    LabelTitle
+    label for generic title bar
+    """
+    css_style = 'padding:4px 10px; font-size:16px;'
+
+    def __init__(self, title: str):
+        super().__init__(title)
+        self.setStyleSheet(self.css_style)
+        self.setFrameStyle(QFrame.Shape.WinPanel | QFrame.Shadow.Raised)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
 
 
 class GridLayout(QGridLayout):

@@ -25,9 +25,7 @@ class Recipe(FeatureMatrix):
         self.init_ui()
 
     def init_ui(self):
-        """
-        init_ui
-        initialize UI
+        """Initialize UI
         """
         layout = VBoxLayout()
         self.setLayout(layout)
@@ -46,11 +44,13 @@ class Recipe(FeatureMatrix):
         head_vertical.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         head_vertical.setDefaultAlignment(Qt.AlignRight)
         layout.addWidget(table)
-
+        # pattern with (setting data)
         pattern = self.features.pattern_sensor_setting
         sensors_setting = list()
         units_setting = list()
+        sensors_setting_step = {}
         for sensor in self.features.getSensors():
+            # check if sensor has (setting data)
             result = pattern.match(sensor)
             if not result:
                 continue
@@ -68,6 +68,7 @@ class Recipe(FeatureMatrix):
             item.setText(unit_sensor)
             list_row.append(item)
             # step
+            sensors_setting_step[name_sensor] = {}
             for step in self.features.getSteps():
                 if step <= 0:
                     continue
@@ -78,12 +79,15 @@ class Recipe(FeatureMatrix):
                         # setting data == 0
                         item = RecipeItem(str_value, status=1)
                     else:
-                        # valid value
+                        # Valid value
                         if is_num(str_value):
-                            str_value2 = str(round(float(str_value), 1))
-                            item = RecipeItem(str_value2, status=0)
+                            str_value_new = str(round(float(str_value), 1))
+                            item = RecipeItem(str_value_new, status=0)
                         else:
                             item = RecipeItem(str_value, status=0)
+                            str_value_new = str_value
+
+                        sensors_setting_step[name_sensor][step] = str_value_new
                 else:
                     # multiple values
                     item = RecipeItem('', status=-1)
@@ -92,6 +96,7 @@ class Recipe(FeatureMatrix):
                 list_row.append(item)
 
             model.appendRow(list_row)
+
         # adjust specific column width
         width_char = table.fontMetrics().averageCharWidth()
         head_horizontal = table.horizontalHeader()
@@ -107,6 +112,8 @@ class Recipe(FeatureMatrix):
         for col in range(2, model.columnCount()):
             table.resizeColumnToContents(col)
         #
+        self.features.setSensorSetting(sensors_setting)
+        self.features.setSensorSettingStep(sensors_setting_step)
         self.model = model
 
     def excludeGasFlow0(self, flag: bool) -> list:
