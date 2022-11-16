@@ -81,6 +81,7 @@ class DCPCreator(QMainWindow):
         self.resize(1000, 800)
         self.setWindowTitle('DCP Creator')
         self.setWindowIcon(QIcon(os.path.join(self.imgdir, 'logo.png')))
+        # _____________________________________________________________________
         # Console output
         self.console.insertOut(
             'Python {}'.format(sys.version)
