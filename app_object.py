@@ -1,8 +1,8 @@
 from PySide6.QtCore import QObject, Qt
 
-from dcp_sensor_selection import DCPSensorSelection
-from dcp_stats_selection import DCPStats
-from dcp_step_value_setting import DCPStepValueSetting
+from dcp_sensors import DCPSensorSelection
+from dcp_stats import DCPStats
+from dcp_recipe import DCPStepValueSetting
 from dcp_summary import DCPSummary
 from recipe import Recipe
 from sensors import Sensors

@@ -1,8 +1,6 @@
 import pandas as pd
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
-    QFrame,
-    QScrollArea,
     QSizePolicy,
     QWidget,
 )
@@ -17,6 +15,7 @@ from app_widgets import (
 from custom_scaler import CustomScaler
 from experimental_charts import PCAScatter
 from experimental_dataframe import ExperimentalDataframe
+from experimental_target_tolerance import TargetTolerance
 from features import Features
 
 
@@ -74,6 +73,7 @@ class Experimental(QWidget):
         self.panel_1.set_info_feature(list_feature_selected)
         # _____________________________________________________________________
         # panel_2:
+        print(list_feature_selected)
         #self.panel_2 =
         # _____________________________________________________________________
         # PCA
@@ -118,10 +118,3 @@ class Experimental(QWidget):
 
     def clear_ui(self):
         pass
-class TargetTolerance(QScrollArea):
-    def __init__(self):
-        super().__init__()
-        self.setWidgetResizable(True)
-        base = QFrame()
-        base.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.setWidget(base)

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-import json
 import os
 import sys
 import zipfile
-from collections import OrderedDict
 
 import PySide6
+import matplotlib
 import pandas as pd
 import warnings
 
@@ -23,7 +22,6 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QStatusBar,
-    QStyle,
     QTabWidget,
 )
 
@@ -32,9 +30,9 @@ from app_widgets import WorkInProgress, DialogWarn, OptionWindow
 from base.log_console import LogConsole
 from app_toolbar import DCPCreatorToolBar
 from dcp_experimental import DCPExperimental
-from dcp_sensor_selection import DCPSensorSelection
-from dcp_stats_selection import DCPStats
-from dcp_step_value_setting import DCPStepValueSetting
+from dcp_sensors import DCPSensorSelection
+from dcp_stats import DCPStats
+from dcp_recipe import DCPStepValueSetting
 from dcp_summary import DCPSummary
 from features import Features
 from ui_controller import UIController
@@ -46,7 +44,7 @@ class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
     __version__ = '0.1.1'
-    __version_minor__ = '20221114'
+    __version_minor__ = '20221116'
 
     # UI components
     console: LogConsole = None
@@ -91,10 +89,13 @@ class DCPCreator(QMainWindow):
             'PySide (Python for Qt) {}'.format(PySide6.__version__)
         )
         self.console.insertOut(
-            'scikit-learn {}'.format(sklearn.__version__)
+            'matplotlib {}'.format(matplotlib.__version__)
         )
         self.console.insertOut(
-            'DCP Creator {}, {}'.format(self.__version__, self.__version_minor__)
+            'scikit-learn {}'.format(sklearn.__version__)
+        )
+        self.console.insertIn(
+            '<<< Welcome to DCP Creator {}, {} >>>'.format(self.__version__, self.__version_minor__)
         )
 
     def button_open_csv_clicked(self):

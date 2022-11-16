@@ -11,7 +11,7 @@ from app_widgets import (
     RadioButton,
 )
 from app_object import AppObject
-from dcp_sensor_selection_dock import DCPSensorSelectionDock
+from dcp_sensors_dock import DCPSensorSelectionDock
 
 
 class UtilFilter(AppObject):
