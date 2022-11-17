@@ -12,7 +12,6 @@ from features import Features
 
 
 class TargetTolerance(QScrollArea):
-
     def __init__(self):
         super().__init__()
         self.style = ExperimentalCSSStyle()
