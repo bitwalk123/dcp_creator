@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
     QScrollArea,
-    QSizePolicy,
+    QSizePolicy, QWidgetItem,
 )
 
 from app_widgets import (
@@ -148,3 +148,6 @@ class DCPTable(QScrollArea):
     def sensor_clicked(self):
         button:ButtonSensor = self.sender()
         print(button.text(), self.layout.rowCount(), self.layout.columnCount())
+        for row in range(self.layout.rowCount()):
+            item:QWidgetItem = self.layout.itemAtPosition(row, 0)
+            print(type(item.widget()))
