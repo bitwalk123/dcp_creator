@@ -41,23 +41,24 @@ class Experimental(QWidget):
         """
         layout_base = VBoxLayout()
         self.setLayout(layout_base)
-        # row 0
+        # Summary
+        title_summary = LabelTitle('Summary of exported data')
+        layout_base.addWidget(title_summary)
+        #
         self.panel_info = ExperimentalDataframe()
         layout_base.addWidget(self.panel_info)
-        # row 1
+        # DCP
         title_dcp = LabelTitle('DCP')
         layout_base.addWidget(title_dcp)
-        # row 2
-        #splitter = QSplitter(Qt.Vertical)
-        #layout_base.addWidget(splitter)
-        #
+        # DCP table
         self.panel_recipe = TargetTolerance()
-        #splitter.addWidget(self.panel_recipe)
         layout_base.addWidget(self.panel_recipe)
-        #
+        # PCA
+        title_pca = LabelTitle('PCA')
+        layout_base.addWidget(title_pca)
+        # PCA chart
         self.panel_chart = panel_chart = QFrame()
         panel_chart.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        #splitter.addWidget(panel_chart)
         layout_base.addWidget(panel_chart)
 
     def update_ui(self, df: pd.DataFrame, col_chamber: str, list_feature_selected: list):

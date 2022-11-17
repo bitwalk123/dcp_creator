@@ -34,6 +34,41 @@ from PySide6.QtWidgets import (
 from features import Features
 
 
+class ButtonOn2Labels(QPushButton):
+    def __init__(self, titles: list, style:str):
+        super().__init__()
+        self.setStyleSheet(style)
+        self.titles = titles
+        self.setContentsMargins(10, 0, 10, 0)
+        self.setMinimumWidth(60)
+        self.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.MinimumExpanding
+        )
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        self.setLayout(layout)
+        for i in range(2):
+            lab = QLabel(titles[i])
+            lab.setContentsMargins(0, 0, 0, 0)
+            lab.setSizePolicy(
+                QSizePolicy.Policy.Expanding,
+                QSizePolicy.Policy.Fixed
+            )
+            lab.setAlignment(Qt.AlignmentFlag.AlignRight)
+            layout.addWidget(lab)
+
+class ButtonSensor(QPushButton):
+    def __init__(self, title: str, style: str):
+        super().__init__(title)
+        self.setStyleSheet(style)
+        self.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.MinimumExpanding
+        )
+
+
 class CheckBox(QCheckBox):
     """
     CheckBox
@@ -156,19 +191,24 @@ class LabelSensor(LabelCell):
         self.setAutoFillBackground(True)
         self.setPalette(pal)
 
+
 class LabelTitle(QLabel):
     """
     LabelTitle
     label for generic title bar
     """
-    css_style = 'padding:4px 10px; font-size:16px;'
+    css_style = """
+    QLabel {
+        padding:5px 10px;
+        font-size:18px;
+    }"""
 
     def __init__(self, title: str):
         super().__init__(title)
+        self.setLineWidth(2)
         self.setStyleSheet(self.css_style)
         self.setFrameStyle(QFrame.Shape.WinPanel | QFrame.Shadow.Raised)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-
 
 
 class GridLayout(QGridLayout):
