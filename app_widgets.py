@@ -1,3 +1,4 @@
+import enum
 from typing import Union, Any
 
 from PySide6.QtCore import (
@@ -31,15 +32,20 @@ from PySide6.QtWidgets import (
     QWidget, QMessageBox,
 )
 
+from custom_scaler import Scale
+from experimental_css_style import ExperimentalCSSStyle
 from features import Features
 
 
 class ButtonOn2Labels(QPushButton):
-    def __init__(self, titles: list, styles: list, flag: bool):
+    style = ExperimentalCSSStyle()
+
+    def __init__(self, titles: list, scales: list, css_base: str, flag: bool):
         super().__init__()
         self.titles = titles
+        self.scales = scales
         self.setEnabled(flag)
-        self.setStyleSheet(styles[0])
+        self.setStyleSheet(css_base)
         self.setContentsMargins(5, 1, 5, 1)
         self.setMinimumWidth(60)
         self.setSizePolicy(
@@ -50,10 +56,14 @@ class ButtonOn2Labels(QPushButton):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
+        #
+        self.labels = list()
         for i in range(2):
             lab = QLabel(titles[i])
+            self.labels.append(lab)
             if flag:
-                lab.setStyleSheet(styles[i + 1])
+                lab.setStyleSheet(self.getStyle4Scale(scales[i]))
+
             lab.setContentsMargins(0, 0, 0, 0)
             lab.setSizePolicy(
                 QSizePolicy.Policy.Expanding,
@@ -62,9 +72,36 @@ class ButtonOn2Labels(QPushButton):
             lab.setAlignment(Qt.AlignmentFlag.AlignRight)
             layout.addWidget(lab)
 
+    def getStyle4Scale(self, scale):
+        if scale == Scale.MEAN_SIGMA:
+            css_label = self.style.style_cell_mean_sigma
+        elif scale == Scale.TARGET_TOLERANCE:
+            css_label = self.style.style_cell_target_tolerance
+        else:
+            css_label = self.style.style_cell_none
+        return css_label
+
     def getTitles(self) -> list:
         return self.titles
 
+    def getScales(self) -> list:
+        return self.scales
+
+    def getScaleCenter(self) -> enum:
+        return self.scales[0]
+
+    def getScaleVariation(self) -> enum:
+        return self.scales[1]
+
+    def setScaleCenter(self, scale:enum):
+        self.setScaleStyle(scale, 0)
+
+    def setScaleVariation(self, scale:enum):
+        self.setScaleStyle(scale, 1)
+
+    def setScaleStyle(self, scale:enum, i:int):
+        self.scales[i] = scale
+        self.labels[i].setStyleSheet(self.getStyle4Scale(scale))
 
 class ButtonSensor(QPushButton):
     def __init__(self, title: str, style: str):
