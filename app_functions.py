@@ -2,6 +2,37 @@ import logging
 import time
 
 
+def convert_dcp_dict2colname(dict_dcp):
+    list_sensor_step = dict_dcp['sensor_steps']
+    list_stat = dict_dcp['statistics']
+    list_colname = list()
+    for dict_sensor_step in list_sensor_step:
+        sensor = dict_sensor_step['sensor']
+        step = dict_sensor_step['step']
+        for stat in list_stat:
+            list_colname.append('%s_%s_%s' % (sensor, step, stat))
+    return list_colname
+
+
+def getAppLogger(name):
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler('logger.log')
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        '%(levelname)-9s  %(asctime)s  [%(name)s] %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
+
+
+def get_error_header():
+    """return error header to display on the og console
+    """
+    return '*** ERROR ******************************'
+
+
 def is_num(s: str):
     """
     is_num
@@ -32,34 +63,3 @@ def timeit(f: callable):
         return ret
 
     return wrap
-
-
-def getAppLogger(name):
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler('logger.log')
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        '%(levelname)-9s  %(asctime)s  [%(name)s] %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
-
-
-def convert_dcp_dict2colname(dict_dcp):
-    list_sensor_step = dict_dcp['sensor_steps']
-    list_stat = dict_dcp['statistics']
-    list_colname = list()
-    for dict_sensor_step in list_sensor_step:
-        sensor = dict_sensor_step['sensor']
-        step = dict_sensor_step['step']
-        for stat in list_stat:
-            list_colname.append('%s_%s_%s' % (sensor, step, stat))
-    return list_colname
-
-
-def get_error_header():
-    """return error header to display on the og console
-    """
-    return '*** ERROR ******************************'

@@ -35,15 +35,16 @@ from features import Features
 
 
 class ButtonOn2Labels(QPushButton):
-    def __init__(self, titles: list, style:str):
+    def __init__(self, titles: list, styles: list, flag: bool):
         super().__init__()
-        self.setStyleSheet(style)
         self.titles = titles
-        self.setContentsMargins(10, 0, 10, 0)
+        self.setEnabled(flag)
+        self.setStyleSheet(styles[0])
+        self.setContentsMargins(5, 1, 5, 1)
         self.setMinimumWidth(60)
         self.setSizePolicy(
             QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.MinimumExpanding
+            QSizePolicy.Policy.Preferred
         )
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -51,6 +52,8 @@ class ButtonOn2Labels(QPushButton):
         self.setLayout(layout)
         for i in range(2):
             lab = QLabel(titles[i])
+            if flag:
+                lab.setStyleSheet(styles[i + 1])
             lab.setContentsMargins(0, 0, 0, 0)
             lab.setSizePolicy(
                 QSizePolicy.Policy.Expanding,
@@ -58,6 +61,10 @@ class ButtonOn2Labels(QPushButton):
             )
             lab.setAlignment(Qt.AlignmentFlag.AlignRight)
             layout.addWidget(lab)
+
+    def getTitles(self) -> list:
+        return self.titles
+
 
 class ButtonSensor(QPushButton):
     def __init__(self, title: str, style: str):
