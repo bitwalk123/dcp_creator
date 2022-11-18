@@ -28,6 +28,12 @@ class ExperimentalCSSStyle:
         background-color:#bcb;
     }
     """
+    style_cell_2 = """
+    QLabel {
+        font-family:monospace;
+        background-color:#fff;
+    }
+    """
     style_cell_target_tolerance = """
     QLabel {
         padding:2px 5px;

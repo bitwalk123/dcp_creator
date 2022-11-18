@@ -16,7 +16,7 @@ class ExperimentalDCPMenu(QWidget):
         #
         lab_color = QLabel('Color Legend :')
         layout.addWidget(lab_color)
-        titles = ['Target/Tolerance', 'Mean/Sigma']
+        titles = ['Target/Tolerance', 'Mean/Stddev']
         styles = [style.style_cell_target_tolerance, style.style_cell_mean_sigma]
         for title, style_title in zip(titles, styles):
             lab = QLabel(title)

@@ -169,7 +169,7 @@ class DCPTable(QScrollArea):
             'steps':steps,
             'stats':stats,
         }
-        dlg = SensorScaleDlg(info_sensor)
+        dlg = SensorScaleDlg(info_sensor, self.features)
         if dlg.exec():
             print('OK')
         else:
