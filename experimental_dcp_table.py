@@ -3,8 +3,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
     QScrollArea,
-    QSizePolicy, QWidgetItem,
-)
+    QSizePolicy, )
 
 from app_widgets import (
     ButtonOn2Labels,
@@ -15,10 +14,14 @@ from app_widgets import (
 )
 from custom_scaler import Scale
 from experimental_css_style import ExperimentalCSSStyle
+from experimental_dcp_table_dialogs import SensorScaleDlg
 from features import Features
 
 
 class DCPTable(QScrollArea):
+    info = None
+    features = None
+
     def __init__(self):
         super().__init__()
         self.style = ExperimentalCSSStyle()
@@ -53,6 +56,8 @@ class DCPTable(QScrollArea):
         sensors_dcp: list = info['sensors']
         units: dict = info['units']
         steps_recipe: list = info['steps']
+        self.info = info
+        self.features = features
 
         self.col_start = col_start = 3
         self.row_start = row_start = 1
@@ -87,13 +92,13 @@ class DCPTable(QScrollArea):
             layout_target_tolerance = VBoxLayout()
             fra.setLayout(layout_target_tolerance)
             # target
-            lab_target = LabelCell('Target or Mean', self.style.style_head)
+            lab_target = LabelCell('Target', self.style.style_head)
             lab_target.setContentsMargins(0, 0, 0, 0)
             lab_target.setAlignment(Qt.AlignmentFlag.AlignBottom)
             lab_target.setFrameStyle(QFrame.Shape.NoFrame | QFrame.Shadow.Plain)
             layout_target_tolerance.addWidget(lab_target)
             # tolerance
-            lab_tolerance = LabelCell('Tolerance or Sigma', self.style.style_head)
+            lab_tolerance = LabelCell('Tolerance', self.style.style_head)
             lab_tolerance.setContentsMargins(0, 0, 0, 0)
             lab_tolerance.setFrameStyle(QFrame.Shape.NoFrame | QFrame.Shadow.Plain)
             lab_tolerance.setAlignment(Qt.AlignmentFlag.AlignBottom)
@@ -132,7 +137,6 @@ class DCPTable(QScrollArea):
                     method_upper = scale_center
 
                 str_tolerance_value = '0.0'
-                #css_style_lower = self.style.style_cell_mean_sigma
                 method_lower = scale_variation
 
                 but = ButtonOn2Labels(
@@ -146,8 +150,27 @@ class DCPTable(QScrollArea):
             self.layout.columnStretch(col)
 
     def sensor_clicked(self):
-        button:ButtonSensor = self.sender()
-        print(button.text(), self.layout.rowCount(), self.layout.columnCount())
-        for row in range(self.layout.rowCount()):
-            item:QWidgetItem = self.layout.itemAtPosition(row, 0)
-            print(type(item.widget()))
+        button: ButtonSensor = self.sender()
+        name_sensor = button.text()
+        features_sensor = [s for s in self.info['feature'] if s.startswith(name_sensor)]
+        sensor = list() # dummy
+        unit = {}
+        steps = list()
+        stats = list()
+        for feature in features_sensor:
+            self.features.sensor_unit_step(feature, sensor, stats, steps, unit)
+        steps = sorted(list(set(steps)))
+        sensor = sorted(list(set(sensor)))[0]
+        stats = sorted(list(set(stats)))
+
+        info_sensor = {
+            'sensor': sensor,
+            'unit': unit[sensor],
+            'steps':steps,
+            'stats':stats,
+        }
+        dlg = SensorScaleDlg(info_sensor)
+        if dlg.exec():
+            print('OK')
+        else:
+            print('Cancel')
