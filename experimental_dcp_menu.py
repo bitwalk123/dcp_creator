@@ -11,9 +11,10 @@ class ExperimentalDCPMenu(QWidget):
         style = ExperimentalCSSStyle()
         layout = QHBoxLayout()
         self.setLayout(layout)
+        # padding
         pad = Pad()
         layout.addWidget(pad)
-        #
+        # legend
         lab_color = QLabel('Color Legend :')
         layout.addWidget(lab_color)
         titles = ['Target/Tolerance', 'Mean/Stddev']

@@ -19,6 +19,7 @@ class SensorScaleDlg(QDialog):
 
     LABEL_MEAN_STDDEV = 'Mean / Stddev'
     LABEL_TARGET_TOLERANCE = 'Target / Tolerance'
+    label_target_cell = None
     entry_tolerance_cell = None
 
     def __init__(self, info: dict, features: Features):
@@ -64,29 +65,31 @@ class SensorScaleDlg(QDialog):
         #
         self.col_start = col_start = 3
         self.row_start = row_start = 1
+
         # column header sensor, unit & scaler
-        lab_sensor_head = LabelHead('Sensor', self.style.style_head)
-        layout.addWidget(lab_sensor_head, 0, 0)
-        lab_unit_head = LabelHead('Unit', self.style.style_head)
-        layout.addWidget(lab_unit_head, 0, 1)
+        label_sensor_head = LabelHead('Sensor', self.style.style_head)
+        layout.addWidget(label_sensor_head, 0, 0)
+
+        label_unit_head = LabelHead('Unit', self.style.style_head)
+        layout.addWidget(label_unit_head, 0, 1)
         # column header for process step
         for i, step in enumerate(self.info['steps']):
             col = i + col_start
-            lab_step_head = LabelHead(str(step), self.style.style_head)
-            lab_step_head.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
-            layout.addWidget(lab_step_head, 0, col)
+            label_step_head = LabelHead(str(step), self.style.style_head)
+            label_step_head.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+            layout.addWidget(label_step_head, 0, col)
         # row header
         sensor = self.info['sensor']
         unit = self.info['unit']
-        #lab_sensor = LabelHead(sensor, self.style.style_head_sensor)
-        lab_sensor = LabelCell(sensor, self.style.style_cell_label)
-        layout.addWidget(lab_sensor, 1, 0)
-        #lab_unit = LabelHead(unit, self.style.style_head)
-        lab_unit = LabelCell(unit, self.style.style_cell_label)
-        layout.addWidget(lab_unit, 1, 1)
-        #lab_setting = LabelHead('Setting', self.style.style_head)
-        lab_setting = LabelCell('Setting', self.style.style_cell_label)
-        layout.addWidget(lab_setting, 1, 2)
+
+        label_sensor = LabelCell(sensor, self.style.style_cell_label)
+        layout.addWidget(label_sensor, 1, 0)
+
+        label_unit = LabelCell(unit, self.style.style_cell_label)
+        layout.addWidget(label_unit, 1, 1)
+
+        label_setting = LabelCell('Setting', self.style.style_cell_label)
+        layout.addWidget(label_setting, 1, 2)
 
         list_sensor_setting = self.features.getSensorSetting()
         dict_sensor_setting_step = self.features.getSensorSettingStep()
@@ -104,9 +107,9 @@ class SensorScaleDlg(QDialog):
                 # The sensor has no setting
                 str_setting_value = '---'
 
-            lab_cell = LabelCell(str_setting_value, self.style.style_cell_label)
-            lab_cell.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-            layout.addWidget(lab_cell, 1, col)
+            label_cell = LabelCell(str_setting_value, self.style.style_cell_label)
+            label_cell.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+            layout.addWidget(label_cell, 1, col)
 
     def gen_option(self, base):
         layout = QGridLayout()
@@ -133,17 +136,20 @@ class SensorScaleDlg(QDialog):
         label_tolerance = LabelHead('Tolerance', self.style.style_head)
         layout.addWidget(label_tolerance, 1, 3)
 
+        self.entry_tolerance_cell = entry_tolerance_cell = EntryTolerance(self.style.style_cell_entry)
+        """
         self.entry_tolerance_cell = entry_tolerance_cell = QLineEdit()
         entry_tolerance_cell.setStyleSheet(self.style.style_cell_entry)
         entry_tolerance_cell.setAlignment(Qt.AlignmentFlag.AlignRight)
         validator = QDoubleValidator()
         validator.setBottom(0.0)  # only positive value is accepted for tolerance
         entry_tolerance_cell.setValidator(validator)
+        """
         layout.addWidget(entry_tolerance_cell, 1, 4)
 
-        rb_group = QButtonGroup()
-        rb_group.addButton(radio_mean_stddev)
-        rb_group.addButton(radio_target_tolerance)
+        radio_group = QButtonGroup()
+        radio_group.addButton(radio_mean_stddev)
+        radio_group.addButton(radio_target_tolerance)
 
         radio_mean_stddev.setChecked(True)
 
@@ -156,3 +162,13 @@ class SensorScaleDlg(QDialog):
             else:
                 self.label_target_cell.setEnabled(True)
                 self.entry_tolerance_cell.setEnabled(True)
+
+
+class EntryTolerance(QLineEdit):
+    def __init__(self, css_style:str):
+        super().__init__()
+        self.setStyleSheet(css_style)
+        self.setAlignment(Qt.AlignmentFlag.AlignRight)
+        validator = QDoubleValidator()
+        validator.setBottom(0.0)  # only positive value is accepted for tolerance
+        self.setValidator(validator)
