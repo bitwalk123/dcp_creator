@@ -28,17 +28,36 @@ class ExperimentalCSSStyle:
         background-color:#bcb;
     }
     """
-    style_cell_2 = """
+    style_cell_label = """
     QLabel {
         font-family:monospace;
         background-color:#fff;
+        padding:2px 5px;
+    }
+    QLabel:disabled {
+        background-color:#ccc;
+    }
+    """
+    style_cell_entry = """
+    QLineEdit {
+        font-family:monospace;
+        padding:2px 5px;
+    }
+    QLineEdit:disabled {
+        background-color:#ccc;
+    }
+    """
+    style_cell_radio = """
+    QLineEdit {
+        font-family:monospace;
+        padding:2px 5px;
     }
     """
     style_cell_target_tolerance = """
     QLabel {
-        padding:2px 5px;
         font-family:monospace;
         background-color:#eef;
+        padding:2px 5px;
     }
     """
     style_cell_mean_sigma = """

@@ -1,9 +1,10 @@
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QDoubleValidator
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QGridLayout,
-    QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QRadioButton, QButtonGroup,
+    QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QRadioButton, QButtonGroup, QLineEdit, QFrame,
 )
 
 from app_widgets import VBoxLayout, LabelHead, LabelCell, LabelTitle
@@ -16,11 +17,16 @@ class SensorScaleDlg(QDialog):
     col_start = 0
     row_start = 0
 
+    LABEL_MEAN_STDDEV = 'Mean / Stddev'
+    LABEL_TARGET_TOLERANCE = 'Target / Tolerance'
+    entry_tolerance_cell = None
+
     def __init__(self, info: dict, features: Features):
         super().__init__()
         self.info = info
         self.features = features
         self.setWindowTitle(info['sensor'])
+        self.setContentsMargins(2, 2, 2, 2)
 
         layout = VBoxLayout()
         self.setLayout(layout)
@@ -36,7 +42,10 @@ class SensorScaleDlg(QDialog):
         self.gen_table(table)
 
         # Option
-        option = QWidget()
+        option = QFrame()
+        option.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        option.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Sunken)
+        option.setLineWidth(2)
         layout.addWidget(option)
         self.gen_option(option)
 
@@ -69,11 +78,14 @@ class SensorScaleDlg(QDialog):
         # row header
         sensor = self.info['sensor']
         unit = self.info['unit']
-        lab_sensor = LabelHead(sensor, self.style.style_head_sensor)
+        #lab_sensor = LabelHead(sensor, self.style.style_head_sensor)
+        lab_sensor = LabelCell(sensor, self.style.style_cell_label)
         layout.addWidget(lab_sensor, 1, 0)
-        lab_unit = LabelHead(unit, self.style.style_head)
+        #lab_unit = LabelHead(unit, self.style.style_head)
+        lab_unit = LabelCell(unit, self.style.style_cell_label)
         layout.addWidget(lab_unit, 1, 1)
-        lab_setting = LabelHead('Setting', self.style.style_head)
+        #lab_setting = LabelHead('Setting', self.style.style_head)
+        lab_setting = LabelCell('Setting', self.style.style_cell_label)
         layout.addWidget(lab_setting, 1, 2)
 
         list_sensor_setting = self.features.getSensorSetting()
@@ -92,33 +104,55 @@ class SensorScaleDlg(QDialog):
                 # The sensor has no setting
                 str_setting_value = '---'
 
-            lab_cell = LabelCell(str_setting_value, self.style.style_cell_2)
+            lab_cell = LabelCell(str_setting_value, self.style.style_cell_label)
             lab_cell.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
             layout.addWidget(lab_cell, 1, col)
 
     def gen_option(self, base):
         layout = QGridLayout()
         layout.setContentsMargins(1, 1, 1, 1)
-        layout.setSpacing(1)
+        layout.setSpacing(2)
         base.setLayout(layout)
         #
-        rb_A = QRadioButton('Mean / Stddev')
-        # rad_A.toggle()
-        #rb_A.toggled.connect(self.checkboxChanged)
-        layout.addWidget(rb_A, 0, 0)
+        radio_mean_stddev = QRadioButton(self.LABEL_MEAN_STDDEV)
+        radio_mean_stddev.setStyleSheet(self.style.style_cell_radio)
+        radio_mean_stddev.toggled.connect(self.radiobutton_changed)
+        layout.addWidget(radio_mean_stddev, 0, 0)
 
-        rb_B = QRadioButton('Target / Tolerance')
-        #rb_B.toggled.connect(self.checkboxChanged)
-        layout.addWidget(rb_B, 1, 0)
-        lab_target = LabelHead('Target', self.style.style_head)
-        layout.addWidget(lab_target, 1, 1)
-        lab_target_cell = LabelCell('Setting', self.style.style_cell_2)
-        layout.addWidget(lab_target_cell, 1, 2)
-        lab_tolerance = LabelHead('Tolerance', self.style.style_head)
-        layout.addWidget(lab_tolerance, 1, 3)
-        lab_tolerance_cell = LabelCell('---', self.style.style_cell_2)
-        layout.addWidget(lab_tolerance_cell, 1, 4)
+        radio_target_tolerance = QRadioButton(self.LABEL_TARGET_TOLERANCE)
+        radio_target_tolerance.setStyleSheet(self.style.style_cell_radio)
+        radio_target_tolerance.toggled.connect(self.radiobutton_changed)
+        layout.addWidget(radio_target_tolerance, 1, 0)
+
+        label_target = LabelHead('Target', self.style.style_head)
+        layout.addWidget(label_target, 1, 1)
+
+        self.label_target_cell = label_target_cell = LabelCell('Setting', self.style.style_cell_label)
+        layout.addWidget(label_target_cell, 1, 2)
+
+        label_tolerance = LabelHead('Tolerance', self.style.style_head)
+        layout.addWidget(label_tolerance, 1, 3)
+
+        self.entry_tolerance_cell = entry_tolerance_cell = QLineEdit()
+        entry_tolerance_cell.setStyleSheet(self.style.style_cell_entry)
+        entry_tolerance_cell.setAlignment(Qt.AlignmentFlag.AlignRight)
+        validator = QDoubleValidator()
+        validator.setBottom(0.0)  # only positive value is accepted for tolerance
+        entry_tolerance_cell.setValidator(validator)
+        layout.addWidget(entry_tolerance_cell, 1, 4)
 
         rb_group = QButtonGroup()
-        rb_group.addButton(rb_A)
-        rb_group.addButton(rb_B)
+        rb_group.addButton(radio_mean_stddev)
+        rb_group.addButton(radio_target_tolerance)
+
+        radio_mean_stddev.setChecked(True)
+
+    def radiobutton_changed(self):
+        rb: QRadioButton = self.sender()
+        if rb.isChecked():
+            if rb.text() == self.LABEL_MEAN_STDDEV:
+                self.label_target_cell.setEnabled(False)
+                self.entry_tolerance_cell.setEnabled(False)
+            else:
+                self.label_target_cell.setEnabled(True)
+                self.entry_tolerance_cell.setEnabled(True)
