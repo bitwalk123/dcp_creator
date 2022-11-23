@@ -1,4 +1,8 @@
 class ExperimentalCSSStyle:
+    # COLOR CONSTANT
+    COLOR_TARGET_TOLERANCE = '#ccf'
+    COLOR_MEAN_SIGMA = '#fcc'
+
     # CSS Style Sheet
     style_head = 'padding:2px 5px; font-family:monospace; background-color:#eee;'
     style_head2 = 'padding:2px 5px; font-family:monospace; font-size:7pt; background-color:#eee;'
@@ -53,20 +57,21 @@ class ExperimentalCSSStyle:
         padding:2px 5px;
     }
     """
+
     style_cell_target_tolerance = """
     QLabel {
         font-family:monospace;
-        background-color:#eef;
+        background-color:%s;
         padding:2px 5px;
     }
-    """
+    """ % COLOR_TARGET_TOLERANCE
     style_cell_mean_sigma = """
     QLabel {
         padding:2px 5px;
         font-family:monospace;
-        background-color:#fee;
+        background-color:%s;
     }
-    """
+    """ % COLOR_MEAN_SIGMA
     style_cell_none = """
     QLabel {
         padding:2px 5px;
@@ -78,5 +83,6 @@ class ExperimentalCSSStyle:
         font-family:monospace;
     }
     """
+
     def getStyle(self, name):
         return getattr(self, name)
