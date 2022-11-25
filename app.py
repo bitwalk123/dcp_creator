@@ -119,6 +119,9 @@ class DCPCreator(QMainWindow):
             self.console.insertIn('reading %s.' % csvfile)
             self.read_csv(csvfile)
 
+    def button_dcp_help_clicked(self):
+        print('Sorry, this is under construction!')
+
     def button_dcp_read_clicked(self):
         if self.features is None:
             dlg = DialogWarn('At first, please read summary statistics!')
@@ -182,8 +185,9 @@ class DCPCreator(QMainWindow):
         self.toolbar = DCPCreatorToolBar()
         self.toolbar.openCSVClicked.connect(self.button_open_csv_clicked)
         self.toolbar.dcpReadClicked.connect(self.button_dcp_read_clicked)
-        self.toolbar.dcpSaveClicked.connect(self.button_dcp_save_clicked)
         self.toolbar.optionButtonClicked.connect(self.button_option_button_clicked)
+        self.toolbar.dcpHelpClicked.connect(self.button_dcp_help_clicked)
+        self.toolbar.dcpSaveClicked.connect(self.button_dcp_save_clicked)
         self.addToolBar(Qt.TopToolBarArea, self.toolbar)
         # _____________________________________________________________________
         # Statusbar
@@ -215,10 +219,10 @@ class DCPCreator(QMainWindow):
         # Log event
         for key in page.keys():
             page[key].logMessage.connect(self.showLog)
-        #page['sensors'].logMessage.connect(self.showLog)
-        #page['recipe'].logMessage.connect(self.showLog)
-        #page['stats'].logMessage.connect(self.showLog)
-        #page['experimental'].logMessage.connect(self.showLog)
+        # page['sensors'].logMessage.connect(self.showLog)
+        # page['recipe'].logMessage.connect(self.showLog)
+        # page['stats'].logMessage.connect(self.showLog)
+        # page['experimental'].logMessage.connect(self.showLog)
         # _____________________________________________________________________
         # for tab click event
         self.tab.currentChanged.connect(self.tab_changed)

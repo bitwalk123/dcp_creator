@@ -17,6 +17,7 @@ class DCPCreatorToolBar(QToolBar):
     toolbar class of the sensor window
     """
     openCSVClicked = Signal()
+    dcpHelpClicked = Signal()
     dcpReadClicked = Signal()
     dcpSaveClicked = Signal()
     optionButtonClicked = Signal()
@@ -41,7 +42,7 @@ class DCPCreatorToolBar(QToolBar):
         button_dcp.setStyleSheet('margin:0 1em;')
         button_dcp.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_dcp.setIcon(
-            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DriveFDIcon))
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon))
         )
         button_dcp.setToolTip('load DCP file in JSON, previously saved.')
         button_dcp.clicked.connect(self.dcpReadClicked.emit)
@@ -55,7 +56,7 @@ class DCPCreatorToolBar(QToolBar):
         # _____________________________________________________________________
         # Option button
         button_option = QToolButton()
-        button_option.setStyleSheet('margin:0 1em;')
+        button_option.setStyleSheet('margin:0;')
         button_option.setToolButtonStyle(Qt.ToolButtonIconOnly)
         button_option.setIcon(
             QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView))
@@ -64,6 +65,17 @@ class DCPCreatorToolBar(QToolBar):
         button_option.clicked.connect(self.optionButtonClicked.emit)
         self.addWidget(button_option)
         self.addSeparator()
+        # _____________________________________________________________________
+        # Help button
+        button_help = QToolButton()
+        button_help.setStyleSheet('margin:0 1em;')
+        button_help.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        button_help.setIcon(
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxQuestion))
+        )
+        button_help.setToolTip('Help Document.')
+        button_help.clicked.connect(self.dcpHelpClicked.emit)
+        self.addWidget(button_help)
         # _____________________________________________________________________
         # Save button
         button_save = QToolButton()

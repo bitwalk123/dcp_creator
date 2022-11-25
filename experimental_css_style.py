@@ -23,13 +23,13 @@ class ExperimentalCSSStyle:
     style_cell = """
     QPushButton {
         font-family:monospace;
-        background-color:#ded;
+        background-color:#beb;
     }
     QPushButton:hover {
-        background-color:#efe;
+        background-color:#dfd;
     }
     QPushButton:pressed {
-        background-color:#bcb;
+        background-color:#aca;
     }
     """
     style_cell_label = """
