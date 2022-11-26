@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import os
+import pathlib
 import sys
 import zipfile
 
@@ -15,14 +16,16 @@ import sklearn
 from PySide6.QtCore import (
     Qt,
     QThread,
+    QUrl,
 )
 from PySide6.QtGui import QIcon
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
     QMainWindow,
     QStatusBar,
-    QTabWidget,
+    QTabWidget, QStyle,
 )
 
 from app_thread import CSVReadWorker, ParseFeaturesWorker
@@ -75,6 +78,9 @@ class DCPCreator(QMainWindow):
     # Option Window
     option_win = None
 
+    # manual
+    view_manual = None
+
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -99,30 +105,22 @@ class DCPCreator(QMainWindow):
             '<<< Welcome to DCP Creator {}, {} >>>'.format(self.__version__, self.__version_minor__)
         )
 
-    def button_open_csv_clicked(self):
-        """Action for 'Open' button clicked.
-        """
-        # only at the first time to open
-        if self.opendir is None:
-            self.opendir = str(Path.home())
-        # dialog
-        selection = QFileDialog.getOpenFileName(
-            parent=self,
-            caption='Select CSV file',
-            dir=self.opendir,
-            filter='Zip File (*.zip);; CSV File (*.csv)'
-        )
-        csvfile = selection[0]
-        if len(csvfile) > 0:
-            # remember directory location
-            self.opendir = os.path.dirname(csvfile)
-            self.console.insertIn('reading %s.' % csvfile)
-            self.read_csv(csvfile)
-
     def button_dcp_help_clicked(self):
-        print('Sorry, this is under construction!')
+        """manual browser for DCP Creator
+        """
+        self.view_manual = QWebEngineView()
+        self.view_manual.setWindowIcon(
+            QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxQuestion))
+        )
+        self.view_manual.setWindowTitle('DCP Creator user\'s manual')
+        index_file = pathlib.Path(os.path.join(os.getcwd(), 'doc/index.html'))
+        site = index_file.as_uri()
+        self.view_manual.load(QUrl(site))
+        self.view_manual.show()
 
     def button_dcp_read_clicked(self):
+        """DCP Reader in JSON format
+        """
         if self.features is None:
             dlg = DialogWarn('At first, please read summary statistics!')
             dlg.exec()
@@ -143,7 +141,7 @@ class DCPCreator(QMainWindow):
             self.controller.readJSON4DCP(jsonfile)
 
     def button_dcp_save_clicked(self):
-        """Action for 'Save' button clicked.
+        """DCP Saver in JSON format
         """
         if self.controller is None:
             print('There is no data!')
@@ -163,6 +161,26 @@ class DCPCreator(QMainWindow):
             self.opendir = os.path.dirname(jsonfile)
             self.controller.saveJSON4DCP(jsonfile)
 
+    def button_open_csv_clicked(self):
+        """Data Reader in CSV format, which is exported from main application
+        """
+        # only at the first time to open
+        if self.opendir is None:
+            self.opendir = str(Path.home())
+        # dialog
+        selection = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select CSV file',
+            dir=self.opendir,
+            filter='Zip File (*.zip);; CSV File (*.csv)'
+        )
+        csvfile = selection[0]
+        if len(csvfile) > 0:
+            # remember directory location
+            self.opendir = os.path.dirname(csvfile)
+            self.console.insertIn('reading %s.' % csvfile)
+            self.read_csv(csvfile)
+
     def button_option_button_clicked(self):
         self.option_win = OptionWindow()
         self.option_win.show()
@@ -175,6 +193,8 @@ class DCPCreator(QMainWindow):
         event: QCloseEvent
         """
         print('Exiting application ...')
+        if self.view_manual is not None:
+            self.view_manual.close()
         event.accept()
 
     def init_ui(self):
