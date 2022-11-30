@@ -22,12 +22,10 @@ class ExperimentalDCPMenu(QWidget):
 
         # RadioButton to switch Mean/Stddev and Target/Tolerance
         radio_mean_stddev = QRadioButton(self.LABEL_MEAN_STDDEV)
-        # radio_mean_stddev.setStyleSheet(self.style.style_cell_radio)
-        # radio_mean_stddev.toggled.connect(self.radiobutton_changed)
+        #radio_mean_stddev.toggled.connect(self.radiobutton_changed)
         layout.addWidget(radio_mean_stddev)
 
         radio_target_tolerance = QRadioButton(self.LABEL_TARGET_TOLERANCE)
-        # radio_target_tolerance.setStyleSheet(self.style.style_cell_radio)
         # radio_target_tolerance.toggled.connect(self.radiobutton_changed)
         layout.addWidget(radio_target_tolerance)
 

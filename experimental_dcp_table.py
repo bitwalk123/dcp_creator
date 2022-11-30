@@ -107,42 +107,39 @@ class DCPTable(QScrollArea):
         # default scale
         scale_center = Scale.MEAN_SIGMA
         scale_variation = Scale.MEAN_SIGMA
-
+        # _____________________________________________________________________
         # contents
         for i, step in enumerate(steps_recipe):
             col = i + col_start
             for j, sensor in enumerate(sensors_dcp):
                 row = j + row_start
-
-                feature_partial = '%s%s_%d' % (sensor, units[sensor], steps_recipe[i])
-                if len([s for s in info['feature'] if s.startswith(feature_partial)]) > 0:
+                # check if specified feature_unit_step exists in the selected feature list.
+                feature_unit_step = '%s%s_%d' % (sensor, units[sensor], steps_recipe[i])
+                if len([s for s in info['feature'] if s.startswith(feature_unit_step)]) > 0:
                     flag_enable = True
-                    css_style = self.style.style_cell
                 else:
                     flag_enable = False
-                    css_style = self.style.style_cell_disable
-
+                # check if sensor has setting value
                 if sensor in list_sensor_setting:
                     # The sensor has setting
                     if step in dict_sensor_setting_step[sensor].keys():
                         str_setting_value = str(dict_sensor_setting_step[sensor][step])
-                        method_upper = scale_center
+                        scale_upper = scale_center
                     else:
                         # This step of this sensor is not in DCP
                         str_setting_value = '0.0'
-                        method_upper = Scale.NONE
+                        scale_upper = Scale.NONE
                 else:
                     # The sensor has no setting
                     str_setting_value = '0.0'
-                    method_upper = scale_center
+                    scale_upper = scale_center
 
                 str_tolerance_value = '0.0'
-                method_lower = scale_variation
+                scale_lower = scale_variation
 
                 but = ButtonOn2Labels(
                     [str_setting_value, str_tolerance_value],
-                    [method_upper, method_lower],
-                    css_style,
+                    [scale_upper, scale_lower],
                     flag_enable,
                 )
                 self.layout.addWidget(but, row, col)
