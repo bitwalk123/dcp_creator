@@ -46,8 +46,8 @@ warnings.simplefilter('ignore', FutureWarning)
 class DCPCreator(QMainWindow):
     """DCP creator with the CSV file exported from the fleet analysis tool
     """
-    __version__ = '0.1.2'
-    __version_minor__ = '20221130'
+    __version__ = '0.1.4'
+    __version_minor__ = '20230107'
 
     # UI components
     console: LogConsole = None
