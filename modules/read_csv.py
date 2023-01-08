@@ -66,7 +66,6 @@ class ReadCSV(QObject):
         elapsed: elapsed seconds to read
         """
         self.progress_reader.cancel()
-        # print(df)
         self.readCompleted.emit(df)
         self.event_loop.quit()
         print('elapsed %f sec' % elapsed)
