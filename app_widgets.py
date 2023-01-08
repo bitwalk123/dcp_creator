@@ -365,15 +365,16 @@ class VBoxLayout(QVBoxLayout):
 
 
 class WorkInProgress(QProgressDialog):
-    def __init__(self, parent, title='Working...'):
-        super().__init__(parent=parent, labelText=title)
+    def __init__(self, title='Working...'):
+        super().__init__()
         self.setWindowIcon(
             QIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
         )
-        self.setWindowModality(Qt.WindowModal)
+        self.setLabel(QLabel(title))
         self.setCancelButton(None)
         self.setRange(0, 0)
         self.setWindowTitle('In progress')
+        self.setWindowModality(Qt.WindowModality.WindowModal)
 
 
 # _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_

@@ -3,15 +3,12 @@
 import os
 import pathlib
 import sys
-import zipfile
+import warnings
+from pathlib import Path
 
 import PySide6
 import matplotlib
 import pandas as pd
-import warnings
-
-from pathlib import Path
-
 import sklearn
 from PySide6.QtCore import (
     Qt,
@@ -25,19 +22,20 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QStatusBar,
-    QTabWidget, QStyle,
+    QTabWidget,
+    QStyle,
 )
 
-from app_thread import CSVReadWorker, ParseFeaturesWorker
+from app_toolbar import DCPCreatorToolBar
 from app_widgets import WorkInProgress, DialogWarn, OptionWindow
 from base.log_console import LogConsole
-from app_toolbar import DCPCreatorToolBar
 from dcp_experimental import DCPExperimental
+from dcp_recipe import DCPStepValueSetting
 from dcp_sensors import DCPSensorSelection
 from dcp_stats import DCPStats
-from dcp_recipe import DCPStepValueSetting
 from dcp_summary import DCPSummary
 from features import Features
+from modules.read_csv import ReadCSV, CSVReadWorker
 from ui_controller import UIController
 
 warnings.simplefilter('ignore', FutureWarning)
@@ -67,7 +65,6 @@ class DCPCreator(QMainWindow):
 
     # thread instances
     reader: CSVReadWorker = None
-    parser: ParseFeaturesWorker = None
     thread_reader: QThread = None
     thread_parser: QThread = None
 
@@ -175,11 +172,20 @@ class DCPCreator(QMainWindow):
             filter='Zip File (*.zip);; CSV File (*.csv)'
         )
         csvfile = selection[0]
-        if len(csvfile) > 0:
-            # remember directory location
-            self.opendir = os.path.dirname(csvfile)
-            self.console.insertIn('reading %s.' % csvfile)
-            self.read_csv(csvfile)
+        if len(csvfile) == 0:
+            return
+
+        # remember directory location
+        self.opendir = os.path.dirname(csvfile)
+        self.console.insertIn('reading %s.' % csvfile)
+        obj = ReadCSV()
+        obj.readCompleted.connect(self.parse_df)
+        obj.read(csvfile)
+
+    def parse_df(self, df: pd.DataFrame):
+        self.df = df
+        self.features = Features(df)
+        self.main_ui()
 
     def button_option_button_clicked(self):
         self.option_win = OptionWindow()
@@ -253,99 +259,6 @@ class DCPCreator(QMainWindow):
         page['experimental'] = DCPExperimental(self.features, self.controller)
         self.tab.addTab(page['experimental'], 'Experimental')
         page['experimental'].logMessage.connect(self.showLog)
-
-    def parse_features(self, df: pd.DataFrame):
-        """Parser for exported summary statistics (feature) in dataframe.
-
-        Parameters
-        ----------
-        df: pd.DataFrame
-        """
-        # _____________________________________________________________________
-        # Prep. Threading
-        self.parser = ParseFeaturesWorker(df)
-        self.thread_parser = QThread(self)
-        self.parser.moveToThread(self.thread_reader)
-        # Controller
-        self.thread_parser.started.connect(self.parser.run)
-        self.parser.finished.connect(self.thread_parser.quit)
-        self.parser.finished.connect(self.parser.deleteLater)
-        self.thread_parser.finished.connect(self.thread_parser.deleteLater)
-        self.parser.parseCompleted.connect(self.parse_features_completed)
-        # Start Threading
-        self.thread_parser.start()
-        self.progress_parser = WorkInProgress(self, 'Parsing ...')
-        self.progress_parser.show()
-
-    def parse_features_completed(self, features: Features, elapsed: float):
-        """Event handler when thread of parse_feature is completed.
-
-        Parameters
-        ----------
-        features: Features
-        """
-        self.progress_parser.cancel()
-        # Log
-        self.console.insertCompleted(elapsed)
-
-        self.console.insertOut(features.getLogDfShape())
-        self.console.insertOut(features.getLogStep())
-        self.console.insertOut(features.getLogStat())
-        #
-        self.features = features
-        self.main_ui()
-
-    def read_csv(self, csvfile: str):
-        """Read CSV file in a thread.
-
-        Parameters
-        ----------
-        csvfile: str
-        """
-        # check if csvfile exists
-        if not os.path.exists(csvfile):
-            return pd.DataFrame()
-        # check contents of csvfile if the file is zip file
-        ext = os.path.splitext(csvfile)[1]
-        if ext == '.zip':
-            zip_f = zipfile.ZipFile(csvfile)
-            list_file = zip_f.namelist()
-            zip_f.close()
-            self.console.insertIn('Contents of the zip file:')
-            for name_file in list_file:
-                self.console.insertIn('- %s' % name_file)
-            if len(list_file) > 1:
-                self.console.insertAttention()
-                self.console.insertIn('Several files are included in this zip file.')
-                self.console.insertIn('Sorry, this type of file cannot be read.')
-                return
-        # _____________________________________________________________________
-        # Prep. Threading
-        self.reader = CSVReadWorker(csvfile)
-        self.thread_reader = QThread(self)
-        self.reader.moveToThread(self.thread_reader)
-        # Controller
-        self.thread_reader.started.connect(self.reader.run)
-        self.reader.finished.connect(self.thread_reader.quit)
-        self.reader.finished.connect(self.reader.deleteLater)
-        self.thread_reader.finished.connect(self.thread_reader.deleteLater)
-        self.reader.readCompleted.connect(self.read_csv_completed)
-        # Start Threading
-        self.thread_reader.start()
-        self.progress_reader = WorkInProgress(self, 'Reading ...')
-        self.progress_reader.show()
-
-    def read_csv_completed(self, df: pd.DataFrame, elapsed: float):
-        """Event handler when thread of read_csv is completed.
-
-        Parameters
-        ----------
-        df: pd.DataFrame
-        """
-        self.progress_reader.cancel()
-        self.console.insertCompleted(elapsed)
-        self.console.insertIn('Parsing data.')
-        self.parse_features(df)
 
     def showLog(self, msg):
         self.console.insertIn(msg)
